@@ -1,4 +1,4 @@
-package main
+package usecase
 
 import (
 	"content_service/model"
@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func (postServerRef *postServer) createPostHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func (postServerRef *PostServer) CreatePostHandler(responseWriter http.ResponseWriter, request *http.Request) {
 
 	// Enforce a JSON Content-Type.
 	contentType := request.Header.Get("Content-Type")
@@ -32,12 +32,12 @@ func (postServerRef *postServer) createPostHandler(responseWriter http.ResponseW
 	renderJSON(responseWriter, model.ResponseId{Id: id})
 }
 
-func (postServerRef *postServer) getAllPostsHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func (postServerRef *PostServer) GetAllPostsHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	allTasks := postServerRef.store.GetAllPosts()
 	renderJSON(responseWriter, allTasks)
 }
 
-func (postServerRef *postServer) getPostHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func (postServerRef *PostServer) GetPostHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	id, _ := strconv.Atoi(mux.Vars(request)["id"])
 	task, err := postServerRef.store.GetPost(id)
 
@@ -49,7 +49,7 @@ func (postServerRef *postServer) getPostHandler(responseWriter http.ResponseWrit
 	renderJSON(responseWriter, task)
 }
 
-func (postServerRef *postServer) deletePostHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func (postServerRef *PostServer) DeletePostHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	id, _ := strconv.Atoi(mux.Vars(request)["id"])
 	err := postServerRef.store.DeletePost(id)
 

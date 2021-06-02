@@ -1,26 +1,26 @@
-package main
+package usecase
 
 import (
 	"content_service/dataservice"
 )
 
-type postServer struct {
+type PostServer struct {
 	store  *dataservice.PostStore
 }
 
 const name = "post_service"
 
-func NewPostServer() (*postServer, error) {
+func NewPostServer() (*PostServer, error) {
 	store, err := dataservice.New()
 	if err != nil {
 		return nil, err
 	}
 
-	return &postServer{
+	return &PostServer{
 		store:  store,
 	}, nil
 }
 
-func (postServerRef *postServer) CloseDB() error {
+func (postServerRef *PostServer) CloseDB() error {
 	return postServerRef.store.Close()
 }

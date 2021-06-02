@@ -1,6 +1,7 @@
 package main
 
 import (
+	"content_service/usecase"
 	"context"
 	"github.com/gorilla/mux"
 	"log"
@@ -17,17 +18,17 @@ func main() {
 
 	router := mux.NewRouter()
 	router.StrictSlash(true)
-	server, err := NewPostServer()
+	server, err := usecase.NewPostServer()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
 	defer server.CloseDB()
 
-	router.HandleFunc("/post/", server.createPostHandler).Methods("POST")
-	router.HandleFunc("/post/", server.getAllPostsHandler).Methods("GET")
-	router.HandleFunc("/post/{id:[0-9]+}/", server.getPostHandler).Methods("GET")
-	router.HandleFunc("/post/{id:[0-9]+}/", server.deletePostHandler).Methods("DELETE")
+	router.HandleFunc("/post/", server.CreatePostHandler).Methods("POST")
+	router.HandleFunc("/post/", server.GetAllPostsHandler).Methods("GET")
+	router.HandleFunc("/post/{id:[0-9]+}/", server.GetPostHandler).Methods("GET")
+	router.HandleFunc("/post/{id:[0-9]+}/", server.DeletePostHandler).Methods("DELETE")
 
 	// start server
 	srv := &http.Server{Addr: "0.0.0.0:8000", Handler: router}
