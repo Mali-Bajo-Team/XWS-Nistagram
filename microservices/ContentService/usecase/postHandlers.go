@@ -3,10 +3,25 @@ package usecase
 import (
 	"content_service/model"
 	"github.com/gorilla/mux"
+	"log"
 	"mime"
 	"net/http"
 	"strconv"
 )
+
+func InitializeRouter(router *mux.Router, server *ContentServer) {
+
+	router.HandleFunc("/upload/", server.UploadFileHandler).Methods("POST")
+
+	router.HandleFunc("/post/", server.CreatePostHandler).Methods("POST")
+	router.HandleFunc("/post/", server.GetAllPostsHandler).Methods("GET")
+	router.HandleFunc("/post/{id:[0-9]+}/", server.GetPostHandler).Methods("GET")
+	router.HandleFunc("/post/{id:[0-9]+}/", server.DeletePostHandler).Methods("DELETE")
+}
+
+func (contentServerRef *ContentServer) UploadFileHandler(responseWriter http.ResponseWriter, request *http.Request){
+	log.Println("Uploading image")
+}
 
 func (contentServerRef *ContentServer) CreatePostHandler(responseWriter http.ResponseWriter, request *http.Request) {
 

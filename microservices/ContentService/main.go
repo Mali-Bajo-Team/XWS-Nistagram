@@ -25,7 +25,7 @@ func main() {
 
 	defer server.CloseDB()
 
-	initializeRouter(router, server)
+	usecase.InitializeRouter(router, server)
 
 	// start server
 	srv := &http.Server{Addr: "0.0.0.0:8000", Handler: router}
@@ -53,10 +53,5 @@ func main() {
 	log.Println("server stopped")
 }
 
-func initializeRouter(router *mux.Router, server *usecase.ContentServer) {
-	router.HandleFunc("/post/", server.CreatePostHandler).Methods("POST")
-	router.HandleFunc("/post/", server.GetAllPostsHandler).Methods("GET")
-	router.HandleFunc("/post/{id:[0-9]+}/", server.GetPostHandler).Methods("GET")
-	router.HandleFunc("/post/{id:[0-9]+}/", server.DeletePostHandler).Methods("DELETE")
-}
+
 
