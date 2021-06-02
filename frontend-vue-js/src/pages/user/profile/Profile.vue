@@ -4,43 +4,84 @@
     
     <v-col sm="8" md="12" lg="4" cols="12">
         <v-row>
+                    <!--First column-->
                     <v-col sm="8" md="12" lg="4" cols="12">
-                        <v-img class="rounded-circle"
+                        <!--Profile photo-->
+                        <v-img class="rounded-circle" 
+                            aspect-ratio="1.1"
                             src="@/assets/profilePhoto.jpg">
                             
                         </v-img>
                         
-                        <v-text  class="text-center justify-center">
-                            <h3>ivana_mil_98</h3>    
+                        <!--Username and description-->
+                        <v-text>
+                            <h3 class="text-justify">ivana_mil_98</h3>
+                            <body-1 class="font-weight-medium text-justify"> 
+                                Love is in the air.
+                                The sun is shining,I am smiling :).
+                            </body-1>
+                            
                         </v-text>
-                        <br>
-
-                        <v-btn
-                            medium
-                            color="success"
-                        >
-                            <v-icon left>
-                                mdi-pencil
-                            </v-icon>
-                                Edit profile
-                        </v-btn>
+    
+                       
                     </v-col>
+                    <!--End of the first column-->
 
-                    <v-col class="pa-4">
-                        <b>50</b>
-                        <br>
+                    <!--Column for the number of posts-->
+                    <v-col class="pa-4 mt-2">
+                        <h3>250</h3>
                         Posts
                     </v-col>
-                    <v-col class="pa-4">
-                        <b>1406</b>
+                    <!--End of the number of posts-->
+
+                    <!--Column for the number of followers-->
+                    <v-col class="pa-4 mt-2">
+                        <h3>1406</h3>
                         Followers
                     </v-col>
+                    <!--End of the number of followers-->
 
-                    <v-col class="pa-4">
-                        <b>950</b>
+                    <!--Column for the number of following-->
+                    <v-col class="pa-4 mt-2">
+                        <h3>950</h3>
                         Following
                     </v-col>
+                    <!--Column for the number of following-->
                 
+        </v-row>
+        <v-row>
+            <!--Column for edit profile button-->
+            <v-col class="pa-3">
+                <!--Button for editing profile-->
+                <v-btn
+                    outlined
+                    rounded
+                    medium
+                    color="primary"
+                >
+                    <v-icon left>
+                        mdi-pencil
+                    </v-icon>
+                        Edit profile
+                </v-btn>
+            </v-col>
+            <!--End of the column for edit profile button-->
+
+            <!--Column for add content button-->
+            <v-col class="text-right mr-5 mb-5">
+                 <!--Button for adding new content-->
+                    <v-btn 
+                        dark
+                        small
+                        fab
+                        color="primary"
+                    >
+                        <v-icon dark>
+                            mdi-plus
+                        </v-icon>
+                    </v-btn>
+            </v-col>
+            <!--End of the column for add content button-->
         </v-row>
 
         <v-row>
