@@ -3,23 +3,24 @@ import VueRouter from 'vue-router';
 
 Vue.use(VueRouter);
 
-import Guest from './../pages/guest/Container';
-import GuestLanding from './../pages/guest/landing/Landing';
-import Login from './../pages/guest/login/Login';
-import Registration from './../pages/guest/registration/Registration';
+import User from './../pages/user/Container';
+import UserLanding from './../pages/user/landing/Landing';
+import Login from './../pages/user/login/Login';
+import Registration from './../pages/user/registration/Registration';
+import Profile from './../pages/user/profile/Profile';
 
 
 const routes = [
     {
-        component: Guest,
+        component: User,
         path: '/',
         meta: {
-            guest: true
+            user: true
         },
         children: [
             {
-                component: GuestLanding,
-                name: 'guest',
+                component: UserLanding,
+                name: 'user',
                 path: ''
             },
             {
@@ -32,6 +33,11 @@ const routes = [
                 name: 'registration',
                 path: 'register'
             },
+            {
+                component:Profile,
+                name:'profile',
+                path:'profile'
+            }
             
         ]
     },

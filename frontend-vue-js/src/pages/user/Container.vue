@@ -23,8 +23,8 @@ export default {
         to: "/"
       },
       {
-        title: "Media",
-        to: "media",
+        title: "My profile",
+        to: "profile",
       },
       {
         title: "Log in",
