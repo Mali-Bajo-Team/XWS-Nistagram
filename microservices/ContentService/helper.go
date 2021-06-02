@@ -1,6 +1,7 @@
 package main
 
 import (
+	"content_service/model"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -17,10 +18,10 @@ func renderJSON(responseWriter http.ResponseWriter, v interface{}) {
 	responseWriter.Write(marshalJson)
 }
 
-func decodeBody(reader io.Reader) (*RequestPost, error) {
+func decodeBody(reader io.Reader) (*model.RequestPost, error) {
 	decoder := json.NewDecoder(reader)
 	decoder.DisallowUnknownFields()
-	var requestPost RequestPost
+	var requestPost model.RequestPost
 	if err := decoder.Decode(&requestPost); err != nil {
 		return nil, err
 	}

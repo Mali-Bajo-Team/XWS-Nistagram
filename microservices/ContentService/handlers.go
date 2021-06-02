@@ -1,6 +1,7 @@
 package main
 
 import (
+	"content_service/model"
 	"github.com/gorilla/mux"
 	"mime"
 	"net/http"
@@ -28,7 +29,7 @@ func (postServerRef *postServer) createPostHandler(responseWriter http.ResponseW
 	}
 
 	id := postServerRef.store.CreatePost(requestPost.Title, requestPost.Text, requestPost.Tags)
-	renderJSON(responseWriter, ResponseId{Id: id})
+	renderJSON(responseWriter, model.ResponseId{Id: id})
 }
 
 func (postServerRef *postServer) getAllPostsHandler(responseWriter http.ResponseWriter, request *http.Request) {
