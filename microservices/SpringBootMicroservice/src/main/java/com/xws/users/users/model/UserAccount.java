@@ -4,6 +4,8 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "discriminator", discriminatorType = DiscriminatorType.STRING)
 public class UserAccount {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,12 +17,38 @@ public class UserAccount {
 	@Column(name = "password", nullable = false)
 	String password;
 
-	@Column(name = "isActive", nullable = false)
-	boolean isActive;
+	@Column(name = "name", nullable = false)
+	String name;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "person_id", referencedColumnName = "id", nullable = false)
-	private Person person;
+	@Column(name = "surname", nullable = false)
+	String surname;
+
+	@Column(name = "username", nullable = false)
+	String username;
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getSurname() {
+		return surname;
+	}
+
+	public void setSurname(String surname) {
+		this.surname = surname;
+	}
 
 	public Long getId() {
 		return id;
@@ -46,45 +74,16 @@ public class UserAccount {
 		this.password = password;
 	}
 
-	public boolean isActive() {
-		return isActive;
-	}
-
-	public void setActive(boolean active) {
-		isActive = active;
-	}
-
-	public Person getPerson() {
-		return person;
-	}
-
-	public void setPerson(Person person) {
-		this.person = person;
-	}
-
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-		UserAccount u = (UserAccount) o;
-		if (u.id == null || id == null) {
-			return false;
-		}
-		return Objects.equals(id, u.id);
+		if (this == o) return true;
+		if (!(o instanceof UserAccount)) return false;
+		UserAccount that = (UserAccount) o;
+		return Objects.equals(id, that.id) && Objects.equals(email, that.email) && Objects.equals(password, that.password) && Objects.equals(name, that.name) && Objects.equals(surname, that.surname) && Objects.equals(username, that.username);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(id);
-	}
-
-	@Override
-	public String toString() {
-		return "User{" + "id=" + id + ", email='" + email + '\'' + ", password='" + password + '\'' + ", isActive="
-				+ isActive + '}';
+		return Objects.hash(id, email, password, name, surname, username);
 	}
 }

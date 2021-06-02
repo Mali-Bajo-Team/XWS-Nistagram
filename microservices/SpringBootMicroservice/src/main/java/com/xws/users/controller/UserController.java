@@ -59,7 +59,6 @@ public class UserController {
 		UserAccount userAccForSave = new UserAccount();
 		userAccForSave.setEmail(userAcc.getEmail());
 		userAccForSave.setPassword(userAcc.getPassword());
-		userAccForSave.setActive(true);
 
 		userAcc = userAccService.save(userAccForSave);
 		return new ResponseEntity<>(new UserAccDTO(userAcc), HttpStatus.CREATED);
