@@ -7,7 +7,7 @@ import (
 )
 
 type PostStore struct {
-	db *gorm.DB
+	database *gorm.DB
 }
 
 func New() (*PostStore, error) {
@@ -26,13 +26,13 @@ func New() (*PostStore, error) {
 	if err != nil {
 		return nil, err
 	}
-	ts.db = db
-	ts.db.AutoMigrate(&Post{}, &Tag{})
+	ts.database = db
+	ts.database.AutoMigrate(&Post{}, &Tag{})
 
 	return ts, nil
 }
 
-func (ts *PostStore) CreatePost(title string, text string, tags []string) int {
+func (postStoreRef *PostStore) CreatePost(title string, text string, tags []string) int {
 	post := Post{
 		Text:  text,
 		Title: title}
@@ -43,14 +43,14 @@ func (ts *PostStore) CreatePost(title string, text string, tags []string) int {
 	}
 	post.Tags = newTags
 
-	ts.db.Create(&post)
+	postStoreRef.database.Create(&post)
 
 	return int(post.ID)
 }
 
-func (ts *PostStore) GetPost(id int) (Post, error) {
+func (postStoreRef *PostStore) GetPost(id int) (Post, error) {
 	var post Post
-	result := ts.db.Preload("Tags").Find(&post, id)
+	result := postStoreRef.database.Preload("Tags").Find(&post, id)
 
 	if result.RowsAffected > 0 {
 		return post, nil
@@ -59,8 +59,8 @@ func (ts *PostStore) GetPost(id int) (Post, error) {
 	return Post{}, fmt.Errorf("post with id=%d not found", id)
 }
 
-func (ts *PostStore) DeletePost(id int) error {
-	result := ts.db.Delete(&Post{}, id)
+func (postStoreRef *PostStore) DeletePost(id int) error {
+	result := postStoreRef.database.Delete(&Post{}, id)
 	if result.RowsAffected > 0 {
 		return nil
 	}
@@ -69,15 +69,15 @@ func (ts *PostStore) DeletePost(id int) error {
 }
 
 // GetAllPosts GetAllTasks returns all the tasks in the store, in arbitrary order.
-func (ts *PostStore) GetAllPosts() []Post {
+func (postStoreRef *PostStore) GetAllPosts() []Post {
 	var posts []Post
-	ts.db.Preload("Tags").Find(&posts)
+	postStoreRef.database.Preload("Tags").Find(&posts)
 
 	return posts
 }
 
-func (ts *PostStore) Close() error {
-	db, err := ts.db.DB()
+func (postStoreRef *PostStore) Close() error {
+	db, err := postStoreRef.database.DB()
 	if err != nil {
 		return err
 	}

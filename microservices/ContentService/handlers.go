@@ -7,52 +7,52 @@ import (
 	"strconv"
 )
 
-func (ts *postServer) createPostHandler(w http.ResponseWriter, req *http.Request) {
+func (postServerRef *postServer) createPostHandler(responseWriter http.ResponseWriter, request *http.Request) {
 
 	// Enforce a JSON Content-Type.
-	contentType := req.Header.Get("Content-Type")
-	mediatype, _, err := mime.ParseMediaType(contentType)
+	contentType := request.Header.Get("Content-Type")
+	mediaType, _, err := mime.ParseMediaType(contentType)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(responseWriter, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if mediatype != "application/json" {
-		http.Error(w, "expect application/json Content-Type", http.StatusUnsupportedMediaType)
+	if mediaType != "application/json" {
+		http.Error(responseWriter, "expect application/json Content-Type", http.StatusUnsupportedMediaType)
 		return
 	}
 
-	rt, err := decodeBody(req.Body)
+	requestPost, err := decodeBody(request.Body)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(responseWriter, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	id := ts.store.CreatePost(rt.Title, rt.Text, rt.Tags)
-	renderJSON(w, ResponseId{Id: id})
+	id := postServerRef.store.CreatePost(requestPost.Title, requestPost.Text, requestPost.Tags)
+	renderJSON(responseWriter, ResponseId{Id: id})
 }
 
-func (ts *postServer) getAllPostsHandler(w http.ResponseWriter, req *http.Request) {
-	allTasks := ts.store.GetAllPosts()
-	renderJSON(w, allTasks)
+func (postServerRef *postServer) getAllPostsHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	allTasks := postServerRef.store.GetAllPosts()
+	renderJSON(responseWriter, allTasks)
 }
 
-func (ts *postServer) getPostHandler(w http.ResponseWriter, req *http.Request) {
-	id, _ := strconv.Atoi(mux.Vars(req)["id"])
-	task, err := ts.store.GetPost(id)
+func (postServerRef *postServer) getPostHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	id, _ := strconv.Atoi(mux.Vars(request)["id"])
+	task, err := postServerRef.store.GetPost(id)
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		http.Error(responseWriter, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	renderJSON(w, task)
+	renderJSON(responseWriter, task)
 }
 
-func (ts *postServer) deletePostHandler(w http.ResponseWriter, req *http.Request) {
-	id, _ := strconv.Atoi(mux.Vars(req)["id"])
-	err := ts.store.DeletePost(id)
+func (postServerRef *postServer) deletePostHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	id, _ := strconv.Atoi(mux.Vars(request)["id"])
+	err := postServerRef.store.DeletePost(id)
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		http.Error(responseWriter, err.Error(), http.StatusNotFound)
 	}
 }

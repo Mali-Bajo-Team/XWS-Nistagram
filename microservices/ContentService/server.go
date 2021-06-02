@@ -21,6 +21,6 @@ func NewPostServer() (*postServer, error) {
 	}, nil
 }
 
-func (s *postServer) CloseDB() error {
-	return s.store.Close()
+func (postServerRef *postServer) CloseDB() error {
+	return postServerRef.store.Close()
 }
