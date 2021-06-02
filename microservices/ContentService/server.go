@@ -1,7 +1,7 @@
 package main
 
 import (
-	ps "github.com/milossimic/rest/poststore"
+	ps "content_service/poststore"
 )
 
 type postServer struct {

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	//"os"
 )
 
 type PostStore struct {
@@ -14,11 +13,7 @@ type PostStore struct {
 func New() (*PostStore, error) {
 	ts := &PostStore{}
 
-	//host := os.Getenv("DBHOST")
-	//user := os.Getenv("USER")
-	//password := os.Getenv("PASSWORD")
-	//dbname := os.Getenv("DBNAME")
-	//dbport := os.Getenv("DBPORT")
+	// TODO: Add this to some config file
 
 	host := "localhost"
 	dbport :=  "5432"
