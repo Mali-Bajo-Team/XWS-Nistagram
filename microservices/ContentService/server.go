@@ -1,17 +1,17 @@
 package main
 
 import (
-	ps "content_service/poststore"
+	"content_service/dataservice"
 )
 
 type postServer struct {
-	store  *ps.PostStore
+	store  *dataservice.PostStore
 }
 
 const name = "post_service"
 
 func NewPostServer() (*postServer, error) {
-	store, err := ps.New()
+	store, err := dataservice.New()
 	if err != nil {
 		return nil, err
 	}

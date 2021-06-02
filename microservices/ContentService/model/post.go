@@ -1,4 +1,4 @@
-package poststore
+package model
 
 type Post struct {
 	ID    int    `json:"id"`
@@ -7,9 +7,3 @@ type Post struct {
 	Tags  []Tag  `gorm:"polymorphic:Owner;" json:"tags"`
 }
 
-type Tag struct {
-	ID        int    `json:"id"`
-	Name      string `json:"name"`
-	OwnerID   int
-	OwnerType string
-}

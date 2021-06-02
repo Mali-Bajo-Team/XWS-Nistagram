@@ -1,6 +1,7 @@
-package poststore
+package dataservice
 
 import (
+	"content_service/model"
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -11,35 +12,35 @@ type PostStore struct {
 }
 
 func New() (*PostStore, error) {
-	ts := &PostStore{}
+	postStoreRef := &PostStore{}
 
 	// TODO: Add this to some config file
 
 	host := "localhost"
-	dbport :=  "5432"
+	port :=  "5432"
 	user := "postgres"
 	password := "root"
 	dbname := "test"
 
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Shanghai", host, user, password, dbname, dbport)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	connectionString := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Shanghai", host, user, password, dbname, port)
+	db, err := gorm.Open(postgres.Open(connectionString), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
-	ts.database = db
-	ts.database.AutoMigrate(&Post{}, &Tag{})
+	postStoreRef.database = db
+	postStoreRef.database.AutoMigrate(&model.Post{}, &model.Tag{})
 
-	return ts, nil
+	return postStoreRef, nil
 }
 
 func (postStoreRef *PostStore) CreatePost(title string, text string, tags []string) int {
-	post := Post{
+	post := model.Post{
 		Text:  text,
 		Title: title}
 
-	newTags := []Tag{}
+	newTags := []model.Tag{}
 	for _, tag := range tags {
-		newTags = append(newTags, Tag{Name: tag})
+		newTags = append(newTags, model.Tag{Name: tag})
 	}
 	post.Tags = newTags
 
@@ -48,19 +49,19 @@ func (postStoreRef *PostStore) CreatePost(title string, text string, tags []stri
 	return int(post.ID)
 }
 
-func (postStoreRef *PostStore) GetPost(id int) (Post, error) {
-	var post Post
+func (postStoreRef *PostStore) GetPost(id int) (model.Post, error) {
+	var post model.Post
 	result := postStoreRef.database.Preload("Tags").Find(&post, id)
 
 	if result.RowsAffected > 0 {
 		return post, nil
 	}
 
-	return Post{}, fmt.Errorf("post with id=%d not found", id)
+	return model.Post{}, fmt.Errorf("post with id=%d not found", id)
 }
 
 func (postStoreRef *PostStore) DeletePost(id int) error {
-	result := postStoreRef.database.Delete(&Post{}, id)
+	result := postStoreRef.database.Delete(&model.Post{}, id)
 	if result.RowsAffected > 0 {
 		return nil
 	}
@@ -69,8 +70,8 @@ func (postStoreRef *PostStore) DeletePost(id int) error {
 }
 
 // GetAllPosts GetAllTasks returns all the tasks in the store, in arbitrary order.
-func (postStoreRef *PostStore) GetAllPosts() []Post {
-	var posts []Post
+func (postStoreRef *PostStore) GetAllPosts() []model.Post {
+	var posts []model.Post
 	postStoreRef.database.Preload("Tags").Find(&posts)
 
 	return posts
