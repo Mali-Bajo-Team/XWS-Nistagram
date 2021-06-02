@@ -10,7 +10,7 @@ type ContentServer struct {
 
 const name = "post_service"
 
-func NewPostServer() (*ContentServer, error) {
+func NewContentServer() (*ContentServer, error) {
 	store, err := dataservice.NewPostStore()
 	if err != nil {
 		return nil, err
