@@ -4,23 +4,23 @@ import (
 	"content_service/dataservice"
 )
 
-type PostServer struct {
-	store  *dataservice.PostStore
+type ContentServer struct {
+	postStore *dataservice.PostStore
 }
 
 const name = "post_service"
 
-func NewPostServer() (*PostServer, error) {
-	store, err := dataservice.New()
+func NewPostServer() (*ContentServer, error) {
+	store, err := dataservice.NewPostStore()
 	if err != nil {
 		return nil, err
 	}
 
-	return &PostServer{
-		store:  store,
+	return &ContentServer{
+		postStore: store,
 	}, nil
 }
 
-func (postServerRef *PostServer) CloseDB() error {
-	return postServerRef.store.Close()
+func (contentServerRef *ContentServer) CloseDB() error {
+	return contentServerRef.postStore.Close()
 }

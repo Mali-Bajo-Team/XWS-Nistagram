@@ -11,7 +11,7 @@ type PostStore struct {
 	database *gorm.DB
 }
 
-func New() (*PostStore, error) {
+func NewPostStore() (*PostStore, error) {
 	postStoreRef := &PostStore{}
 
 	// TODO: Add this to some config file

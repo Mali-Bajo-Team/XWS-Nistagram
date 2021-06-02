@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func (postServerRef *PostServer) CreatePostHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func (contentServerRef *ContentServer) CreatePostHandler(responseWriter http.ResponseWriter, request *http.Request) {
 
 	// Enforce a JSON Content-Type.
 	contentType := request.Header.Get("Content-Type")
@@ -28,18 +28,18 @@ func (postServerRef *PostServer) CreatePostHandler(responseWriter http.ResponseW
 		return
 	}
 
-	id := postServerRef.store.CreatePost(requestPost.Title, requestPost.Text, requestPost.Tags)
+	id := contentServerRef.postStore.CreatePost(requestPost.Title, requestPost.Text, requestPost.Tags)
 	renderJSON(responseWriter, model.ResponseId{Id: id})
 }
 
-func (postServerRef *PostServer) GetAllPostsHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	allTasks := postServerRef.store.GetAllPosts()
+func (contentServerRef *ContentServer) GetAllPostsHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	allTasks := contentServerRef.postStore.GetAllPosts()
 	renderJSON(responseWriter, allTasks)
 }
 
-func (postServerRef *PostServer) GetPostHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func (contentServerRef *ContentServer) GetPostHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	id, _ := strconv.Atoi(mux.Vars(request)["id"])
-	task, err := postServerRef.store.GetPost(id)
+	task, err := contentServerRef.postStore.GetPost(id)
 
 	if err != nil {
 		http.Error(responseWriter, err.Error(), http.StatusNotFound)
@@ -49,9 +49,9 @@ func (postServerRef *PostServer) GetPostHandler(responseWriter http.ResponseWrit
 	renderJSON(responseWriter, task)
 }
 
-func (postServerRef *PostServer) DeletePostHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func (contentServerRef *ContentServer) DeletePostHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	id, _ := strconv.Atoi(mux.Vars(request)["id"])
-	err := postServerRef.store.DeletePost(id)
+	err := contentServerRef.postStore.DeletePost(id)
 
 	if err != nil {
 		http.Error(responseWriter, err.Error(), http.StatusNotFound)

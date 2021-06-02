@@ -30,6 +30,9 @@ func main() {
 	router.HandleFunc("/post/{id:[0-9]+}/", server.GetPostHandler).Methods("GET")
 	router.HandleFunc("/post/{id:[0-9]+}/", server.DeletePostHandler).Methods("DELETE")
 
+
+
+
 	// start server
 	srv := &http.Server{Addr: "0.0.0.0:8000", Handler: router}
 	go func() {
@@ -55,3 +58,4 @@ func main() {
 
 	log.Println("server stopped")
 }
+
