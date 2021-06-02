@@ -1,12 +1,10 @@
 package poststore
 
 import (
-	"context"
 	"fmt"
-	tracer "github.com/milossimic/rest/tracer"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"os"
+	//"os"
 )
 
 type PostStore struct {
@@ -16,11 +14,17 @@ type PostStore struct {
 func New() (*PostStore, error) {
 	ts := &PostStore{}
 
-	host := os.Getenv("DBHOST")
-	user := os.Getenv("USER")
-	password := os.Getenv("PASSWORD")
-	dbname := os.Getenv("DBNAME")
-	dbport := os.Getenv("DBPORT")
+	//host := os.Getenv("DBHOST")
+	//user := os.Getenv("USER")
+	//password := os.Getenv("PASSWORD")
+	//dbname := os.Getenv("DBNAME")
+	//dbport := os.Getenv("DBPORT")
+
+	host := "localhost"
+	dbport :=  "5432"
+	user := "postgres"
+	password := "root"
+	dbname := "test"
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Shanghai", host, user, password, dbname, dbport)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
@@ -33,10 +37,7 @@ func New() (*PostStore, error) {
 	return ts, nil
 }
 
-func (ts *PostStore) CreatePost(ctx context.Context, title string, text string, tags []string) int {
-	span := tracer.StartSpanFromContext(ctx, "CreatePost")
-	defer span.Finish()
-
+func (ts *PostStore) CreatePost(title string, text string, tags []string) int {
 	post := Post{
 		Text:  text,
 		Title: title}
@@ -52,10 +53,7 @@ func (ts *PostStore) CreatePost(ctx context.Context, title string, text string, 
 	return int(post.ID)
 }
 
-func (ts *PostStore) GetPost(ctx context.Context, id int) (Post, error) {
-	span := tracer.StartSpanFromContext(ctx, "GetPost")
-	defer span.Finish()
-
+func (ts *PostStore) GetPost(id int) (Post, error) {
 	var post Post
 	result := ts.db.Preload("Tags").Find(&post, id)
 
@@ -66,10 +64,7 @@ func (ts *PostStore) GetPost(ctx context.Context, id int) (Post, error) {
 	return Post{}, fmt.Errorf("post with id=%d not found", id)
 }
 
-func (ts *PostStore) DeletePost(ctx context.Context, id int) error {
-	span := tracer.StartSpanFromContext(ctx, "DeletePost")
-	defer span.Finish()
-
+func (ts *PostStore) DeletePost(id int) error {
 	result := ts.db.Delete(&Post{}, id)
 	if result.RowsAffected > 0 {
 		return nil
@@ -78,11 +73,8 @@ func (ts *PostStore) DeletePost(ctx context.Context, id int) error {
 	return fmt.Errorf("post with id=%d not found", id)
 }
 
-// GetAllTasks returns all the tasks in the store, in arbitrary order.
-func (ts *PostStore) GetAllPosts(ctx context.Context) []Post {
-	span := tracer.StartSpanFromContext(ctx, "GetAllPosts")
-	defer span.Finish()
-
+// GetAllPosts GetAllTasks returns all the tasks in the store, in arbitrary order.
+func (ts *PostStore) GetAllPosts() []Post {
 	var posts []Post
 	ts.db.Preload("Tags").Find(&posts)
 

@@ -22,7 +22,6 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	defer server.CloseTracer()
 	defer server.CloseDB()
 
 	router.HandleFunc("/post/", server.createPostHandler).Methods("POST")

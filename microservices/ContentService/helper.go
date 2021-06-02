@@ -1,18 +1,13 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
-	tracer "github.com/milossimic/rest/tracer"
 	"io"
 	"net/http"
 )
 
 // renderJSON renders 'v' as JSON and writes it as a response into w.
-func renderJSON(ctx context.Context, w http.ResponseWriter, v interface{}) {
-	span := tracer.StartSpanFromContext(ctx, "renderJSON")
-	defer span.Finish()
-
+func renderJSON(w http.ResponseWriter, v interface{}) {
 	js, err := json.Marshal(v)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -22,10 +17,7 @@ func renderJSON(ctx context.Context, w http.ResponseWriter, v interface{}) {
 	w.Write(js)
 }
 
-func decodeBody(ctx context.Context, r io.Reader) (*RequestPost, error) {
-	span := tracer.StartSpanFromContext(ctx, "decodeBody")
-	defer span.Finish()
-
+func decodeBody(r io.Reader) (*RequestPost, error) {
 	dec := json.NewDecoder(r)
 	dec.DisallowUnknownFields()
 	var rt RequestPost
