@@ -23,8 +23,6 @@ func main() {
 	}
 
 	defer server.CloseConnectionToPostgreSQL()
-
-	server.OpenConnectionToMongoDB()
 	defer server.CloseConnectionToMongoDB()
 
 	usecase.InitializeRouter(router, server)

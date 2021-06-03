@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"content_service/model"
-	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -11,7 +10,6 @@ import (
 	"mime"
 	"net/http"
 	"strconv"
-	"time"
 )
 
 func InitializeRouter(router *mux.Router, server *ContentServer) {
@@ -29,9 +27,7 @@ func (contentServerRef *ContentServer) CreatePersonEndpoint(response http.Respon
 	response.Header().Set("content-type", "application/json")
 	var person model.Person
 	_ = json.NewDecoder(request.Body).Decode(&person)
-	collection :=  OurClient.Database("thepolyglotdeveloper").Collection("people")
-	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
-	result, _ := collection.InsertOne(ctx, person)
+	var result = contentServerRef.personStore.CreatePerson(person)
 	json.NewEncoder(response).Encode(result)
 }
 
