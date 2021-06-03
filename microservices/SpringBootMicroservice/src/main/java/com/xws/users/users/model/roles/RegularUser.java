@@ -46,6 +46,34 @@ public class RegularUser extends UserAccount {
     @OneToMany(fetch = FetchType.LAZY)
     private Set<FollowRequest> accountsToFollow;
 
+    public void setUserCategory(UserCategory userCategory) {
+        this.userCategory = userCategory;
+    }
+
+    public PrivacySettings getPrivacySettings() {
+        return privacySettings;
+    }
+
+    public void setPrivacySettings(PrivacySettings privacySettings) {
+        this.privacySettings = privacySettings;
+    }
+
+    public Set<FollowRequest> getRequests() {
+        return requests;
+    }
+
+    public void setRequests(Set<FollowRequest> requests) {
+        this.requests = requests;
+    }
+
+    public Set<FollowRequest> getAccountsToFollow() {
+        return accountsToFollow;
+    }
+
+    public void setAccountsToFollow(Set<FollowRequest> accountsToFollow) {
+        this.accountsToFollow = accountsToFollow;
+    }
+
     public String getBio() {
         return bio;
     }
