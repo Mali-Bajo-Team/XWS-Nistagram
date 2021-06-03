@@ -54,7 +54,7 @@
             <v-col class="pa-3">
                 <!--Dialog and button for editing profile-->
                 <v-dialog
-                    v-model="dialog"
+
                     width="600px"
                 >
                     <template v-slot:activator="{ on, attrs }">
@@ -83,14 +83,12 @@
 
                                 color="error"
                                 text
-                                @click="dialog = false"
                             >
                                 Cancel
                             </v-btn>
                             <v-btn
                                 color="primary"
                                 text
-                                @click="dialog = false"
                             >
                                 Save
                             </v-btn>
@@ -126,26 +124,43 @@
                 <v-tab>Tagged<v-icon>mdi-tag</v-icon></v-tab>
 
                 <v-tab-item
-            v-for="n in 3"
-            :key="n"
-        >
-            <v-container fluid>
-            <v-row>
-                <v-col
-                v-for="i in 6"
-                :key="i"
-                cols="12"
-                md="4"
+                    v-for="n in 3"
+                    :key="n"
                 >
-                <v-img
-                    :src="`https://picsum.photos/500/300?image=${i * n * 5 + 10}`"
-                    :lazy-src="`https://picsum.photos/10/6?image=${i * n * 5 + 10}`"
-                    aspect-ratio="1"
-                ></v-img>
-                </v-col>
-            </v-row>
-            </v-container>
-        </v-tab-item>
+                    <v-container fluid>
+                        <v-row>
+                            <v-col
+                                v-for="i in 12"
+                                :key="i"
+                                cols="12"
+                                md="6"
+                            >
+                            <v-card>
+                                <v-img
+                                    :src="`https://picsum.photos/500/300?image=${i * n * 5 + 10}`"
+                                    :lazy-src="`https://picsum.photos/10/6?image=${i * n * 5 + 10}`"
+                                    aspect-ratio="0.8"
+                                ></v-img>
+                                <v-card-text class="title">
+                                    <v-row>
+                                    <v-col>
+                                    <v-icon color="red lighten-2" left>mdi-heart</v-icon>
+                                    <subtitle-1>350</subtitle-1>
+                                    </v-col>
+
+                                    <v-col  class="text-right">
+                                    <v-icon left>mdi-chat</v-icon>
+                                    <subtitle-2>10</subtitle-2>
+                                    </v-col>
+                                    </v-row>
+                                </v-card-text>
+
+                            </v-card>
+                            </v-col>
+                            
+                        </v-row>
+                    </v-container>
+                </v-tab-item>
             </v-tabs>
         </v-row>
 
