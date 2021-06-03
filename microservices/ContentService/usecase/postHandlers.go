@@ -2,7 +2,9 @@ package usecase
 
 import (
 	"content_service/model"
+	"fmt"
 	"github.com/gorilla/mux"
+	"io/ioutil"
 	"log"
 	"mime"
 	"net/http"
@@ -20,8 +22,39 @@ func InitializeRouter(router *mux.Router, server *ContentServer) {
 }
 
 func (contentServerRef *ContentServer) UploadFileHandler(responseWriter http.ResponseWriter, request *http.Request){
-	log.Println("Uploading image")
+	log.Println("Uploading content")
+	// Parse our multipart form, 10 << 20 specifies a maximum
+	// upload of 10 MB files.
+	request.ParseMultipartForm(10 << 20)
+	// FormFile returns the first file for the given key `myFile`
+	// it also returns the FileHeader so we can get the Filename,
+	// the Header and the size of the file
+	file, handler, err := request.FormFile("myFile")
+	if err != nil {
+		fmt.Println("Error Retrieving the File")
+		fmt.Println(err)
+		return
+	}
+	defer file.Close()
+
+	printUploadedFile(handler)
+	tempFile := createFile(err)
+	defer tempFile.Close()
+
+	// read all of the contents of our uploaded file into a
+	// byte array
+	fileBytes, err := ioutil.ReadAll(file)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// write this byte array to our temporary file
+	tempFile.Write(fileBytes)
+	// return that we have successfully uploaded our file!
+	log.Println("Successfully Uploaded File")
 }
+
+
+
 
 func (contentServerRef *ContentServer) CreatePostHandler(responseWriter http.ResponseWriter, request *http.Request) {
 
