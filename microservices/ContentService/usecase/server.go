@@ -2,7 +2,13 @@ package usecase
 
 import (
 	"content_service/dataservice"
+	"context"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"time"
 )
+
+var OurClient *mongo.Client
 
 type ContentServer struct {
 	postStore *dataservice.PostStore
@@ -23,4 +29,11 @@ func NewContentServer() (*ContentServer, error) {
 
 func (contentServerRef *ContentServer) CloseDB() error {
 	return contentServerRef.postStore.Close()
+}
+
+func (contentServerRef *ContentServer) OpenConnectionToMongoDB() {
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	OurClient, _ = mongo.Connect(ctx, clientOptions)
+
 }
