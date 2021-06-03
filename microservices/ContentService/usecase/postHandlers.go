@@ -2,6 +2,8 @@ package usecase
 
 import (
 	"content_service/model"
+	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
 	"io/ioutil"
@@ -9,16 +11,28 @@ import (
 	"mime"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 func InitializeRouter(router *mux.Router, server *ContentServer) {
 
+	router.HandleFunc("/person/", server.CreatePersonEndpoint).Methods("POST")
 	router.HandleFunc("/upload/", server.UploadFileHandler).Methods("POST")
 
 	router.HandleFunc("/post/", server.CreatePostHandler).Methods("POST")
 	router.HandleFunc("/post/", server.GetAllPostsHandler).Methods("GET")
 	router.HandleFunc("/post/{id:[0-9]+}/", server.GetPostHandler).Methods("GET")
 	router.HandleFunc("/post/{id:[0-9]+}/", server.DeletePostHandler).Methods("DELETE")
+}
+
+func (contentServerRef *ContentServer) CreatePersonEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	var person model.Person
+	_ = json.NewDecoder(request.Body).Decode(&person)
+	collection :=  OurClient.Database("thepolyglotdeveloper").Collection("people")
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	result, _ := collection.InsertOne(ctx, person)
+	json.NewEncoder(response).Encode(result)
 }
 
 func (contentServerRef *ContentServer) UploadFileHandler(responseWriter http.ResponseWriter, request *http.Request){

@@ -1,10 +1,8 @@
 package main
 
 import (
-	"content_service/model"
 	"content_service/usecase"
 	"context"
-	"encoding/json"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -24,10 +22,10 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	defer server.CloseDB()
+	defer server.CloseConnectionToPostgreSQL()
 
 	server.OpenConnectionToMongoDB()
-	router.HandleFunc("/person/", CreatePersonEndpoint).Methods("POST")
+	defer server.CloseConnectionToMongoDB()
 
 	usecase.InitializeRouter(router, server)
 
@@ -55,17 +53,6 @@ func main() {
 	}
 
 	log.Println("server stopped")
-}
-
-
-func CreatePersonEndpoint(response http.ResponseWriter, request *http.Request) {
-	response.Header().Set("content-type", "application/json")
-	var person model.Person
-	_ = json.NewDecoder(request.Body).Decode(&person)
-	collection :=  usecase.OurClient.Database("thepolyglotdeveloper").Collection("people")
-	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
-	result, _ := collection.InsertOne(ctx, person)
-	json.NewEncoder(response).Encode(result)
 }
 
 

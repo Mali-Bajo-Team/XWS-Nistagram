@@ -27,13 +27,18 @@ func NewContentServer() (*ContentServer, error) {
 	}, nil
 }
 
-func (contentServerRef *ContentServer) CloseDB() error {
-	return contentServerRef.postStore.Close()
-}
-
 func (contentServerRef *ContentServer) OpenConnectionToMongoDB() {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
 	OurClient, _ = mongo.Connect(ctx, clientOptions)
 
 }
+
+func (contentServerRef *ContentServer) CloseConnectionToMongoDB() error {
+	return OurClient.Disconnect(context.Background())
+}
+
+func (contentServerRef *ContentServer) CloseConnectionToPostgreSQL() error {
+	return contentServerRef.postStore.Close()
+}
+
