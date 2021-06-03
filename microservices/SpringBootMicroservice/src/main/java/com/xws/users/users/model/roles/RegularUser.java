@@ -1,5 +1,6 @@
 package com.xws.users.users.model.roles;
 
+import com.xws.users.users.model.PrivacySettings;
 import com.xws.users.users.model.enums.ProfileStatus;
 
 import javax.persistence.*;
@@ -32,6 +33,9 @@ public class RegularUser extends UserAccount {
 
     @Column(name = "linkToWebSite")
     private String linkToWebSite;
+
+    @OneToOne(fetch = FetchType.LAZY, optional = true)
+    private PrivacySettings privacySettings;
 
     public String getBio() {
         return bio;
