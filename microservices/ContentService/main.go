@@ -1,9 +1,13 @@
 package main
 
 import (
+	"content_service/model"
 	"content_service/usecase"
 	"context"
+	"encoding/json"
 	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net/http"
 	"os"
@@ -11,6 +15,7 @@ import (
 	"syscall"
 	"time"
 )
+var client *mongo.Client
 
 func main() {
 	quit := make(chan os.Signal)
@@ -24,6 +29,9 @@ func main() {
 	}
 
 	defer server.CloseDB()
+
+	setupMongoDB()
+	router.HandleFunc("/person/", CreatePersonEndpoint).Methods("POST")
 
 	usecase.InitializeRouter(router, server)
 
@@ -51,6 +59,21 @@ func main() {
 	}
 
 	log.Println("server stopped")
+}
+
+func setupMongoDB(){
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	client, _ = mongo.Connect(ctx, clientOptions)
+}
+func CreatePersonEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	var person model.Person
+	_ = json.NewDecoder(request.Body).Decode(&person)
+	collection := client.Database("thepolyglotdeveloper").Collection("people")
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	result, _ := collection.InsertOne(ctx, person)
+	json.NewEncoder(response).Encode(result)
 }
 
 
