@@ -22,4 +22,44 @@ public class PrivacySettings {
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     private RegularUser regularUser;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public void setPrivate(boolean aPrivate) {
+        isPrivate = aPrivate;
+    }
+
+    public boolean isAllowMessagesFromNotFollowed() {
+        return allowMessagesFromNotFollowed;
+    }
+
+    public void setAllowMessagesFromNotFollowed(boolean allowMessagesFromNotFollowed) {
+        this.allowMessagesFromNotFollowed = allowMessagesFromNotFollowed;
+    }
+
+    public boolean isAllowTags() {
+        return allowTags;
+    }
+
+    public void setAllowTags(boolean allowTags) {
+        this.allowTags = allowTags;
+    }
+
+    public RegularUser getRegularUser() {
+        return regularUser;
+    }
+
+    public void setRegularUser(RegularUser regularUser) {
+        this.regularUser = regularUser;
+    }
 }
