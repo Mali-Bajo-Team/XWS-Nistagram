@@ -1,6 +1,7 @@
 package com.xws.users.users.model.roles;
 
 import com.xws.users.users.model.PrivacySettings;
+import com.xws.users.users.model.UserCategory;
 import com.xws.users.users.model.enums.ProfileStatus;
 
 import javax.persistence.*;
@@ -25,8 +26,8 @@ public class RegularUser extends UserAccount {
     @Column(nullable = false)
     private ProfileStatus profileStatus;
 
-    @Column
-    private String userCategory;
+    @OneToOne(fetch = FetchType.LAZY, optional = true)
+    private UserCategory userCategory;
 
     @Column(nullable = false)
     private String phoneNumber;
@@ -77,11 +78,11 @@ public class RegularUser extends UserAccount {
         this.profileStatus = profileStatus;
     }
 
-    public String getUserCategory() {
+    public UserCategory getUserCategory() {
         return userCategory;
     }
 
-    public void setUserCategory(String userCategory) {
+    public void setUserCategory(String UserCategory) {
         this.userCategory = userCategory;
     }
 
