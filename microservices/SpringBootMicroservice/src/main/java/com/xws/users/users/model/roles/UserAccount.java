@@ -1,4 +1,4 @@
-package com.xws.users.users.model;
+package com.xws.users.users.model.roles;
 
 import javax.persistence.*;
 import java.util.Objects;

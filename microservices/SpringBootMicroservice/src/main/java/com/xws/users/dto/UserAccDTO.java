@@ -1,6 +1,6 @@
 package com.xws.users.dto;
 
-import com.xws.users.users.model.UserAccount;
+import com.xws.users.users.model.roles.UserAccount;
 
 public class UserAccDTO {
     private Long id;

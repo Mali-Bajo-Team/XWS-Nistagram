@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.xws.users.users.model.UserAccount;
+import com.xws.users.users.model.roles.UserAccount;
 
 @RestController
 @RequestMapping(value = "api/users")

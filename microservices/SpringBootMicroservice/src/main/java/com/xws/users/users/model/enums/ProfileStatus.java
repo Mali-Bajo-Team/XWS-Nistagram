@@ -1,4 +1,4 @@
-package com.xws.users.users.model;
+package com.xws.users.users.model.enums;
 
 public enum ProfileStatus {
     UNCOFIRMED,

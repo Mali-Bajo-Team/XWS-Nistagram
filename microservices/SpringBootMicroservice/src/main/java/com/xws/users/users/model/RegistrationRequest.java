@@ -1,4 +1,7 @@
 package com.xws.users.users.model;
+import com.xws.users.users.model.enums.RequestStatus;
+import com.xws.users.users.model.roles.Agent;
+
 import javax.persistence.*;
 
 @Entity

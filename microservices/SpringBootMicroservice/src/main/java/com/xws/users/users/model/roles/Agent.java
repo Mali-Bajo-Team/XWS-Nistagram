@@ -1,11 +1,12 @@
-package com.xws.users.users.model;
+package com.xws.users.users.model.roles;
+
+import com.xws.users.users.model.RegistrationRequest;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
 @DiscriminatorValue("Agent")
-public class Agent extends UserAccount{
+public class Agent extends UserAccount {
 
     @OneToOne(fetch = FetchType.LAZY, optional = true)
     private RegistrationRequest registrationRequest;

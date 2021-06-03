@@ -1,4 +1,6 @@
-package com.xws.users.users.model;
+package com.xws.users.users.model.roles;
+
+import com.xws.users.users.model.enums.ProfileStatus;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -6,7 +8,7 @@ import java.util.Objects;
 
 @Entity
 @DiscriminatorValue("RegularUser")
-public class RegularUser extends UserAccount{
+public class RegularUser extends UserAccount {
     @Column
     private String bio;
 

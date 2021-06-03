@@ -1,7 +1,7 @@
 package com.xws.users.service;
 
 import com.xws.users.repository.UserRepository;
-import com.xws.users.users.model.UserAccount;
+import com.xws.users.users.model.roles.UserAccount;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
