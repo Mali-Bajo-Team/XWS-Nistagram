@@ -52,18 +52,51 @@
         <v-row>
             <!--Column for edit profile button-->
             <v-col class="pa-3">
-                <!--Button for editing profile-->
-                <v-btn
-                    outlined
-                    rounded
-                    medium
-                    color="primary"
+                <!--Dialog and button for editing profile-->
+                <v-dialog
+                    v-model="dialog"
+                    width="600px"
                 >
-                    <v-icon left>
-                        mdi-pencil
-                    </v-icon>
-                        Edit profile
-                </v-btn>
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                            outlined
+                            rounded
+                            medium
+                            color="primary"
+                            v-bind="attrs"
+                            v-on="on"
+                        >
+                            <v-icon left>
+                                mdi-pencil
+                            </v-icon>
+                                Edit profile
+                        </v-btn>
+                    </template>
+                    <v-card>
+                        <v-card-title class="headline">
+                            Personal information
+                        </v-card-title>
+                        <v-card-text>Let Google help apps determine location. This means sending anonymous location data to Google, even when no apps are running.</v-card-text>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn
+
+                                color="error"
+                                text
+                                @click="dialog = false"
+                            >
+                                Cancel
+                            </v-btn>
+                            <v-btn
+                                color="primary"
+                                text
+                                @click="dialog = false"
+                            >
+                                Save
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
             </v-col>
             <!--End of the column for edit profile button-->
 
