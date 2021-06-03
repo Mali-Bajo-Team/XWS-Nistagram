@@ -12,19 +12,19 @@ public class UserAccount {
 	private Long id;
 
 	@Column(name = "email", nullable = false)
-	String email;
+	private String email;
 
 	@Column(name = "password", nullable = false)
-	String password;
+	private String password;
 
 	@Column(name = "name", nullable = false)
-	String name;
+	private String name;
 
 	@Column(name = "surname", nullable = false)
-	String surname;
+	private String surname;
 
 	@Column(name = "username", nullable = false)
-	String username;
+	private String username;
 
 	public String getUsername() {
 		return username;
