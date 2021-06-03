@@ -9,4 +9,5 @@ type Post struct {
 	IsAdd 		bool				`json:"is_add,omitempty" bson:"is_add,omitempty"`
 	AddLink		string				`json:"add_link,omitempty" bson:"add_link,omitempty"`
 	TimeStamp 	string				`json:"time_stamp,omitempty" bson:"time_stamp,omitempty"`
+	Contents 	[]Content			`json:"contents,omitempty" bson:"contents,omitempty"`
 }
