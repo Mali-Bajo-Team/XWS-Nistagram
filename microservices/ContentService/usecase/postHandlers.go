@@ -18,9 +18,9 @@ func InitializeRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/upload/", server.UploadFileEndpoint).Methods("POST")
 
 	router.HandleFunc("/post/", server.CreatePostEndpoint).Methods("POST")
-	router.HandleFunc("/post/", server.GetAllPostsEndpoint).Methods("GET")
-	router.HandleFunc("/post/{id:[0-9]+}/", server.GetPostEndpoint).Methods("GET")
-	router.HandleFunc("/post/{id:[0-9]+}/", server.DeletePostEndpoint).Methods("DELETE")
+	router.HandleFunc("/post/", server.GetAllSqlPostsEndpoint).Methods("GET")
+	router.HandleFunc("/post/{id:[0-9]+}/", server.GetSqlPostEndpoint).Methods("GET")
+	router.HandleFunc("/post/{id:[0-9]+}/", server.DeleteSqlPostEndpoint).Methods("DELETE")
 }
 
 func (contentServerRef *ContentServer) CreatePersonEndpoint(response http.ResponseWriter, request *http.Request) {
@@ -63,7 +63,15 @@ func (contentServerRef *ContentServer) UploadFileEndpoint(responseWriter http.Re
 	log.Println("Successfully Uploaded File")
 }
 
-func (contentServerRef *ContentServer) CreatePostEndpoint(responseWriter http.ResponseWriter, request *http.Request) {
+func (contentServerRef *ContentServer) CreatePostEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	var post model.Post
+	_ = json.NewDecoder(request.Body).Decode(&post)
+	var result = contentServerRef.postStore.CreatePost(post)
+	json.NewEncoder(response).Encode(result)
+}
+
+func (contentServerRef *ContentServer) CreateSqlPostEndpoint(responseWriter http.ResponseWriter, request *http.Request) {
 
 	// Enforce a JSON Content-Type.
 	contentType := request.Header.Get("Content-Type")
@@ -83,18 +91,18 @@ func (contentServerRef *ContentServer) CreatePostEndpoint(responseWriter http.Re
 		return
 	}
 
-	id := contentServerRef.postStore.CreatePost(requestPost.Title, requestPost.Text, requestPost.Tags)
+	id := contentServerRef.sqlPostStore.CreatePost(requestPost.Title, requestPost.Text, requestPost.Tags)
 	renderJSON(responseWriter, model.ResponseId{Id: id})
 }
 
-func (contentServerRef *ContentServer) GetAllPostsEndpoint(responseWriter http.ResponseWriter, request *http.Request) {
-	allTasks := contentServerRef.postStore.GetAllPosts()
+func (contentServerRef *ContentServer) GetAllSqlPostsEndpoint(responseWriter http.ResponseWriter, request *http.Request) {
+	allTasks := contentServerRef.sqlPostStore.GetAllPosts()
 	renderJSON(responseWriter, allTasks)
 }
 
-func (contentServerRef *ContentServer) GetPostEndpoint(responseWriter http.ResponseWriter, request *http.Request) {
+func (contentServerRef *ContentServer) GetSqlPostEndpoint(responseWriter http.ResponseWriter, request *http.Request) {
 	id, _ := strconv.Atoi(mux.Vars(request)["id"])
-	task, err := contentServerRef.postStore.GetPost(id)
+	task, err := contentServerRef.sqlPostStore.GetPost(id)
 
 	if err != nil {
 		http.Error(responseWriter, err.Error(), http.StatusNotFound)
@@ -104,9 +112,9 @@ func (contentServerRef *ContentServer) GetPostEndpoint(responseWriter http.Respo
 	renderJSON(responseWriter, task)
 }
 
-func (contentServerRef *ContentServer) DeletePostEndpoint(responseWriter http.ResponseWriter, request *http.Request) {
+func (contentServerRef *ContentServer) DeleteSqlPostEndpoint(responseWriter http.ResponseWriter, request *http.Request) {
 	id, _ := strconv.Atoi(mux.Vars(request)["id"])
-	err := contentServerRef.postStore.DeletePost(id)
+	err := contentServerRef.sqlPostStore.DeletePost(id)
 
 	if err != nil {
 		http.Error(responseWriter, err.Error(), http.StatusNotFound)

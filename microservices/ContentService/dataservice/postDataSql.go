@@ -7,12 +7,12 @@ import (
 	"gorm.io/gorm"
 )
 
-type PostStore struct {
+type SqlPostStore struct {
 	database *gorm.DB
 }
 
-func NewPostStore() (*PostStore, error) {
-	postStoreRef := &PostStore{}
+func NewSqlPostStore() (*SqlPostStore, error) {
+	postStoreRef := &SqlPostStore{}
 
 	// TODO: Add this to some config file
 
@@ -28,13 +28,13 @@ func NewPostStore() (*PostStore, error) {
 		return nil, err
 	}
 	postStoreRef.database = db
-	postStoreRef.database.AutoMigrate(&model.Post{}, &model.Tag{})
+	postStoreRef.database.AutoMigrate(&model.OldPost{}, &model.Tag{})
 
 	return postStoreRef, nil
 }
 
-func (postStoreRef *PostStore) CreatePost(title string, text string, tags []string) int {
-	post := model.Post{
+func (postStoreRef *SqlPostStore) CreatePost(title string, text string, tags []string) int {
+	post := model.OldPost{
 		Text:  text,
 		Title: title}
 
@@ -49,19 +49,19 @@ func (postStoreRef *PostStore) CreatePost(title string, text string, tags []stri
 	return int(post.ID)
 }
 
-func (postStoreRef *PostStore) GetPost(id int) (model.Post, error) {
-	var post model.Post
+func (postStoreRef *SqlPostStore) GetPost(id int) (model.OldPost, error) {
+	var post model.OldPost
 	result := postStoreRef.database.Preload("Tags").Find(&post, id)
 
 	if result.RowsAffected > 0 {
 		return post, nil
 	}
 
-	return model.Post{}, fmt.Errorf("post with id=%d not found", id)
+	return model.OldPost{}, fmt.Errorf("post with id=%d not found", id)
 }
 
-func (postStoreRef *PostStore) DeletePost(id int) error {
-	result := postStoreRef.database.Delete(&model.Post{}, id)
+func (postStoreRef *SqlPostStore) DeletePost(id int) error {
+	result := postStoreRef.database.Delete(&model.OldPost{}, id)
 	if result.RowsAffected > 0 {
 		return nil
 	}
@@ -70,14 +70,14 @@ func (postStoreRef *PostStore) DeletePost(id int) error {
 }
 
 // GetAllPosts GetAllTasks returns all the tasks in the store, in arbitrary order.
-func (postStoreRef *PostStore) GetAllPosts() []model.Post {
-	var posts []model.Post
+func (postStoreRef *SqlPostStore) GetAllPosts() []model.OldPost {
+	var posts []model.OldPost
 	postStoreRef.database.Preload("Tags").Find(&posts)
 
 	return posts
 }
 
-func (postStoreRef *PostStore) Close() error {
+func (postStoreRef *SqlPostStore) Close() error {
 	db, err := postStoreRef.database.DB()
 	if err != nil {
 		return err

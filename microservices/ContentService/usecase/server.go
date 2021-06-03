@@ -5,14 +5,15 @@ import (
 )
 
 type ContentServer struct {
+	sqlPostStore *dataservice.SqlPostStore
 	postStore *dataservice.PostStore
-	personStore *dataservice.PersonStore
+	personStore  *dataservice.PersonStore
 }
 
 const name = "post_service"
 
 func NewContentServer() (*ContentServer, error) {
-	postStore, err := dataservice.NewPostStore()
+	sqlPostStore, err := dataservice.NewSqlPostStore()
 	if err != nil {
 		return nil, err
 	}
@@ -22,9 +23,16 @@ func NewContentServer() (*ContentServer, error) {
 		return nil, err
 	}
 
+
+	postStore, err := dataservice.NewPostStore()
+	if err != nil {
+		return nil, err
+	}
+
 	return &ContentServer{
+		sqlPostStore: sqlPostStore,
 		postStore: postStore,
-		personStore: personStore,
+		personStore:  personStore,
 	}, nil
 }
 
@@ -34,6 +42,6 @@ func (contentServerRef *ContentServer) CloseConnectionToMongoDB() error {
 }
 
 func (contentServerRef *ContentServer) CloseConnectionToPostgreSQL() error {
-	return contentServerRef.postStore.Close()
+	return contentServerRef.sqlPostStore.Close()
 }
 
