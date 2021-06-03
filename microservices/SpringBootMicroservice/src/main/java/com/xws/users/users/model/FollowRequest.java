@@ -4,7 +4,6 @@ import com.xws.users.users.model.roles.RegularUser;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.Set;
 
 @Entity
 public class FollowRequest {

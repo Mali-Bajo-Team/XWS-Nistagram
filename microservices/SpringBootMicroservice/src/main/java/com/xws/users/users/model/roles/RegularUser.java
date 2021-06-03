@@ -7,6 +7,7 @@ import com.xws.users.users.model.enums.ProfileStatus;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -45,6 +46,12 @@ public class RegularUser extends UserAccount {
 
     @OneToMany(fetch = FetchType.LAZY)
     private Set<FollowRequest> accountsToFollow;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<RegularUser> inRelationships;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<RegularUser> outRelationships;
 
     public void setUserCategory(UserCategory userCategory) {
         this.userCategory = userCategory;
