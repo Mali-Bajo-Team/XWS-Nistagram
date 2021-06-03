@@ -1,5 +1,6 @@
 package com.xws.users.users.model.roles;
 
+import com.xws.users.users.model.FollowRequest;
 import com.xws.users.users.model.PrivacySettings;
 import com.xws.users.users.model.UserCategory;
 import com.xws.users.users.model.enums.ProfileStatus;
@@ -7,6 +8,7 @@ import com.xws.users.users.model.enums.ProfileStatus;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @DiscriminatorValue("RegularUser")
@@ -37,6 +39,12 @@ public class RegularUser extends UserAccount {
 
     @OneToOne(fetch = FetchType.LAZY, optional = true)
     private PrivacySettings privacySettings;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private Set<FollowRequest> requests;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private Set<FollowRequest> accountsToFollow;
 
     public String getBio() {
         return bio;

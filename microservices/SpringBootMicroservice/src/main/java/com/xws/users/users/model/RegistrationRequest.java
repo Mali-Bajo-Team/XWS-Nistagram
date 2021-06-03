@@ -10,6 +10,7 @@ public class RegistrationRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
     private RequestStatus requestStatus;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
