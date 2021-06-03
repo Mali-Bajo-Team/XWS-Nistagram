@@ -53,9 +53,6 @@ func (contentServerRef *ContentServer) UploadFileHandler(responseWriter http.Res
 	log.Println("Successfully Uploaded File")
 }
 
-
-
-
 func (contentServerRef *ContentServer) CreatePostHandler(responseWriter http.ResponseWriter, request *http.Request) {
 
 	// Enforce a JSON Content-Type.

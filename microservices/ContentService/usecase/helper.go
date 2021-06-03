@@ -48,7 +48,6 @@ func createFile(err error) *os.File {
 	return tempFile
 }
 
-
 func printUploadedFile(handler *multipart.FileHeader) {
 	fmt.Printf("Uploaded File: %+v\n", handler.Filename)
 	fmt.Printf("File Size: %+v\n", handler.Size)
