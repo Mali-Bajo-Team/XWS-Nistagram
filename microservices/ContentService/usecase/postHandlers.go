@@ -17,12 +17,12 @@ import (
 func InitializeRouter(router *mux.Router, server *ContentServer) {
 
 	router.HandleFunc("/person/", server.CreatePersonEndpoint).Methods("POST")
-	router.HandleFunc("/upload/", server.UploadFileHandler).Methods("POST")
+	router.HandleFunc("/upload/", server.UploadFileEndpoint).Methods("POST")
 
-	router.HandleFunc("/post/", server.CreatePostHandler).Methods("POST")
-	router.HandleFunc("/post/", server.GetAllPostsHandler).Methods("GET")
-	router.HandleFunc("/post/{id:[0-9]+}/", server.GetPostHandler).Methods("GET")
-	router.HandleFunc("/post/{id:[0-9]+}/", server.DeletePostHandler).Methods("DELETE")
+	router.HandleFunc("/post/", server.CreatePostEndpoint).Methods("POST")
+	router.HandleFunc("/post/", server.GetAllPostsEndpoint).Methods("GET")
+	router.HandleFunc("/post/{id:[0-9]+}/", server.GetPostEndpoint).Methods("GET")
+	router.HandleFunc("/post/{id:[0-9]+}/", server.DeletePostEndpoint).Methods("DELETE")
 }
 
 func (contentServerRef *ContentServer) CreatePersonEndpoint(response http.ResponseWriter, request *http.Request) {
@@ -35,7 +35,7 @@ func (contentServerRef *ContentServer) CreatePersonEndpoint(response http.Respon
 	json.NewEncoder(response).Encode(result)
 }
 
-func (contentServerRef *ContentServer) UploadFileHandler(responseWriter http.ResponseWriter, request *http.Request){
+func (contentServerRef *ContentServer) UploadFileEndpoint(responseWriter http.ResponseWriter, request *http.Request){
 	log.Println("Uploading content")
 	// Parse our multipart form, 10 << 20 specifies a maximum
 	// upload of 10 MB files.
@@ -67,7 +67,7 @@ func (contentServerRef *ContentServer) UploadFileHandler(responseWriter http.Res
 	log.Println("Successfully Uploaded File")
 }
 
-func (contentServerRef *ContentServer) CreatePostHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func (contentServerRef *ContentServer) CreatePostEndpoint(responseWriter http.ResponseWriter, request *http.Request) {
 
 	// Enforce a JSON Content-Type.
 	contentType := request.Header.Get("Content-Type")
@@ -91,12 +91,12 @@ func (contentServerRef *ContentServer) CreatePostHandler(responseWriter http.Res
 	renderJSON(responseWriter, model.ResponseId{Id: id})
 }
 
-func (contentServerRef *ContentServer) GetAllPostsHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func (contentServerRef *ContentServer) GetAllPostsEndpoint(responseWriter http.ResponseWriter, request *http.Request) {
 	allTasks := contentServerRef.postStore.GetAllPosts()
 	renderJSON(responseWriter, allTasks)
 }
 
-func (contentServerRef *ContentServer) GetPostHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func (contentServerRef *ContentServer) GetPostEndpoint(responseWriter http.ResponseWriter, request *http.Request) {
 	id, _ := strconv.Atoi(mux.Vars(request)["id"])
 	task, err := contentServerRef.postStore.GetPost(id)
 
@@ -108,7 +108,7 @@ func (contentServerRef *ContentServer) GetPostHandler(responseWriter http.Respon
 	renderJSON(responseWriter, task)
 }
 
-func (contentServerRef *ContentServer) DeletePostHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func (contentServerRef *ContentServer) DeletePostEndpoint(responseWriter http.ResponseWriter, request *http.Request) {
 	id, _ := strconv.Atoi(mux.Vars(request)["id"])
 	err := contentServerRef.postStore.DeletePost(id)
 
