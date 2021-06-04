@@ -5,7 +5,6 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
 	"time"
 )
 
@@ -26,10 +25,10 @@ func NewPostStore() (*PostStore, error){
 func (postStoreRef *PostStore) CreatePost(post model.Post) *mongo.InsertOneResult {
 	collectionPeople := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	var a = postStoreRef.CreateContents(post.Contents)
-	for _, b := range a.InsertedIDs {
-		log.Println(b)
-		post.ContentsRef = append(post.ContentsRef, b)
+	var insertManyResult = postStoreRef.CreateContents(post.Contents)
+	for _, contentId := range insertManyResult.InsertedIDs {
+		//log.Println(contentId)
+		post.ContentsRef = append(post.ContentsRef, contentId)
 	}
 	result, _ := collectionPeople.InsertOne(ctx, post)
 	return result
