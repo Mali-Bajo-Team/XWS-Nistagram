@@ -7,15 +7,15 @@ import (
 	"time"
 )
 
-func (postStoreRef *PostStore) CreateContents(content []model.Content) *mongo.InsertManyResult {
-	var contents []interface{}
+func (postStoreRef *PostStore) CreateContents(contents []model.Content) *mongo.InsertManyResult {
+	var insertableContents []interface{}
 
-	for _, content := range content {
-		contents = append(contents, content)
+	for _, content := range contents {
+		insertableContents = append(insertableContents, content)
 	}
 
 	collectionContents := postStoreRef.ourClient.Database("content-service-db").Collection("contents")
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
-	result, _ := collectionContents.InsertMany(ctx, contents)
+	result, _ := collectionContents.InsertMany(ctx, insertableContents)
 	return result
 }

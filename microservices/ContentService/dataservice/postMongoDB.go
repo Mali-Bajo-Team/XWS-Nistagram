@@ -25,7 +25,7 @@ func NewPostStore() (*PostStore, error){
 func (postStoreRef *PostStore) CreatePost(post model.Post) *mongo.InsertOneResult {
 	collectionPeople := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
-	postStoreRef.CreateContents(post.Contents)
+	 postStoreRef.CreateContents(post.Contents)
 	result, _ := collectionPeople.InsertOne(ctx, post)
 	return result
 }
