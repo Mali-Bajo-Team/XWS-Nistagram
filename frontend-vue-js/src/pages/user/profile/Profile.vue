@@ -54,6 +54,7 @@
                 <v-dialog
 
                     width="600px"
+                   
                 >
                     <template v-slot:activator="{ on, attrs }">
                         <v-btn
@@ -330,6 +331,40 @@
                         </v-tab-item>
                         <!--End of tab for adding stories-->
                        
+                       <!--Tab for close friends-->
+                        <v-tab-item>
+                            <v-card>
+                                <v-card-title>
+                                    Add a close friend
+                                </v-card-title>
+                                <v-card-text>
+                                    <v-autocomplete
+                                        label="Choose a close friend"
+                                        prepend-icon="mdi-star-circle"
+                                    ></v-autocomplete>
+                                    
+                                </v-card-text>
+                                <v-card-actions>
+                                         <v-spacer></v-spacer>
+                                    <v-btn
+
+                                        color="error"
+                                        text
+                                    >
+                                        Cancel
+                                    </v-btn>
+                                    <v-btn
+                                        color="primary"
+                                        text
+                                    >
+                                        Add
+                                    </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                            
+
+                        </v-tab-item>
+                        <!--End of tab for close friends-->
                     </v-tabs-items>
                  </v-dialog>
             </v-col>
