@@ -71,10 +71,71 @@
                         </v-btn>
                     </template>
                     <v-card>
+                    
                         <v-card-title class="headline">
                             Edit your profile
                         </v-card-title>
-                        <v-card-text>Let Google help apps determine location. This means sending anonymous location data to Google, even when no apps are running.</v-card-text>
+                        <v-card-text>
+                             <v-file-input
+                                small-chips
+                                accept="image/png, image/jpeg, image/bmp"
+                                label="Choose a profile"
+                                prepend-icon="mdi-camera"
+                            ></v-file-input>
+                            <v-text-field
+                                prepend-icon="mdi-account"
+                                label="Name"
+                                
+                            ></v-text-field>
+                            <v-text-field
+                                prepend-icon="mdi-account"
+                                label="Surname"
+                         
+                            ></v-text-field>
+                            <v-text-field
+                                prepend-icon="mdi-account-circle"
+                                label="Username"
+                         
+                            ></v-text-field>
+                            <v-text-field
+                                prepend-icon="mdi-email"
+                                label="Email"
+                         
+                            ></v-text-field>
+                            <v-text-field
+                                prepend-icon="mdi-phone"
+                                label="Phone number"
+                         
+                            ></v-text-field>
+                            <v-text-field
+                                label="Birthday date"
+                                prepend-icon="mdi-cake-variant"
+                                readonly
+                                
+                            ></v-text-field>
+                            <v-text-field
+                                prepend-icon="mdi-human-male-female"
+                                label="Gender"
+                         
+                            ></v-text-field>
+                            <v-text-field
+                                prepend-icon="mdi-web"
+                                label="Web site"
+                         
+                            ></v-text-field>
+                            <v-textarea
+                                outlined
+                                name="input-7-4"
+                                no-resize
+                                rows="5"
+                                label="Add your biography"
+                                clearable
+                                clear-icon="mdi-close-circle"
+                                
+                            ></v-textarea>
+                        
+                                                    
+                        </v-card-text>
                         <v-card-actions>
                             <v-spacer></v-spacer>
                             <v-btn
@@ -190,6 +251,7 @@
             <v-tabs icons-and-text background-color="transparent">
                 <v-tabs-slider></v-tabs-slider>
                 <v-tab>Posts<v-icon>mdi-camera</v-icon></v-tab>
+                <v-tab>Stories<v-icon>mdi-camera-iris</v-icon></v-tab>
                 <v-tabs-slider></v-tabs-slider>
                 <v-tab>Saved<v-icon>mdi-check-circle</v-icon></v-tab>
                 <v-tab>Tagged<v-icon>mdi-tag</v-icon></v-tab>
