@@ -50,8 +50,6 @@ public class UserService implements IUserService {
         return userRole;
     }
 
-
-
     @Override
     public UserAccount changePassword(String oldPassword, String newPassword) {
         return null;

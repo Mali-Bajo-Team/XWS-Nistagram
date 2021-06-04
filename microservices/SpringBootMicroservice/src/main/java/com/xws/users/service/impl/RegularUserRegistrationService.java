@@ -35,20 +35,8 @@ public class RegularUserRegistrationService implements IRegularUserRegistrationS
 		if (userRepository.existsByEmail(user.getEmail()))
 			throw new USConflictException("The email is already taken.");
 		RegularUser addedRegularUser = addNewRegularUser(user);
-//		UserAccount addedAccount = addNewRegularUserAccount(user, addedRegularUser);
-		UserAccount addedAccount = new UserAccount();
-		return addedAccount;
+		return addedRegularUser;
 	}
-
-//    private UserAccount addNewRegularUserAccount(UserRegisterDTO userRequest, RegularUser addedRegularUser) {
-//        UserAccount newUserAccount = new UserAccount();
-//        newUserAccount.setEmail(userRequest.getEmail());
-//        newUserAccount.setPassword( passwordEncoder.encode(userRequest.getPassword()));
-//        List<Authority> auth = authService.findByName("ROLE_REGULARUSER");
-//        newUserAccount.setAuthorities(auth);
-//		UserAccount addedAccount = userRepository.save(newUserAccount);
-//		return addedAccount;
-//	}
 
 	private RegularUser addNewRegularUser(UserRegisterDTO userRequest) {
 		RegularUser newRegularUser = new RegularUser();
@@ -57,11 +45,11 @@ public class RegularUserRegistrationService implements IRegularUserRegistrationS
 		newRegularUser.setEmail(userRequest.getEmail());
 		newRegularUser.setUsername(userRequest.getUsername());
 		newRegularUser.setPassword( passwordEncoder.encode(userRequest.getPassword()));
-		newRegularUser.setGender( passwordEncoder.encode(userRequest.getGender()));
+		newRegularUser.setGender(userRequest.getGender());
 		newRegularUser.setProfileStatus(ProfileStatus.ACTIVE);
 		List<Authority> auth = authService.findByName("ROLE_REGULAR_USER");
         newRegularUser.setAuthorities(auth);
-		RegularUser addedRegularUser = regularUserRepository.save(newRegularUser);
-		return addedRegularUser;
+		RegularUser addedPatient = regularUserRepository.save(newRegularUser);
+		return addedPatient;
 	}
 }
