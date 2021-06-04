@@ -34,6 +34,8 @@ public class RegularUserRegistrationService implements IRegularUserRegistrationS
 	public UserAccount registerRegularUser(UserRegisterDTO user) {
 		if (userRepository.existsByEmail(user.getEmail()))
 			throw new USConflictException("The email is already taken.");
+		if (userRepository.existsByUsername(user.getUsername()))
+			throw new USConflictException("The username is already taken.");
 		RegularUser addedRegularUser = addNewRegularUser(user);
 		return addedRegularUser;
 	}
