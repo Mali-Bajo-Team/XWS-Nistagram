@@ -22,10 +22,11 @@ func NewPostStore() (*PostStore, error){
 	return postStoreRef, nil
 }
 
-func (postStoreRef *PostStore) CreatePost(person model.Post) *mongo.InsertOneResult {
+func (postStoreRef *PostStore) CreatePost(post model.Post) *mongo.InsertOneResult {
 	collectionPeople := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
-	result, _ := collectionPeople.InsertOne(ctx, person)
+	postStoreRef.CreateContents(post.Contents)
+	result, _ := collectionPeople.InsertOne(ctx, post)
 	return result
 }
 
