@@ -74,7 +74,7 @@
                     </template>
                     <v-card>
                         <v-card-title class="headline">
-                            Personal information
+                            Edit your profile
                         </v-card-title>
                         <v-card-text>Let Google help apps determine location. This means sending anonymous location data to Google, even when no apps are running.</v-card-text>
                         <v-card-actions>
@@ -101,16 +101,116 @@
             <!--Column for add content button-->
             <v-col class="text-right mr-5 mb-5">
                  <!--Button for adding new content-->
-                    <v-btn 
-                        dark
-                        small
-                        fab
-                        color="primary"
-                    >
-                        <v-icon dark>
-                            mdi-plus
-                        </v-icon>
-                    </v-btn>
+                 <v-dialog
+                    width="600px"
+                 >
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-btn 
+                            dark
+                            small
+                            fab
+                            color="primary"
+                            v-bind="attrs"
+                            v-on="on"
+                        >
+                            <v-icon dark>
+                                mdi-plus
+                            </v-icon>
+                        </v-btn>
+                    </template>
+
+                    <v-card>
+                        <v-card-title class="headline">
+                            Add a new content
+                        </v-card-title>
+                        <v-card-text>
+                            <!--File input for images and videos-->
+                            <v-file-input
+                                small-chips
+                                multiple
+                                show-size
+                                counter
+                                accept="image/png, image/jpeg, image/bmp"
+                                label="Choose a photo or video"
+                                prepend-icon="mdi-camera"
+                            ></v-file-input>
+                            <!--End of file input-->
+
+                            <br>
+                            <!--Add description-->
+                            <v-textarea
+                                outlined
+                                name="input-7-4"
+                                no-resize
+                                rows="3"
+                                label="Add description"
+                                clearable
+                                clear-icon="mdi-close-circle"
+                                
+                            ></v-textarea>
+                            <!--End of description-->
+
+                            <!--Tag a person-->
+                            <v-autocomplete
+                                v-model="friends"
+                                :disabled="isUpdating"
+                                :items="people"
+                                filled
+                                chips
+                                color="blue-grey lighten-2"
+                                label="Tag a person"
+                                item-text="name"
+                                item-value="name"
+                                multiple
+                            >
+                                <template v-slot:selection="data">
+                                    <v-chip
+                                        v-bind="data.attrs"
+                                        :input-value="data.selected"
+                                        close
+                                        @click="data.select"
+                                        @click:close="remove(data.item)"
+                                >
+                                        <v-avatar left>
+                                            <v-img :src="data.item.avatar"></v-img>
+                                        </v-avatar>
+                                    {{ data.item.name }}
+                                    </v-chip>
+                                </template>
+                                <template v-slot:item="data">
+                                <template v-if="typeof data.item !== 'object'">
+                                    <v-list-item-content v-text="data.item"></v-list-item-content>
+                                </template>
+                                <template v-else>
+                                        <v-list-item-avatar>
+                                            <img :src="data.item.avatar">
+                                        </v-list-item-avatar>
+                                        <v-list-item-content>
+                                            <v-list-item-title v-html="data.item.name"></v-list-item-title>
+                                        <v-list-item-subtitle v-html="data.item.group"></v-list-item-subtitle>
+                                        </v-list-item-content>
+                                    </template>
+                                </template>
+                            </v-autocomplete>
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn
+
+                                color="error"
+                                text
+                            >
+                                Cancel
+                            </v-btn>
+                            <v-btn
+                                color="primary"
+                                text
+                            >
+                                Post
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                 </v-dialog>
             </v-col>
             <!--End of the column for add content button-->
         </v-row>
