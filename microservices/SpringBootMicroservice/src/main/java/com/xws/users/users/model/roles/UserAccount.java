@@ -1,5 +1,6 @@
 package com.xws.users.users.model.roles;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xws.users.users.model.Authority;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,24 +41,27 @@ public class UserAccount implements UserDetails {
 		return username;
 	}
 
+	@JsonIgnore
 	@Override
 	public boolean isAccountNonExpired() {
-		return false;
+		return true;
 	}
 
+	@JsonIgnore
 	@Override
 	public boolean isAccountNonLocked() {
-		return false;
+		return true;
 	}
 
+	@JsonIgnore
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isEnabled() {
-		return false;
+		return true;
 	}
 
 	public Timestamp getLastPasswordResetDate() {
