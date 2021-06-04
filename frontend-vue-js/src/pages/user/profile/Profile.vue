@@ -14,14 +14,12 @@
                         </v-img>
                         
                         <!--Username and description-->
-                        <v-text>
                             <h3 class="text-justify">ivana_mil_98</h3>
-                            <body-1 class="font-weight-medium text-justify"> 
+                            <div class="font-weight-medium text-justify"> 
                                 Love is in the air.
                                 The sun is shining,I am smiling :).
-                            </body-1>
+                            </div>
                             
-                        </v-text>
     
                        
                     </v-col>
@@ -136,7 +134,18 @@
                             ></v-file-input>
                             <!--End of file input-->
 
+                            <!--Choose a location-->
+                             <v-combobox
+                                label="Choose a location"
+                                prepend-icon="mdi-map-marker-star"
+                            >
+                            </v-combobox>
+                            <!--End of location-->
                             <br>
+                            <v-autocomplete
+                                label="Tagging"
+                                prepend-icon="mdi-tag"
+                            ></v-autocomplete>
                             <!--Add description-->
                             <v-textarea
                                 outlined
@@ -150,48 +159,10 @@
                             ></v-textarea>
                             <!--End of description-->
 
-                            <!--Tag a person-->
-                            <v-autocomplete
-                                v-model="friends"
-                                :disabled="isUpdating"
-                                :items="people"
-                                filled
-                                chips
-                                color="blue-grey lighten-2"
-                                label="Tag a person"
-                                item-text="name"
-                                item-value="name"
-                                multiple
-                            >
-                                <template v-slot:selection="data">
-                                    <v-chip
-                                        v-bind="data.attrs"
-                                        :input-value="data.selected"
-                                        close
-                                        @click="data.select"
-                                        @click:close="remove(data.item)"
-                                >
-                                        <v-avatar left>
-                                            <v-img :src="data.item.avatar"></v-img>
-                                        </v-avatar>
-                                    {{ data.item.name }}
-                                    </v-chip>
-                                </template>
-                                <template v-slot:item="data">
-                                <template v-if="typeof data.item !== 'object'">
-                                    <v-list-item-content v-text="data.item"></v-list-item-content>
-                                </template>
-                                <template v-else>
-                                        <v-list-item-avatar>
-                                            <img :src="data.item.avatar">
-                                        </v-list-item-avatar>
-                                        <v-list-item-content>
-                                            <v-list-item-title v-html="data.item.name"></v-list-item-title>
-                                        <v-list-item-subtitle v-html="data.item.group"></v-list-item-subtitle>
-                                        </v-list-item-content>
-                                    </template>
-                                </template>
-                            </v-autocomplete>
+                            
+
+                            
+                           
                         </v-card-text>
                         <v-card-actions>
                             <v-spacer></v-spacer>
@@ -245,12 +216,12 @@
                                     <v-row>
                                     <v-col>
                                     <v-icon color="red lighten-2" left>mdi-heart</v-icon>
-                                    <subtitle-1>350</subtitle-1>
+                                    350
                                     </v-col>
 
                                     <v-col  class="text-right">
                                     <v-icon left>mdi-chat</v-icon>
-                                    <subtitle-2>10</subtitle-2>
+                                    10
                                     </v-col>
                                     </v-row>
                                 </v-card-text>
