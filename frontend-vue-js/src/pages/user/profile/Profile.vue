@@ -71,7 +71,7 @@
                         </v-btn>
                     </template>
                     <v-card>
-                    
+                        <!--Edit profile fields-->
                         <v-card-title class="headline">
                             Edit your profile
                         </v-card-title>
@@ -136,6 +136,7 @@
                         
                                                     
                         </v-card-text>
+                        <!--End of edit profile fields-->
                         <v-card-actions>
                             <v-spacer></v-spacer>
                             <v-btn
@@ -162,7 +163,16 @@
                  <!--Button for adding new content-->
                  <v-dialog
                     width="600px"
+                    
                  >
+                 <v-tabs   v-model="tabs" icons-and-text>
+                    <v-tabs-slider></v-tabs-slider>
+                    <v-tab>Regular posts<v-icon>mdi-camera</v-icon></v-tab>
+                    <v-tab>Stories<v-icon>mdi-camera-iris</v-icon></v-tab>
+                    <v-tab>Close friends<v-icon>mdi-star</v-icon></v-tab>
+                 </v-tabs>
+                   
+                
                     <template v-slot:activator="{ on, attrs }">
                         <v-btn 
                             dark
@@ -177,78 +187,157 @@
                             </v-icon>
                         </v-btn>
                     </template>
+                    <v-tabs-items  v-model="tabs">
+                        <!--Tab for adding photo or video-->
+                        <v-tab-item>
+                            <v-card>
+                                <v-card-title class="headline">
+                                    Add a new photo or video
+                                </v-card-title>
+                                <v-card-text>
+                                    <!--File input for images and videos-->
+                                    <v-file-input
+                                        small-chips
+                                        multiple
+                                        show-size
+                                        counter
+                                        accept="image/png, image/jpeg, image/bmp"
+                                        label="Choose a photo or video"
+                                        prepend-icon="mdi-camera"
+                                    ></v-file-input>
+                                    <!--End of file input-->
 
-                    <v-card>
-                        <v-card-title class="headline">
-                            Add a new content
-                        </v-card-title>
-                        <v-card-text>
-                            <!--File input for images and videos-->
-                            <v-file-input
-                                small-chips
-                                multiple
-                                show-size
-                                counter
-                                accept="image/png, image/jpeg, image/bmp"
-                                label="Choose a photo or video"
-                                prepend-icon="mdi-camera"
-                            ></v-file-input>
-                            <!--End of file input-->
+                                    <!--Choose a location-->
+                                    <v-combobox
+                                        label="Choose a location"
+                                        prepend-icon="mdi-map-marker-star"
+                                    >
+                                    </v-combobox>
+                                    <!--End of location-->
+                                    <br>
+                                    <v-autocomplete
+                                        label="Tagging"
+                                        prepend-icon="mdi-tag"
+                                    ></v-autocomplete>
+                                    <!--Add description-->
+                                    <v-textarea
+                                        outlined
+                                        name="input-7-4"
+                                        no-resize
+                                        rows="3"
+                                        label="Add description"
+                                        clearable
+                                        clear-icon="mdi-close-circle"
+                                        
+                                    ></v-textarea>
+                                    <!--End of description-->
 
-                            <!--Choose a location-->
-                             <v-combobox
-                                label="Choose a location"
-                                prepend-icon="mdi-map-marker-star"
-                            >
-                            </v-combobox>
-                            <!--End of location-->
-                            <br>
-                            <v-autocomplete
-                                label="Tagging"
-                                prepend-icon="mdi-tag"
-                            ></v-autocomplete>
-                            <!--Add description-->
-                            <v-textarea
-                                outlined
-                                name="input-7-4"
-                                no-resize
-                                rows="3"
-                                label="Add description"
-                                clearable
-                                clear-icon="mdi-close-circle"
+                                    
+
+                                    
                                 
-                            ></v-textarea>
-                            <!--End of description-->
+                                </v-card-text>
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn
 
-                            
+                                        color="error"
+                                        text
+                                    >
+                                        Cancel
+                                    </v-btn>
+                                    <v-btn
+                                        color="primary"
+                                        text
+                                    >
+                                        Post
+                                    </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-tab-item>
+                        <!--End of tab for adding photo or video-->
 
-                            
-                           
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn
+                        <!--Tab for adding stories-->
+                        <v-tab-item>
+                            <v-card>
+                                <v-card-title class="headline">
+                                    Add a new story
+                                </v-card-title>
+                                <v-card-text>
+                                    <!--File input for images and videos-->
+                                    <v-file-input
+                                        small-chips
+                                        multiple
+                                        show-size
+                                        counter
+                                        accept="image/png, image/jpeg, image/bmp"
+                                        label="Choose a photo or video"
+                                        prepend-icon="mdi-camera"
+                                    ></v-file-input>
+                                    <!--End of file input-->
 
-                                color="error"
-                                text
-                            >
-                                Cancel
-                            </v-btn>
-                            <v-btn
-                                color="primary"
-                                text
-                            >
-                                Post
-                            </v-btn>
-                        </v-card-actions>
-                    </v-card>
+                                    <!--Choose a location-->
+                                    <v-combobox
+                                        label="Choose a location"
+                                        prepend-icon="mdi-map-marker-star"
+                                    >
+                                    </v-combobox>
+                                    <!--End of location-->
+                                    <br>
+                                    <v-autocomplete
+                                        label="Tagging"
+                                        prepend-icon="mdi-tag"
+                                    ></v-autocomplete>
+                                    <v-checkbox
+                                        
+                                        label="Only available to close friends"
+                                     ></v-checkbox>
+                                    <!--Add description-->
+                                    <v-textarea
+                                        outlined
+                                        name="input-7-4"
+                                        no-resize
+                                        rows="3"
+                                        label="Add description"
+                                        clearable
+                                        clear-icon="mdi-close-circle"
+                                        
+                                    ></v-textarea>
+                                    <!--End of description-->
+
+                                    
+
+                                    
+                                
+                                </v-card-text>
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn
+
+                                        color="error"
+                                        text
+                                    >
+                                        Cancel
+                                    </v-btn>
+                                    <v-btn
+                                        color="primary"
+                                        text
+                                    >
+                                        Post
+                                    </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-tab-item>
+                        <!--End of tab for adding stories-->
+                       
+                    </v-tabs-items>
                  </v-dialog>
             </v-col>
             <!--End of the column for add content button-->
         </v-row>
 
         <v-row>
-            <v-tabs icons-and-text background-color="transparent">
+            <v-tabs  icons-and-text background-color="transparent">
                 <v-tabs-slider></v-tabs-slider>
                 <v-tab>Posts<v-icon>mdi-camera</v-icon></v-tab>
                 <v-tab>Stories<v-icon>mdi-camera-iris</v-icon></v-tab>
@@ -310,6 +399,7 @@ export default {
       snackbar: false,
       snackbarText: '',
       loading: false,
+      tabs: null,
       form: {
         email: "",
         password: "",
