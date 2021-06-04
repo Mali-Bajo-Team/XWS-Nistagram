@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.xws.users.dto.UserAccDTO;
-import com.xws.users.service.UserService;
+import com.xws.users.service.impl.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

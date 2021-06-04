@@ -20,7 +20,7 @@ public class RegularUser extends UserAccount {
     @Column
     private String profileImagePath;
 
-    @Column(nullable = false)
+    @Column
     private Date dateOfBirth;
 
     @Column(nullable = false)
@@ -32,7 +32,7 @@ public class RegularUser extends UserAccount {
     @OneToOne(fetch = FetchType.LAZY, optional = true)
     private UserCategory userCategory;
 
-    @Column(nullable = false)
+    @Column
     private String phoneNumber;
 
     @Column(name = "linkToWebSite")
