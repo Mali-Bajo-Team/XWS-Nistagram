@@ -16,7 +16,7 @@ import java.util.Date;
 public class TokenUtils {
 
     // Token Publisher
-    @Value("centralized-pharmacy-information-system")
+    @Value("XWSNistagram")
     private String APP_NAME;
 
     // The secret that only a backend application needs to know in order to be able to generate and check JWT https://jwt.io/
