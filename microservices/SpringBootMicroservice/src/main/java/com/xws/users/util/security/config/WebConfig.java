@@ -13,7 +13,6 @@ public class WebConfig implements WebMvcConfigurer {
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		// TODO: Make separated file for this type of config
-		registry.addMapping("/**").allowedOrigins("http://localhost:8082", "http://localhost:8083",
-				"https://isa-2020-tim29.herokuapp.com/", "http://isa-2020-tim29.herokuapp.com/");
+		registry.addMapping("/**").allowedOrigins("http://localhost:8082", "http://localhost:8083");
 	}
 }
