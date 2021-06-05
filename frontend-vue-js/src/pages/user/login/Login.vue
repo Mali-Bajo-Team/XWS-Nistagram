@@ -75,7 +75,7 @@
 import { validationMixin } from "vuelidate";
 import { required, email, minLength } from "vuelidate/lib/validators";
 
-// import { saveToken } from "./../../../util/token"
+import { saveToken } from "./../../../util/token"
 
 export default {
   mixins: [validationMixin],
@@ -129,9 +129,9 @@ export default {
             email: this.form.email,
           }
         )
-        .then(() => {
-          // let token = response.data.accessToken;
-          // saveToken(token)
+        .then((response) => {
+          let token = response.data.accessToken;
+          saveToken(token)
 
           if(this.$route.params.nextUrl != null){
               this.$router.push(this.$route.params.nextUrl)
