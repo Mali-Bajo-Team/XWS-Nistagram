@@ -12,10 +12,7 @@ import (
 )
 
 func InitializeRouter(router *mux.Router, server *ContentServer) {
-
-	// TODO: Create content and return entire content entity
 	router.HandleFunc("/upload/", server.UploadFileEndpoint).Methods("POST")
-
 	router.HandleFunc("/post/", server.CreatePostEndpoint).Methods("POST")
 	router.HandleFunc("/story/", server.CreateStoryEndpoint).Methods("POST")
 }
@@ -42,7 +39,6 @@ func (contentServerRef *ContentServer) UploadFileEndpoint(res http.ResponseWrite
 
 			io.Copy(outfile, infile)
 			allContent = append(allContent, content)
-			//renderJSON(res,allContent)
 		}
 	}
 	renderJSON(res,allContent)
