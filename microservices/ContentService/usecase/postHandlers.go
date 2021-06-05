@@ -19,6 +19,7 @@ func InitializeRouter(router *mux.Router, server *ContentServer) {
 
 	router.HandleFunc("/post/", server.CreatePostEndpoint).Methods("POST")
 	router.HandleFunc("/regular-post/", server.CreateRegularPostEndpoint).Methods("POST")
+	router.HandleFunc("/story/", server.CreateStoryEndpoint).Methods("POST")
 	router.HandleFunc("/post/", server.GetAllSqlPostsEndpoint).Methods("GET")
 	router.HandleFunc("/post/{id:[0-9]+}/", server.GetSqlPostEndpoint).Methods("GET")
 	router.HandleFunc("/post/{id:[0-9]+}/", server.DeleteSqlPostEndpoint).Methods("DELETE")
@@ -69,6 +70,14 @@ func (contentServerRef *ContentServer) CreateRegularPostEndpoint(response http.R
 	var regularPost model.RegularPost
 	_ = json.NewDecoder(request.Body).Decode(&regularPost)
 	var result = contentServerRef.postStore.CreateRegularPost(regularPost)
+	json.NewEncoder(response).Encode(result)
+}
+
+func (contentServerRef *ContentServer) CreateStoryEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	var story model.Story
+	_ = json.NewDecoder(request.Body).Decode(&story)
+	var result = contentServerRef.postStore.CreateStory(story)
 	json.NewEncoder(response).Encode(result)
 }
 
