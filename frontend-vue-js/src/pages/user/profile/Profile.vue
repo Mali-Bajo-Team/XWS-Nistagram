@@ -183,10 +183,14 @@
                             accept="image/png, image/jpeg, image/bmp"
                             label="Choose a photo or video"
                             prepend-icon="mdi-camera"
+                            @change="onFileSelected"
                           ></v-file-input>
                           <!--End of file input-->
 
-                          <v-btn color="primary" @click="e1 = 2">
+                          <v-btn
+                            color="primary"
+                            @click="createContent(), (e1 = 2)"
+                          >
                             Continue
                           </v-btn>
 
@@ -292,7 +296,10 @@
                           ></v-file-input>
                           <!--End of file input-->
 
-                          <v-btn color="primary" @click="e2 = 2">
+                          <v-btn
+                            color="primary"
+                            @click="createContent(), (e2 = 2)"
+                          >
                             Continue
                           </v-btn>
 
@@ -443,6 +450,7 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
@@ -471,9 +479,24 @@ export default {
         country: "",
         phone: "",
       },
+      selectedFiles: [],
     };
   },
   computed: {},
-  methods: {},
+  methods: {
+    createContent() {
+      alert("test");
+      const fd = new FormData();
+      fd.append("image", this.selectedFiles[0], "post");
+      // TODO: Move this to ENV !!!
+      axios.post("http://localhost:8000/upload/", fd).then((res) => {
+        console.log(res);
+      });
+    },
+    onFileSelected(event) {
+      this.selectedFiles = event;
+      console.log(this.selectedFiles);
+    },
+  },
 };
 </script>
