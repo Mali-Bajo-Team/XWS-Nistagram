@@ -487,7 +487,11 @@ export default {
     createContent() {
       alert("test");
       const fd = new FormData();
-      fd.append("image", this.selectedFiles[0], "post");
+
+      this.selectedFiles.forEach((selectedFile) => {
+        fd.append("image", selectedFile, selectedFile.name);
+      });
+
       // TODO: Move this to ENV !!!
       axios.post("http://localhost:8000/upload/", fd).then((res) => {
         console.log(res);
