@@ -2,12 +2,13 @@ package usecase
 
 import (
 	"content_service/dataservice"
+	"content_service/dataservice/MongoDB"
 )
 
 type ContentServer struct {
 	sqlPostStore *dataservice.SqlPostStore
-	postStore *dataservice.PostStore
-	personStore  *dataservice.PersonStore
+	postStore *MongoDB.PostStore
+	personStore  *MongoDB.PersonStore
 }
 
 const name = "post_service"
@@ -18,13 +19,13 @@ func NewContentServer() (*ContentServer, error) {
 		return nil, err
 	}
 
-	personStore, err := dataservice.NewPersonStore()
+	personStore, err := MongoDB.NewPersonStore()
 	if err != nil {
 		return nil, err
 	}
 
 
-	postStore, err := dataservice.NewPostStore()
+	postStore, err := MongoDB.NewPostStore()
 	if err != nil {
 		return nil, err
 	}
