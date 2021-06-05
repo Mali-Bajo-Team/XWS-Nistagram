@@ -14,7 +14,6 @@ import (
 
 func InitializeRouter(router *mux.Router, server *ContentServer) {
 
-	router.HandleFunc("/person/", server.CreatePersonEndpoint).Methods("POST")
 	router.HandleFunc("/upload/", server.UploadFileEndpoint).Methods("POST")
 
 	router.HandleFunc("/post/", server.CreatePostEndpoint).Methods("POST")
@@ -23,14 +22,6 @@ func InitializeRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/post/", server.GetAllSqlPostsEndpoint).Methods("GET")
 	router.HandleFunc("/post/{id:[0-9]+}/", server.GetSqlPostEndpoint).Methods("GET")
 	router.HandleFunc("/post/{id:[0-9]+}/", server.DeleteSqlPostEndpoint).Methods("DELETE")
-}
-
-func (contentServerRef *ContentServer) CreatePersonEndpoint(response http.ResponseWriter, request *http.Request) {
-	response.Header().Set("content-type", "application/json")
-	var person model.Person
-	_ = json.NewDecoder(request.Body).Decode(&person)
-	var result = contentServerRef.personStore.CreatePerson(person)
-	json.NewEncoder(response).Encode(result)
 }
 
 func (contentServerRef *ContentServer) UploadFileEndpoint(responseWriter http.ResponseWriter, request *http.Request){

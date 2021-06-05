@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+
 func (postStoreRef *PostStore) CreateContents(contents []model.Content) *mongo.InsertManyResult {
 	var insertableContents []interface{}
 
