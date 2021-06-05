@@ -11,6 +11,14 @@
 
         <v-form>
             <v-text-field
+            v-model="form.username"
+            :error-messages="usernameErrors"
+            label="Username"
+            @blur="$v.form.username.$touch()"
+            @input="$v.form.username.$touch()"
+            ></v-text-field>   
+
+            <v-text-field
             v-model="form.email"
             :error-messages="emailErrors"
             label="Email"
@@ -56,37 +64,15 @@
             @input="$v.form.surname.$touch()"
             ></v-text-field>      
         
-            <v-text-field
-            v-model="form.address"
-            :error-messages="addressErrors"
-            label="Home address"
-            @blur="$v.form.address.$touch()"
-            @input="$v.form.address.$touch()"
-            ></v-text-field> 
-
-            <v-text-field
-            v-model="form.city"
-            :error-messages="cityErrors"
-            label="City"
-            @blur="$v.form.city.$touch()"
-            @input="$v.form.city.$touch()"
-            ></v-text-field> 
-
-            <v-text-field
-            v-model="form.country"
-            :error-messages="countryErrors"
-            label="Country"
-            @blur="$v.form.country.$touch()"
-            @input="$v.form.country.$touch()"
-            ></v-text-field> 
-            
-            <v-text-field
-            v-model="form.phone"
-            :error-messages="phoneErrors"
-            label="Phone number"
-            @blur="$v.form.phone.$touch()"
-            @input="$v.form.phone.$touch()"
-            ></v-text-field> 
+         <v-select
+            v-model="form.gender"
+            :items="form.items"
+            :error-messages="genderErrors"
+            @blur="$v.form.gender.$touch()"
+            @input="$v.form.gender.$touch()"
+            label="Gender"
+           outlined
+          ></v-select>
 
             <v-card-actions class="pt-5">
                 <v-btn color="secondary" text @click="reset">
@@ -145,7 +131,6 @@ import {
   email,
   minLength,
   sameAs,
-  numeric
 } from "vuelidate/lib/validators";
 
 export default {
@@ -156,6 +141,8 @@ export default {
       snackbarText: '',
       loading: false,
       form: {
+        items: ['Man', 'Woman', 'Others'],
+        username: "",
         email: "",
         password: "",
         showPassword: false,
@@ -163,10 +150,7 @@ export default {
         showRepeatPassword: false,
         name: "",
         surname: "",
-        address: "",
-        city: "",
-        country: "",
-        phone: ""
+        gender: "",
       },
     };
   },
@@ -181,6 +165,9 @@ export default {
         minLength: minLength(6),
         sameAsPassword: sameAs('password')
       },
+      username: {
+        required
+      },
       email: {
         required,
         email,
@@ -191,19 +178,9 @@ export default {
       surname: {
         required
       },
-      address: {
+      gender: {
         required
       },
-      city: {
-        required
-      },
-      country: {
-        required
-      },
-      phone: {
-        required,
-        numeric
-      }
     },
   },
   computed: {
@@ -241,44 +218,29 @@ export default {
         !this.$v.form.surname.required && errors.push('Surname is required.') 
         return errors
       },
-      cityErrors() {
+      usernameErrors() {
         const errors = []
-        if (!this.$v.form.city.$dirty) return errors
-        !this.$v.form.city.required && errors.push('City is required.') 
+        if (!this.$v.form.username.$dirty) return errors
+        !this.$v.form.username.required && errors.push('Username is required.') 
         return errors
       },
-      countryErrors() {
+      genderErrors() {
         const errors = []
-        if (!this.$v.form.country.$dirty) return errors
-        !this.$v.form.country.required && errors.push('Country is required.') 
+        if (!this.$v.form.gender.$dirty) return errors
+        !this.$v.form.gender.required && errors.push('Gender is required.') 
         return errors
       },
-      addressErrors() {
-        const errors = []
-        if (!this.$v.form.address.$dirty) return errors
-        !this.$v.form.address.required && errors.push('Home address is required.') 
-        return errors
-      },
-      phoneErrors() {
-        const errors = []
-        if (!this.$v.form.phone.$dirty) return errors
-        !this.$v.form.phone.required && errors.push('Phone number is required.') 
-        !this.$v.form.phone.numeric && errors.push('Phone number should only contain numbers.') 
-        return errors
-      }
   },
   methods: {
     register() {
         this.axios
         .post(process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_REGISTRATION_ENDPOINT, {
+          username: this.form.username,
           password: this.form.password,
           email: this.form.email,
           name: this.form.name,
           surname: this.form.surname,
-          city: this.form.city,
-          address: this.form.address,
-          country: this.form.country,
-          mobile : this.form.phone,
+          gender: this.form.gender,
         })
         .then(() => {
           this.snackbarText = "Registration successful."
@@ -304,15 +266,13 @@ export default {
     },
     reset() {
         this.$v.$reset()
+        this.form.username = ''
         this.form.email = ''
         this.form.password = ''
         this.form.repeatPassword = ''
         this.form.name = ''
         this.form.surname = ''
-        this.form.address = ''
-        this.form.city = ''
-        this.form.country = ''
-        this.form.phone = ''
+        this.form.gender = ''
     }
   },
 };
