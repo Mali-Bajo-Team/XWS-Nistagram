@@ -489,7 +489,11 @@ export default {
       const fd = new FormData();
 
       this.selectedFiles.forEach((selectedFile) => {
-        fd.append("image", selectedFile, selectedFile.name);
+        if (selectedFile.type.includes("image")) {
+          fd.append("image", selectedFile, selectedFile.name);
+        } else {
+          fd.append("video", selectedFile, selectedFile.name);
+        }
       });
 
       // TODO: Move this to ENV !!!
