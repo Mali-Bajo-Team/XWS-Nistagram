@@ -7,21 +7,16 @@ import (
 	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
-	"mime"
 	"net/http"
-	"strconv"
 )
 
 func InitializeRouter(router *mux.Router, server *ContentServer) {
 
+	// TODO: Create content and return entire content entity
 	router.HandleFunc("/upload/", server.UploadFileEndpoint).Methods("POST")
 
 	router.HandleFunc("/post/", server.CreatePostEndpoint).Methods("POST")
-	router.HandleFunc("/regular-post/", server.CreateRegularPostEndpoint).Methods("POST")
 	router.HandleFunc("/story/", server.CreateStoryEndpoint).Methods("POST")
-	router.HandleFunc("/post/", server.GetAllSqlPostsEndpoint).Methods("GET")
-	router.HandleFunc("/post/{id:[0-9]+}/", server.GetSqlPostEndpoint).Methods("GET")
-	router.HandleFunc("/post/{id:[0-9]+}/", server.DeleteSqlPostEndpoint).Methods("DELETE")
 }
 
 func (contentServerRef *ContentServer) UploadFileEndpoint(responseWriter http.ResponseWriter, request *http.Request){
@@ -56,11 +51,11 @@ func (contentServerRef *ContentServer) UploadFileEndpoint(responseWriter http.Re
 	log.Println("Successfully Uploaded File")
 }
 
-func (contentServerRef *ContentServer) CreateRegularPostEndpoint(response http.ResponseWriter, request *http.Request) {
+func (contentServerRef *ContentServer) CreatePostEndpoint(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("content-type", "application/json")
 	var regularPost model.RegularPost
 	_ = json.NewDecoder(request.Body).Decode(&regularPost)
-	var result = contentServerRef.postStore.CreateRegularPost(regularPost)
+	var result = contentServerRef.postStore.CreatePost(regularPost)
 	json.NewEncoder(response).Encode(result)
 }
 
@@ -70,62 +65,4 @@ func (contentServerRef *ContentServer) CreateStoryEndpoint(response http.Respons
 	_ = json.NewDecoder(request.Body).Decode(&story)
 	var result = contentServerRef.postStore.CreateStory(story)
 	json.NewEncoder(response).Encode(result)
-}
-
-func (contentServerRef *ContentServer) CreatePostEndpoint(response http.ResponseWriter, request *http.Request) {
-	response.Header().Set("content-type", "application/json")
-	var post model.Post
-	_ = json.NewDecoder(request.Body).Decode(&post)
-	var result = contentServerRef.postStore.CreatePost(post)
-	json.NewEncoder(response).Encode(result)
-}
-
-func (contentServerRef *ContentServer) CreateSqlPostEndpoint(responseWriter http.ResponseWriter, request *http.Request) {
-
-	// Enforce a JSON Content-Type.
-	contentType := request.Header.Get("Content-Type")
-	mediaType, _, err := mime.ParseMediaType(contentType)
-	if err != nil {
-		http.Error(responseWriter, err.Error(), http.StatusBadRequest)
-		return
-	}
-	if mediaType != "application/json" {
-		http.Error(responseWriter, "expect application/json Content-Type", http.StatusUnsupportedMediaType)
-		return
-	}
-
-	requestPost, err := decodeBody(request.Body)
-	if err != nil {
-		http.Error(responseWriter, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	id := contentServerRef.sqlPostStore.CreatePost(requestPost.Title, requestPost.Text, requestPost.Tags)
-	renderJSON(responseWriter, model.ResponseId{Id: id})
-}
-
-func (contentServerRef *ContentServer) GetAllSqlPostsEndpoint(responseWriter http.ResponseWriter, request *http.Request) {
-	allTasks := contentServerRef.sqlPostStore.GetAllPosts()
-	renderJSON(responseWriter, allTasks)
-}
-
-func (contentServerRef *ContentServer) GetSqlPostEndpoint(responseWriter http.ResponseWriter, request *http.Request) {
-	id, _ := strconv.Atoi(mux.Vars(request)["id"])
-	task, err := contentServerRef.sqlPostStore.GetPost(id)
-
-	if err != nil {
-		http.Error(responseWriter, err.Error(), http.StatusNotFound)
-		return
-	}
-
-	renderJSON(responseWriter, task)
-}
-
-func (contentServerRef *ContentServer) DeleteSqlPostEndpoint(responseWriter http.ResponseWriter, request *http.Request) {
-	id, _ := strconv.Atoi(mux.Vars(request)["id"])
-	err := contentServerRef.sqlPostStore.DeletePost(id)
-
-	if err != nil {
-		http.Error(responseWriter, err.Error(), http.StatusNotFound)
-	}
 }

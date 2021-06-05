@@ -8,14 +8,14 @@ import (
 )
 
 
-func (postStoreRef *PostStore) CreateContents(contents []model.Content) *mongo.InsertManyResult {
+func (postStoreRef *PostStore) CreateContent(contents []model.Content) *mongo.InsertManyResult {
 	var insertableContents []interface{}
 
 	for _, content := range contents {
 		insertableContents = append(insertableContents, content)
 	}
 
-	collectionContents := postStoreRef.ourClient.Database("content-service-db").Collection("contents")
+	collectionContents := postStoreRef.ourClient.Database("content-service-db").Collection("content")
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	result, _ := collectionContents.InsertMany(ctx, insertableContents)
 	return result

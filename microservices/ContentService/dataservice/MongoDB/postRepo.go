@@ -22,39 +22,27 @@ func NewPostStore() (*PostStore, error){
 	return postStoreRef, nil
 }
 
-func (postStoreRef *PostStore) CreateRegularPost(regularPost model.RegularPost) *mongo.InsertOneResult{
-	collectionRegularPosts := postStoreRef.ourClient.Database("content-service-db").Collection("regular_posts")
+func (postStoreRef *PostStore) CreatePost(post model.RegularPost) *mongo.InsertOneResult{
+	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	var insertManyResult = postStoreRef.CreateContents(regularPost.MyPost.Contents)
+	var insertManyResult = postStoreRef.CreateContent(post.MyPost.Contents)
 	for _, contentId := range insertManyResult.InsertedIDs {
 		//log.Println(contentId)
-		regularPost.MyPost.ContentsRef = append(regularPost.MyPost.ContentsRef, contentId)
+		post.MyPost.ContentsRef = append(post.MyPost.ContentsRef, contentId)
 	}
-	result, _ := collectionRegularPosts.InsertOne(ctx, regularPost)
+	result, _ := collectionPosts.InsertOne(ctx, post)
 	return result
 }
 
 func (postStoreRef *PostStore) CreateStory(story model.Story) *mongo.InsertOneResult{
 	collectionStories := postStoreRef.ourClient.Database("content-service-db").Collection("stories")
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	var insertManyResult = postStoreRef.CreateContents(story.MyPost.Contents)
+	var insertManyResult = postStoreRef.CreateContent(story.MyPost.Contents)
 	for _, contentId := range insertManyResult.InsertedIDs {
 		//log.Println(contentId)
 		story.MyPost.ContentsRef = append(story.MyPost.ContentsRef, contentId)
 	}
 	result, _ := collectionStories.InsertOne(ctx, story)
-	return result
-}
-
-func (postStoreRef *PostStore) CreatePost(post model.Post) *mongo.InsertOneResult {
-	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	var insertManyResult = postStoreRef.CreateContents(post.Contents)
-	for _, contentId := range insertManyResult.InsertedIDs {
-		//log.Println(contentId)
-		post.ContentsRef = append(post.ContentsRef, contentId)
-	}
-	result, _ := collectionPosts.InsertOne(ctx, post)
 	return result
 }
 
