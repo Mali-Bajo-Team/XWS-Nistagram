@@ -18,6 +18,7 @@ func InitializeRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/upload/", server.UploadFileEndpoint).Methods("POST")
 
 	router.HandleFunc("/post/", server.CreatePostEndpoint).Methods("POST")
+	router.HandleFunc("/regular-post/", server.CreateRegularPostEndpoint).Methods("POST")
 	router.HandleFunc("/post/", server.GetAllSqlPostsEndpoint).Methods("GET")
 	router.HandleFunc("/post/{id:[0-9]+}/", server.GetSqlPostEndpoint).Methods("GET")
 	router.HandleFunc("/post/{id:[0-9]+}/", server.DeleteSqlPostEndpoint).Methods("DELETE")
@@ -61,6 +62,14 @@ func (contentServerRef *ContentServer) UploadFileEndpoint(responseWriter http.Re
 	tempFile.Write(fileBytes)
 	// return that we have successfully uploaded our file!
 	log.Println("Successfully Uploaded File")
+}
+
+func (contentServerRef *ContentServer) CreateRegularPostEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	var regularPost model.RegularPost
+	_ = json.NewDecoder(request.Body).Decode(&regularPost)
+	var result = contentServerRef.postStore.CreateRegularPost(regularPost)
+	json.NewEncoder(response).Encode(result)
 }
 
 func (contentServerRef *ContentServer) CreatePostEndpoint(response http.ResponseWriter, request *http.Request) {
