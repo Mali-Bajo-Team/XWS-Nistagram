@@ -203,7 +203,7 @@
                                                 :complete="e1 > 1"
                                                 step="1"
                                             >
-                                                Name of step 1
+                                                Photo/Video
                                             </v-stepper-step>
 
                                             <v-divider></v-divider>
@@ -212,37 +212,32 @@
                                                 :complete="e1 > 2"
                                                 step="2"
                                             >
-                                                Name of step 2
+                                                Other information
                                             </v-stepper-step>
 
                                             <v-divider></v-divider>
 
                                             <v-stepper-step step="3">
-                                                Name of step 3
+                                                Confirmation
                                             </v-stepper-step>
                                         </v-stepper-header>
 
                                         <v-stepper-items>
                                             <!--Step 1-->
                                             <v-stepper-content step="1">
-                                                <v-card
-                                                class="mb-12"
+                                            
+                                                <!--File input for images and videos-->
+                                                <v-file-input
+                                                    small-chips
+                                                    multiple
+                                                    show-size
+                                                    counter
+                                                    accept="image/png, image/jpeg, image/bmp"
+                                                    label="Choose a photo or video"
+                                                    prepend-icon="mdi-camera"
+                                                ></v-file-input>
+                                                <!--End of file input-->
                                                 
-                                                >
-                                                    <v-card-text>
-                                                        <!--File input for images and videos-->
-                                                        <v-file-input
-                                                            small-chips
-                                                            multiple
-                                                            show-size
-                                                            counter
-                                                            accept="image/png, image/jpeg, image/bmp"
-                                                            label="Choose a photo or video"
-                                                            prepend-icon="mdi-camera"
-                                                        ></v-file-input>
-                                                        <!--End of file input-->
-                                                    </v-card-text>
-                                                </v-card>
                                                 <v-btn
                                                 color="primary"
                                                 @click="e1 = 2"
@@ -258,85 +253,78 @@
 
                                             <!--Step 2-->
                                             <v-stepper-content step="2">
-                                                <v-card
-                                                class="mb-12"
-                                                
-                                                >
-                                                    <v-card-text>
-                                                        <!--Choose a location-->
-                                                        <v-combobox
-                                                            label="Choose a location"
-                                                            prepend-icon="mdi-map-marker-star"
-                                                        >
-                                                        </v-combobox>
-                                                        <!--End of location-->
-
-                                                        <!--Tagging-->
-                                                        <br>
-                                                        <v-autocomplete
-                                                            label="Tagging"
-                                                            prepend-icon="mdi-tag"
-                                                        ></v-autocomplete>
-                                                        <!--End of tagging-->
-                                                        
-                                                        <!--Add description-->
-                                                        <v-textarea
-                                                            outlined
-                                                            name="input-7-4"
-                                                            no-resize
-                                                            rows="3"
-                                                            label="Add description"
-                                                            clearable
-                                                            clear-icon="mdi-close-circle"
-
-                                                        ></v-textarea>
-                                                        <!--End of description-->
-                                                    </v-card-text>
                                               
-                                                       
-                                     
-                                                </v-card>
+                                                
+                                                <!--Choose a location-->
+                                                <v-combobox
+                                                    label="Choose a location"
+                                                    prepend-icon="mdi-map-marker-star"
+                                                >
+                                                </v-combobox>
+                                                <!--End of location-->
+
+                                                <!--Tagging-->
+                                                <br>
+                                                <v-autocomplete
+                                                    label="Tagging"
+                                                    prepend-icon="mdi-tag"
+                                                ></v-autocomplete>
+                                                <!--End of tagging-->
+                                                        
+                                                <!--Add description-->
+                                                <v-textarea
+                                                    outlined
+                                                    name="input-7-4"
+                                                    no-resize
+                                                    rows="3"
+                                                    label="Add description"
+                                                    clearable
+                                                    clear-icon="mdi-close-circle"
+
+                                                ></v-textarea>
+                                                <!--End of description-->
+                                                 
+                                              
+                                                    
                                                 <v-btn
                                                     color="primary"
                                                     @click="e1 = 3"
-                                                    >
+                                                >
                                                     Continue
                                                 </v-btn>
 
                                                 <v-btn text>
                                                     Cancel
                                                 </v-btn>
+                                                   
+                                     
+                                              
+                                                
 
                                             </v-stepper-content>
                                             <!--End of step 2-->
 
                                             <!--Step 3-->
                                             <v-stepper-content step="3">
-                                                 <v-card
-                                                class="mb-12"
                                                 
-                                                >
-                                                <v-card-text>
-                                                    Are you sure you want to publish a chosen content? 
-                                                </v-card-text>
-                                                <v-card-actions>
+                                               
+                                                    <h3>Are you sure you want to publish a chosen content?</h3>
+                                                
+                                                
                                                     <v-spacer></v-spacer>
-                                                    <v-btn
-
-                                                        color="error"
-                                                        text
-                                                    >
-                                                        Cancel
-                                                    </v-btn>
+                                                    <br>
                                                     <v-btn
                                                         color="primary"
-                                                        text
+                                                       
                                                     >
-                                                            Confirm
+                                                    Confirm
                                                     </v-btn>
-                                                    </v-card-actions>
-                                                
-                                                </v-card>
+
+                                                    <v-btn text>
+                                                        Cancel
+                                                    </v-btn>
+                                                   
+                                                   
                                             </v-stepper-content>
                                             <!--End of step 3-->
                                         </v-stepper-items>
