@@ -64,13 +64,15 @@
             @input="$v.form.surname.$touch()"
             ></v-text-field>      
         
-            <v-text-field
+         <v-select
             v-model="form.gender"
+            :items="form.items"
             :error-messages="genderErrors"
-            label="Gender"
             @blur="$v.form.gender.$touch()"
             @input="$v.form.gender.$touch()"
-            ></v-text-field> 
+            label="Gender"
+           outlined
+          ></v-select>
 
             <v-card-actions class="pt-5">
                 <v-btn color="secondary" text @click="reset">
@@ -139,6 +141,7 @@ export default {
       snackbarText: '',
       loading: false,
       form: {
+        items: ['Man', 'Woman', 'Others :)'],
         username: "",
         email: "",
         password: "",
@@ -219,6 +222,12 @@ export default {
         const errors = []
         if (!this.$v.form.username.$dirty) return errors
         !this.$v.form.username.required && errors.push('Username is required.') 
+        return errors
+      },
+      genderErrors() {
+        const errors = []
+        if (!this.$v.form.gender.$dirty) return errors
+        !this.$v.form.gender.required && errors.push('Gender is required.') 
         return errors
       },
   },
