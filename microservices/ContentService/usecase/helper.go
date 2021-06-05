@@ -2,35 +2,22 @@ package usecase
 
 import (
 	"content_service/model"
-	"encoding/json"
-	"fmt"
-	"io"
 	"math/rand"
 	"mime/multipart"
-	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
-// renderJSON renders 'v' as JSON and writes it as a response into w.
-func renderJSON(responseWriter http.ResponseWriter, v interface{}) {
-	marshalJson, err := json.Marshal(v)
-	if err != nil {
-		http.Error(responseWriter, err.Error(), http.StatusInternalServerError)
-		return
+func initializeContent(filePath string, hdr *multipart.FileHeader) model.Content {
+	var content model.Content
+	content.Path = filePath
+	if isVideoContent(hdr) {
+		content.Type = "video"
+	} else {
+		content.Type = "image"
 	}
-	responseWriter.Header().Set("Content-Type", "application/json")
-	responseWriter.Write(marshalJson)
-}
-
-func decodeBody(reader io.Reader) (*model.RequestPost, error) {
-	decoder := json.NewDecoder(reader)
-	decoder.DisallowUnknownFields()
-	var requestPost model.RequestPost
-	if err := decoder.Decode(&requestPost); err != nil {
-		return nil, err
-	}
-	return &requestPost, nil
+	return content
 }
 
 func createUniqueName() string {
@@ -43,10 +30,12 @@ func createUniqueName() string {
 	return randomString(12) + "_" + strconv.FormatInt(millis, 10)
 }
 
-func printUploadedFile(handler *multipart.FileHeader) {
-	fmt.Printf("Uploaded File: %+v\n", handler.Filename)
-	fmt.Printf("File Size: %+v\n", handler.Size)
-	fmt.Printf("MIME Header: %+v\n", handler.Header)
+func isVideoContent(hdr *multipart.FileHeader) bool {
+	var contentType = hdr.Header.Get("Content-Type")
+	if strings.Contains(contentType, "video") {
+		return true
+	}
+	return false
 }
 
 func randomString(len int) string {

@@ -31,14 +31,19 @@ func (contentServerRef *ContentServer) UploadFileEndpoint(res http.ResponseWrite
 			infile, err := hdr.Open()
 			// open destination
 			var outfile *os.File
-			if outfile, err = os.Create("./post-content/" + createUniqueName() + "-" + hdr.Filename); nil != err {
+			var filePath = "./post-content/" + createUniqueName() + "-" + hdr.Filename
+			if outfile, err = os.Create(filePath); nil != err {
 				return
 			}
+			content := initializeContent(filePath, hdr)
+			contentServerRef.postStore.CreateOneContent(content)
+
 			// 32K buffer copy
 			var written int64
 			if written, err = io.Copy(outfile, infile); nil != err {
 				return
 			}
+
 			res.Write([]byte("uploaded file:" + hdr.Filename + ";length:" + strconv.Itoa(int(written))))
 		}
 	}
