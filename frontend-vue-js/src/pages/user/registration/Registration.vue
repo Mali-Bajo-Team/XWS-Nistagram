@@ -141,7 +141,7 @@ export default {
       snackbarText: '',
       loading: false,
       form: {
-        items: ['Man', 'Woman', 'Others :)'],
+        items: ['Man', 'Woman', 'Others'],
         username: "",
         email: "",
         password: "",
