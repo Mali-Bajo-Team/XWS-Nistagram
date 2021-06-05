@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.xws.users.dto.UserAccDTO;
-import com.xws.users.service.UserService;
+import com.xws.users.service.impl.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.xws.users.users.model.UserAccount;
+import com.xws.users.users.model.roles.UserAccount;
 
 @RestController
 @RequestMapping(value = "api/users")
@@ -59,7 +59,6 @@ public class UserController {
 		UserAccount userAccForSave = new UserAccount();
 		userAccForSave.setEmail(userAcc.getEmail());
 		userAccForSave.setPassword(userAcc.getPassword());
-		userAccForSave.setActive(true);
 
 		userAcc = userAccService.save(userAccForSave);
 		return new ResponseEntity<>(new UserAccDTO(userAcc), HttpStatus.CREATED);
