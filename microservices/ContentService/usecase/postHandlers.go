@@ -18,6 +18,7 @@ func InitializeRouter(router *mux.Router, server *ContentServer) {
 }
 
 func (contentServerRef *ContentServer) UploadFileEndpoint(responseWriter http.ResponseWriter, request *http.Request) {
+	enableCors(responseWriter)
 	// parse request
 	var allContent []interface{}
 	const _24K = (1 << 10) * 24
@@ -44,7 +45,10 @@ func (contentServerRef *ContentServer) UploadFileEndpoint(responseWriter http.Re
 	renderJSON(responseWriter, allContent)
 }
 
+
+
 func (contentServerRef *ContentServer) CreatePostEndpoint(response http.ResponseWriter, request *http.Request) {
+	enableCors(response)
 	response.Header().Set("content-type", "application/json")
 	var post model.RegularPost
 	_ = json.NewDecoder(request.Body).Decode(&post)
@@ -54,6 +58,7 @@ func (contentServerRef *ContentServer) CreatePostEndpoint(response http.Response
 }
 
 func (contentServerRef *ContentServer) CreateStoryEndpoint(response http.ResponseWriter, request *http.Request) {
+	enableCors(response)
 	response.Header().Set("content-type", "application/json")
 	var story model.Story
 	_ = json.NewDecoder(request.Body).Decode(&story)
