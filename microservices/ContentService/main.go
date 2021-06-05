@@ -21,8 +21,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-
-	defer server.CloseConnectionToPostgreSQL()
+	
 	defer server.CloseConnectionToMongoDB()
 
 	usecase.InitializeRouter(router, server)
