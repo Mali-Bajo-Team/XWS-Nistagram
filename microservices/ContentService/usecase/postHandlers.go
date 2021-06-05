@@ -17,12 +17,12 @@ func InitializeRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/story/", server.CreateStoryEndpoint).Methods("POST")
 }
 
-func (contentServerRef *ContentServer) UploadFileEndpoint(res http.ResponseWriter, req *http.Request) {
+func (contentServerRef *ContentServer) UploadFileEndpoint(responseWriter http.ResponseWriter, request *http.Request) {
 	// parse request
 	var allContent []interface{}
 	const _24K = (1 << 10) * 24
-	req.ParseMultipartForm(_24K)
-	for _, fileHeaders := range req.MultipartForm.File {
+	request.ParseMultipartForm(_24K)
+	for _, fileHeaders := range request.MultipartForm.File {
 		for _, hdr := range fileHeaders {
 			// open uploaded
 			var infile multipart.File
@@ -41,21 +41,23 @@ func (contentServerRef *ContentServer) UploadFileEndpoint(res http.ResponseWrite
 			allContent = append(allContent, content)
 		}
 	}
-	renderJSON(res,allContent)
+	renderJSON(responseWriter, allContent)
 }
 
 func (contentServerRef *ContentServer) CreatePostEndpoint(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("content-type", "application/json")
-	var regularPost model.RegularPost
-	_ = json.NewDecoder(request.Body).Decode(&regularPost)
-	var result = contentServerRef.postStore.CreatePost(regularPost)
-	json.NewEncoder(response).Encode(result)
+	var post model.RegularPost
+	_ = json.NewDecoder(request.Body).Decode(&post)
+	var documentId = contentServerRef.postStore.CreatePost(post)
+	post.ID = documentId.InsertedID.(primitive.ObjectID)
+	renderJSON(response, post)
 }
 
 func (contentServerRef *ContentServer) CreateStoryEndpoint(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("content-type", "application/json")
 	var story model.Story
 	_ = json.NewDecoder(request.Body).Decode(&story)
-	var result = contentServerRef.postStore.CreateStory(story)
-	json.NewEncoder(response).Encode(result)
+	var documentId = contentServerRef.postStore.CreateStory(story)
+	story.ID = documentId.InsertedID.(primitive.ObjectID)
+	renderJSON(response, story)
 }

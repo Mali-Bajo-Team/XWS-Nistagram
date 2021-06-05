@@ -25,11 +25,6 @@ func NewPostStore() (*PostStore, error){
 func (postStoreRef *PostStore) CreatePost(post model.RegularPost) *mongo.InsertOneResult{
 	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	var insertManyResult = postStoreRef.CreateManyContent(post.MyPost.Contents)
-	for _, contentId := range insertManyResult.InsertedIDs {
-		//log.Println(contentId)
-		post.MyPost.ContentsRef = append(post.MyPost.ContentsRef, contentId)
-	}
 	result, _ := collectionPosts.InsertOne(ctx, post)
 	return result
 }
@@ -37,11 +32,6 @@ func (postStoreRef *PostStore) CreatePost(post model.RegularPost) *mongo.InsertO
 func (postStoreRef *PostStore) CreateStory(story model.Story) *mongo.InsertOneResult{
 	collectionStories := postStoreRef.ourClient.Database("content-service-db").Collection("stories")
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	var insertManyResult = postStoreRef.CreateManyContent(story.MyPost.Contents)
-	for _, contentId := range insertManyResult.InsertedIDs {
-		//log.Println(contentId)
-		story.MyPost.ContentsRef = append(story.MyPost.ContentsRef, contentId)
-	}
 	result, _ := collectionStories.InsertOne(ctx, story)
 	return result
 }
