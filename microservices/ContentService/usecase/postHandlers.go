@@ -3,11 +3,12 @@ package usecase
 import (
 	"content_service/model"
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/mux"
-	"io/ioutil"
-	"log"
+	"io"
+	"mime/multipart"
 	"net/http"
+	"os"
+	"strconv"
 )
 
 func InitializeRouter(router *mux.Router, server *ContentServer) {
@@ -19,36 +20,28 @@ func InitializeRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/story/", server.CreateStoryEndpoint).Methods("POST")
 }
 
-func (contentServerRef *ContentServer) UploadFileEndpoint(responseWriter http.ResponseWriter, request *http.Request){
-	log.Println("Uploading content")
-	// Parse our multipart form, 10 << 20 specifies a maximum
-	// upload of 10 MB files.
-	request.ParseMultipartForm(10 << 20)
-	// FormFile returns the first file for the given key `myFile`
-	// it also returns the FileHeader so we can get the Filename,
-	// the Header and the size of the file
-	file, handler, err := request.FormFile("myFile")
-	if err != nil {
-		fmt.Println("Error Retrieving the File")
-		fmt.Println(err)
-		return
+func (contentServerRef *ContentServer) UploadFileEndpoint(res http.ResponseWriter, req *http.Request) {
+	// parse request
+	const _24K = (1 << 10) * 24
+	req.ParseMultipartForm(_24K)
+	for _, fileHeaders := range req.MultipartForm.File {
+		for _, hdr := range fileHeaders {
+			// open uploaded
+			var infile multipart.File
+			infile, err := hdr.Open()
+			// open destination
+			var outfile *os.File
+			if outfile, err = os.Create("./post-content/" + createUniqueName() + "-" + hdr.Filename); nil != err {
+				return
+			}
+			// 32K buffer copy
+			var written int64
+			if written, err = io.Copy(outfile, infile); nil != err {
+				return
+			}
+			res.Write([]byte("uploaded file:" + hdr.Filename + ";length:" + strconv.Itoa(int(written))))
+		}
 	}
-	defer file.Close()
-
-	printUploadedFile(handler)
-	tempFile := createFile(err)
-	defer tempFile.Close()
-
-	// read all of the contents of our uploaded file into a
-	// byte array
-	fileBytes, err := ioutil.ReadAll(file)
-	if err != nil {
-		fmt.Println(err)
-	}
-	// write this byte array to our temporary file
-	tempFile.Write(fileBytes)
-	// return that we have successfully uploaded our file!
-	log.Println("Successfully Uploaded File")
 }
 
 func (contentServerRef *ContentServer) CreatePostEndpoint(response http.ResponseWriter, request *http.Request) {

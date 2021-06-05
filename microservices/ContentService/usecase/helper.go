@@ -5,10 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
+	"math/rand"
 	"mime/multipart"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
 )
@@ -34,22 +33,34 @@ func decodeBody(reader io.Reader) (*model.RequestPost, error) {
 	return &requestPost, nil
 }
 
-// Create a temporary file within our post-content directory that follows a
-// particular naming pattern
-func createFile(err error) *os.File {
+func createUniqueName() string {
 	now := time.Now()
 	nanos := now.UnixNano()
 	millis := nanos / 1000000
 
-	tempFile, err := ioutil.TempFile("post-content", "post-*-"+strconv.FormatInt(millis, 10)+".png")
-	if err != nil {
-		fmt.Println(err)
-	}
-	return tempFile
+	rand.Seed(time.Now().UTC().UnixNano())
+
+	return randomString(12) + "_" + strconv.FormatInt(millis, 10)
 }
 
 func printUploadedFile(handler *multipart.FileHeader) {
 	fmt.Printf("Uploaded File: %+v\n", handler.Filename)
 	fmt.Printf("File Size: %+v\n", handler.Size)
 	fmt.Printf("MIME Header: %+v\n", handler.Header)
+}
+
+func randomString(len int) string {
+
+	bytes := make([]byte, len)
+
+	for i := 0; i < len; i++ {
+		bytes[i] = byte(randInt(97, 122))
+	}
+
+	return string(bytes)
+}
+
+func randInt(min int, max int) int {
+
+	return min + rand.Intn(max-min)
 }
