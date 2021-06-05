@@ -21,7 +21,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	
+
 	defer server.CloseConnectionToMongoDB()
 
 	usecase.InitializeRouter(router, server)
