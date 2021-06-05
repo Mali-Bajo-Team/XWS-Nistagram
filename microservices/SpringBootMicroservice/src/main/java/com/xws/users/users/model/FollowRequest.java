@@ -1,9 +1,11 @@
 package com.xws.users.users.model;
 
 import com.xws.users.users.model.roles.RegularUser;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 public class FollowRequest {
@@ -11,14 +13,16 @@ public class FollowRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     @Column
     private Date dateOfCreation;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    private RegularUser requster;
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<RegularUser> requster;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    private RegularUser accountToFollow;
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<RegularUser> accountToFollow;
 
     public Long getId() {
         return id;
@@ -36,19 +40,19 @@ public class FollowRequest {
         this.dateOfCreation = dateOfCreation;
     }
 
-    public RegularUser getRequster() {
+    public List<RegularUser> getRequster() {
         return requster;
     }
 
-    public void setRequster(RegularUser requster) {
+    public void setRequster(List<RegularUser> requster) {
         this.requster = requster;
     }
 
-    public RegularUser getAccountToFollow() {
+    public List<RegularUser> getAccountToFollow() {
         return accountToFollow;
     }
 
-    public void setAccountToFollow(RegularUser accountToFollow) {
+    public void setAccountToFollow(List<RegularUser> accountToFollow) {
         this.accountToFollow = accountToFollow;
     }
 }

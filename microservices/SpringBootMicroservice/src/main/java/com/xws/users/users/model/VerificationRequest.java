@@ -1,6 +1,7 @@
 package com.xws.users.users.model;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class VerificationRequest {
@@ -14,8 +15,8 @@ public class VerificationRequest {
     @Column
     private String realSurname;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    private UserCategory category;
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<UserCategory> category;
 
     @Column
     private String imageOfOfficialDocument;
@@ -44,11 +45,11 @@ public class VerificationRequest {
         this.realSurname = realSurname;
     }
 
-    public UserCategory getCategory() {
+    public List<UserCategory> getCategory() {
         return category;
     }
 
-    public void setCategory(UserCategory category) {
+    public void setCategory(List<UserCategory> category) {
         this.category = category;
     }
 

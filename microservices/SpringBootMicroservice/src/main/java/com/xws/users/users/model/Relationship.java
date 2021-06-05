@@ -15,10 +15,41 @@ public class Relationship {
     @Column
     private RelationshipType relationshipType;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    private RegularUser inRelationship;
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<RegularUser> inRelationship;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    private RegularUser outRelationship;
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<RegularUser> outRelationship;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public RelationshipType getRelationshipType() {
+        return relationshipType;
+    }
+
+    public void setRelationshipType(RelationshipType relationshipType) {
+        this.relationshipType = relationshipType;
+    }
+
+    public List<RegularUser> getInRelationship() {
+        return inRelationship;
+    }
+
+    public void setInRelationship(List<RegularUser> inRelationship) {
+        this.inRelationship = inRelationship;
+    }
+
+    public List<RegularUser> getOutRelationship() {
+        return outRelationship;
+    }
+
+    public void setOutRelationship(List<RegularUser> outRelationship) {
+        this.outRelationship = outRelationship;
+    }
 }

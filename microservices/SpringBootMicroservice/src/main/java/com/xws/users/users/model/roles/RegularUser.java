@@ -2,6 +2,7 @@ package com.xws.users.users.model.roles;
 
 import com.xws.users.users.model.FollowRequest;
 import com.xws.users.users.model.PrivacySettings;
+import com.xws.users.users.model.Relationship;
 import com.xws.users.users.model.UserCategory;
 import com.xws.users.users.model.enums.ProfileStatus;
 
@@ -20,13 +21,14 @@ public class RegularUser extends UserAccount {
     @Column
     private String profileImagePath;
 
+    @Temporal(TemporalType.DATE)
     @Column
     private Date dateOfBirth;
 
-    @Column(nullable = false)
+    @Column
     private String gender;
 
-    @Column(nullable = false)
+    @Column
     private ProfileStatus profileStatus;
 
     @OneToOne(fetch = FetchType.LAZY, optional = true)
@@ -48,10 +50,10 @@ public class RegularUser extends UserAccount {
     private Set<FollowRequest> accountsToFollow;
 
     @OneToMany(fetch = FetchType.LAZY)
-    private List<RegularUser> inRelationships;
+    private List<Relationship> inRelationships;
 
     @OneToMany(fetch = FetchType.LAZY)
-    private List<RegularUser> outRelationships;
+    private List<Relationship> outRelationships;
 
     public void setUserCategory(UserCategory userCategory) {
         this.userCategory = userCategory;
