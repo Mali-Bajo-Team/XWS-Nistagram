@@ -2,12 +2,25 @@ package usecase
 
 import (
 	"content_service/model"
+	"encoding/json"
 	"math/rand"
 	"mime/multipart"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
 )
+
+// renderJSON renders 'v' as JSON and writes it as a response into w.
+func renderJSON(responseWriter http.ResponseWriter, model interface{}) {
+	marshalJson, err := json.Marshal(model)
+	if err != nil {
+		http.Error(responseWriter, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	responseWriter.Header().Set("Content-Type", "application/json")
+	responseWriter.Write(marshalJson)
+}
 
 func initializeContent(filePath string, hdr *multipart.FileHeader) model.Content {
 	var content model.Content

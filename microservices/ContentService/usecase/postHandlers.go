@@ -4,11 +4,11 @@ import (
 	"content_service/model"
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
-	"strconv"
 )
 
 func InitializeRouter(router *mux.Router, server *ContentServer) {
@@ -22,6 +22,7 @@ func InitializeRouter(router *mux.Router, server *ContentServer) {
 
 func (contentServerRef *ContentServer) UploadFileEndpoint(res http.ResponseWriter, req *http.Request) {
 	// parse request
+	var allContent []interface{}
 	const _24K = (1 << 10) * 24
 	req.ParseMultipartForm(_24K)
 	for _, fileHeaders := range req.MultipartForm.File {
@@ -36,17 +37,15 @@ func (contentServerRef *ContentServer) UploadFileEndpoint(res http.ResponseWrite
 				return
 			}
 			content := initializeContent(filePath, hdr)
-			contentServerRef.postStore.CreateOneContent(content)
+			documentId := contentServerRef.postStore.CreateOneContent(content)
+			content.ID = documentId.InsertedID.(primitive.ObjectID)
 
-			// 32K buffer copy
-			var written int64
-			if written, err = io.Copy(outfile, infile); nil != err {
-				return
-			}
-
-			res.Write([]byte("uploaded file:" + hdr.Filename + ";length:" + strconv.Itoa(int(written))))
+			io.Copy(outfile, infile)
+			allContent = append(allContent, content)
+			//renderJSON(res,allContent)
 		}
 	}
+	renderJSON(res,allContent)
 }
 
 func (contentServerRef *ContentServer) CreatePostEndpoint(response http.ResponseWriter, request *http.Request) {
