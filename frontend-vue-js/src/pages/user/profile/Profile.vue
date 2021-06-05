@@ -534,53 +534,67 @@
         </v-row>
 
         <v-row>
-            <v-tabs  icons-and-text background-color="transparent">
+            <v-tabs v-model="tabs2" icons-and-text background-color="transparent">
                 <v-tabs-slider></v-tabs-slider>
                 <v-tab>Posts<v-icon>mdi-camera</v-icon></v-tab>
                 <v-tab>Stories<v-icon>mdi-camera-iris</v-icon></v-tab>
-                <v-tabs-slider></v-tabs-slider>
                 <v-tab>Saved<v-icon>mdi-check-circle</v-icon></v-tab>
                 <v-tab>Tagged<v-icon>mdi-tag</v-icon></v-tab>
-
-                <v-tab-item
-                    v-for="n in 3"
-                    :key="n"
-                >
-                    <v-container fluid>
-                        <v-row>
-                            <v-col
-                                v-for="i in 12"
-                                :key="i"
-                                cols="12"
-                                md="6"
-                            >
-                            <v-card>
-                                <v-img
-                                    :src="`https://picsum.photos/500/300?image=${i * n * 5 + 10}`"
-                                    :lazy-src="`https://picsum.photos/10/6?image=${i * n * 5 + 10}`"
-                                    aspect-ratio="0.8"
-                                ></v-img>
-                                <v-card-text class="title">
-                                    <v-row>
-                                    <v-col>
-                                    <v-icon color="red lighten-2" left>mdi-heart</v-icon>
-                                    350
-                                    </v-col>
-
-                                    <v-col  class="text-right">
-                                    <v-icon left>mdi-chat</v-icon>
-                                    10
-                                    </v-col>
-                                    </v-row>
-                                </v-card-text>
-
-                            </v-card>
-                            </v-col>
-                            
-                        </v-row>
-                    </v-container>
-                </v-tab-item>
             </v-tabs>
+            <v-tabs-items v-model="tabs2">
+                <!--Tab for photos and videos-->
+                <v-tab-item>
+                    <v-col
+                        v-for="n in 9"
+                        :key="n"
+                        class="d-flex child-flex"
+                        cols="4"
+                    >
+                        <v-img
+                            :src="`https://picsum.photos/500/300?image=${n * 5 + 10}`"
+                            aspect-ratio="1"
+                            class="grey lighten-2"
+                        >
+                            <template v-slot:placeholder>
+                                <v-row
+                                    class="fill-height ma-0"
+                                    align="center"
+                                    justify="center"
+                                >
+                                    <v-progress-circular
+                                    indeterminate
+                                    color="grey lighten-5"
+                                    ></v-progress-circular>
+                                </v-row>
+                            </template>
+                        </v-img>
+                    </v-col>
+   
+                </v-tab-item>
+                <!--End of tab for photos and videos-->
+
+                <!--Tab for stories-->
+                <v-tab-item>
+                    STORIES
+                </v-tab-item>
+                <!--End of tab for stories-->
+
+                <!--Tab for saved/favorites-->
+                <v-tab-item>
+                    SAVED
+                </v-tab-item>
+                <!--End of tab for saved/favorites-->
+
+                <!--Tab for tagged-->
+                <v-tab-item>
+                    TAGGED
+                </v-tab-item>
+                <!--End of tab for tagged-->
+                
+
+            </v-tabs-items>
+              
+          
         </v-row>
 
     </v-col>
@@ -597,8 +611,14 @@ export default {
       snackbarText: '',
       loading: false,
       tabs: null,
+      tabs2:null,
       e1: 1,
       e2: 1,
+      pictures:[
+          {
+              path:"https://picsum.photos/200/300",
+          }
+      ],
       form: {
         email: "",
         password: "",
