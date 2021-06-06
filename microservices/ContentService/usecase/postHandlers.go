@@ -14,6 +14,7 @@ import (
 func InitializeRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/upload/", server.UploadFileEndpoint).Methods("POST")
 	router.HandleFunc("/post/", server.CreatePostEndpoint).Methods("POST")
+	router.HandleFunc("/user/", server.CreateUserEndpoint).Methods("POST")
 	router.HandleFunc("/story/", server.CreateStoryEndpoint).Methods("POST")
 }
 
@@ -41,6 +42,16 @@ func (contentServerRef *ContentServer) UploadFileEndpoint(responseWriter http.Re
 		}
 	}
 	renderJSON(responseWriter, allContent)
+}
+
+func (contentServerRef *ContentServer) CreateUserEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+
+	var user model.User
+	_ = json.NewDecoder(request.Body).Decode(&user)
+	var documentId = contentServerRef.postStore.CreateUser(user)
+	user.ID = documentId.InsertedID.(primitive.ObjectID)
+	renderJSON(response, user)
 }
 
 func (contentServerRef *ContentServer) CreatePostEndpoint(response http.ResponseWriter, request *http.Request) {
