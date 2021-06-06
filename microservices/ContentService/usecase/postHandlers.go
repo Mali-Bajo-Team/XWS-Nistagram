@@ -16,6 +16,9 @@ func InitializeRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/file/{name}", server.GetFileEndpoint).Methods("GET")
 
 	router.HandleFunc("/post/", server.CreatePostEndpoint).Methods("POST")
+	// TODO: Find some better naming for reaction-undo-reaction
+	router.HandleFunc("/post/reaction/{id}", server.CreatePostReactionEndpoint).Methods("POST")
+	router.HandleFunc("/post/unreaction/{id}", server.DeletePostReactionEndpoint).Methods("POST")
 	router.HandleFunc("/post/comment/{id}", server.CreatePostCommentEndpoint).Methods("POST")
 	router.HandleFunc("/post/comment/{id}", server.GetPostCommentsEndpoint).Methods("GET")
 
@@ -85,6 +88,24 @@ func (contentServerRef *ContentServer) CreatePostCommentEndpoint(response http.R
 	params := mux.Vars(request)
 	contentServerRef.postStore.UpdatePostComments(comment, params["id"])
 	renderJSON(response, comment)
+}
+
+func (contentServerRef *ContentServer) CreatePostReactionEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	var reaction model.Reaction
+	_ = json.NewDecoder(request.Body).Decode(&reaction)
+	params := mux.Vars(request)
+	contentServerRef.postStore.CreatePostReaction(reaction, params["id"])
+	renderJSON(response, reaction)
+}
+
+func (contentServerRef *ContentServer) DeletePostReactionEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	var reaction model.Reaction
+	_ = json.NewDecoder(request.Body).Decode(&reaction)
+	params := mux.Vars(request)
+	contentServerRef.postStore.DeletePostReaction(reaction, params["id"])
+	renderJSON(response, reaction)
 }
 
 func (contentServerRef *ContentServer) GetPostCommentsEndpoint(response http.ResponseWriter, request *http.Request) {
