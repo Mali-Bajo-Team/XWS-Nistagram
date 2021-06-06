@@ -132,7 +132,7 @@
         <!--Column for add content button-->
         <v-col class="text-right mr-5 mb-5">
           <!--Button for adding new content-->
-          <v-dialog width="600px">
+          <v-dialog width="600px" v-model="openedContenDialog">
             <v-tabs v-model="tabs" icons-and-text>
               <v-tabs-slider></v-tabs-slider>
               <v-tab>Regular posts<v-icon>mdi-camera</v-icon></v-tab>
@@ -200,6 +200,14 @@
 
                         <!--Step 2-->
                         <v-stepper-content step="2">
+                          <!-- Chose a title -->
+                          <v-text-field
+                            v-model="my_post.title"
+                            label="Choose a title"
+                            prepend-icon="mdi-home"
+                          >
+                          </v-text-field>
+                          <!-- End of title-->
                           <!--Choose a location-->
                           <v-combobox
                             label="Choose a location"
@@ -218,6 +226,7 @@
 
                           <!--Add description-->
                           <v-textarea
+                            v-model="my_post.description"
                             outlined
                             name="input-7-4"
                             no-resize
@@ -228,7 +237,10 @@
                           ></v-textarea>
                           <!--End of description-->
 
-                          <v-btn color="primary" @click="e1 = 3">
+                          <v-btn
+                            color="primary"
+                            @click="createPost(), (e1 = 3)"
+                          >
                             Continue
                           </v-btn>
 
@@ -239,14 +251,12 @@
                         <!--Step 3-->
                         <v-stepper-content step="3">
                           <h3>
-                            Are you sure you want to publish a chosen content?
+                              Congratulations, you have successfully posted the desired content!
                           </h3>
 
                           <v-spacer></v-spacer>
                           <br />
-                          <v-btn color="primary"> Confirm </v-btn>
-
-                          <v-btn text> Cancel </v-btn>
+                           <v-btn color="primary" @click="openedContenDialog=false"> Close </v-btn>
                         </v-stepper-content>
                         <!--End of step 3-->
                       </v-stepper-items>
@@ -293,6 +303,7 @@
                             accept="image/png, image/jpeg, image/bmp"
                             label="Choose a photo or video"
                             prepend-icon="mdi-camera"
+                            @change="onFileSelected"
                           ></v-file-input>
                           <!--End of file input-->
 
@@ -326,7 +337,10 @@
                           <!--End of tagging-->
 
                           <!--Only available to close friends-->
-                          <v-checkbox label="Only available to close friends">
+                          <v-checkbox
+                            v-model="isForCloseFriends"
+                            label="Only available to close friends"
+                          >
                           </v-checkbox>
 
                           <!--Add description-->
@@ -341,7 +355,10 @@
                           ></v-textarea>
                           <!--End of description-->
 
-                          <v-btn color="primary" @click="e2 = 3">
+                          <v-btn
+                            color="primary"
+                            @click="createStory(), (e2 = 3)"
+                          >
                             Continue
                           </v-btn>
 
@@ -352,14 +369,12 @@
                         <!--Step 3-->
                         <v-stepper-content step="3">
                           <h3>
-                            Are you sure you want to publish a chosen content?
+                            Congratulations, you have successfully posted the desired content!
                           </h3>
 
                           <v-spacer></v-spacer>
                           <br />
-                          <v-btn color="primary"> Confirm </v-btn>
-
-                          <v-btn text> Cancel </v-btn>
+                          <v-btn color="primary" @click="openedContenDialog=false"> Close </v-btn>
                         </v-stepper-content>
                         <!--End of step 3-->
                       </v-stepper-items>
@@ -466,6 +481,15 @@ export default {
           path: "https://picsum.photos/200/300",
         },
       ],
+      my_post: {
+        title: "",
+        // location: null,
+        description: "",
+        is_add: false,
+        add_link: "/",
+        content: [],
+      },
+      isForCloseFriends: false,
       form: {
         email: "",
         password: "",
@@ -479,13 +503,34 @@ export default {
         country: "",
         phone: "",
       },
+      openedContenDialog: null,
       selectedFiles: [],
     };
   },
   computed: {},
   methods: {
+    createPost() {
+      // TODO: Move this to ENV !!!
+      axios
+        .post("http://localhost:8000/post/", {
+          my_post: this.my_post,
+        })
+        .then((res) => {
+          console.log(res);
+        });
+    },
+    createStory() {
+      // TODO: Move this to ENV !!!
+      axios
+        .post("http://localhost:8000/story/", {
+          my_post: this.my_post,
+          is_for_close_friends: this.isForCloseFriends,
+        })
+        .then((res) => {
+          console.log(res);
+        });
+    },
     createContent() {
-      alert("test");
       const fd = new FormData();
 
       this.selectedFiles.forEach((selectedFile) => {
@@ -499,6 +544,7 @@ export default {
       // TODO: Move this to ENV !!!
       axios.post("http://localhost:8000/upload/", fd).then((res) => {
         console.log(res);
+        this.my_post.content = res.data;
       });
     },
     onFileSelected(event) {
