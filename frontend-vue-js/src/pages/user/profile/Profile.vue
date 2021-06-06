@@ -452,16 +452,128 @@
                       <v-card-actions>
                         <v-spacer></v-spacer>
 
-                        <v-btn icon>
-                          <v-icon>mdi-heart</v-icon>
-                        </v-btn>
+                        <!--Dialog for choosing photo-->
+                        <v-dialog width="600px">
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                    
+                              v-bind="attrs"
+                              v-on="on"
+                              icon
+                            >
+                              <v-icon right> mdi-plus-circle </v-icon>
+                            </v-btn>
+                          </template>
+                          <!--Card for comments-->
+                          <v-card>
+                            <v-card-title>
+                              <v-img
+                                lazy-src="https://picsum.photos/id/11/10/6"
+                                src="https://picsum.photos/id/11/500/300"
+                              ></v-img>
+                            </v-card-title>
+                            <v-card-text>
+                              <v-row>
+                                <v-col>
+                                  <!--The number of likes and comments-->
+                                  <v-icon medium>mdi-heart</v-icon>700
+                                  <v-icon medium right>mdi-comment</v-icon>10
+                                </v-col>
+
+                                <v-col class="text-right mr-5 mb-5">
+                                  <!--Button for likes-->
+                                  <v-btn
+                                    class="mx-2"
+                                    fab
+                                    x-small
+                                    color="primary"
+                                    ><v-icon>mdi-thumb-up</v-icon>
+                                  </v-btn>
+                                  <!--End of button for likes-->
+
+                                  <!--Button for dislikes-->
+                                  <v-btn
+                                    class="mx-2"
+                                    fab
+                                    x-small
+                                    color="primary"
+                                    ><v-icon>mdi-thumb-down</v-icon>
+                                  </v-btn>
+                                  <!--End of button for dislikes-->
+
+                                  <!--Dialog for adding comment-->
+                                  <v-dialog width="600px">
+                                    <template v-slot:activator="{ on, attrs }">
+                                      <v-btn
+                                        class="mx-2"
+                                        fab
+                                        x-small
+                                        v-bind="attrs"
+                                        v-on="on"
+                                        color="primary"
+                                        ><v-icon>mdi-pencil</v-icon>
+                                      </v-btn>
+                                    </template>
+                                    <v-card>
+                                      <v-card-title>
+                                        Add a new comment to the post
+                                      </v-card-title>
+                                      <v-card-text>
+                                        <!--Field for comments-->
+                                        <v-textarea
+                                          outlined
+                                          name="input-7-4"
+                                          no-resize
+                                          rows="3"
+                                          label="Comment"
+                                          clearable
+                                          clear-icon="mdi-close-circle"
+                                        ></v-textarea>
+                                        <!--End of field for comments-->
+                                      </v-card-text>
+                                      <v-card-actions>
+                                        <!--Buttons to confirm or cancel action-->
+                                        <v-spacer></v-spacer>
+                                        <v-btn color="error" text>
+                                          Cancel
+                                        </v-btn>
+                                        <v-btn color="primary" text>
+                                          Confirm
+                                        </v-btn>
+                                      </v-card-actions>
+                                    </v-card>
+                                  </v-dialog>
+                                  <!--End of dialog for adding comments-->
+                                </v-col>
+                              </v-row>
+
+                              <br /><br />
+                              <!--Expansion panels for showing comments-->
+                              <v-expansion-panels>
+                                <v-expansion-panel
+                                  v-for="(item, i) in 1"
+                                  :key="i"
+                                >
+                                  <v-expansion-panel-header>
+                                    Show all comments
+                                  </v-expansion-panel-header>
+                                  <v-expansion-panel-content
+                                    v-for="comment in comments"
+                                    :key="comment.id"
+                                  >
+                                    <h3>{{ comment.username }}</h3>
+                                    {{ comment.description }}
+                                  </v-expansion-panel-content>
+                                </v-expansion-panel>
+                              </v-expansion-panels>
+                              <!--End of expansion panels-->
+                            </v-card-text>
+                          </v-card>
+                        </v-dialog>
+                        <!--End of dialog for choosing photo-->
 
                         <v-btn icon>
                           <v-icon>mdi-bookmark</v-icon>
-                        </v-btn>
-
-                        <v-btn icon>
-                          <v-icon>mdi-share-variant</v-icon>
                         </v-btn>
                       </v-card-actions>
                     </v-card>
@@ -480,16 +592,128 @@
                       <v-card-actions>
                         <v-spacer></v-spacer>
 
-                        <v-btn icon>
-                          <v-icon>mdi-heart</v-icon>
-                        </v-btn>
+                       <!--Dialog for choosing photo-->
+                        <v-dialog width="600px">
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                    
+                              v-bind="attrs"
+                              v-on="on"
+                              icon
+                            >
+                              <v-icon right> mdi-plus-circle </v-icon>
+                            </v-btn>
+                          </template>
+                          <!--Card for comments-->
+                          <v-card>
+                            <v-card-title>
+                              <v-img
+                                lazy-src="https://picsum.photos/id/11/10/6"
+                                src="https://picsum.photos/id/11/500/300"
+                              ></v-img>
+                            </v-card-title>
+                            <v-card-text>
+                              <v-row>
+                                <v-col>
+                                  <!--The number of likes and comments-->
+                                  <v-icon medium>mdi-heart</v-icon>700
+                                  <v-icon medium right>mdi-comment</v-icon>10
+                                </v-col>
+
+                                <v-col class="text-right mr-5 mb-5">
+                                  <!--Button for likes-->
+                                  <v-btn
+                                    class="mx-2"
+                                    fab
+                                    x-small
+                                    color="primary"
+                                    ><v-icon>mdi-thumb-up</v-icon>
+                                  </v-btn>
+                                  <!--End of button for likes-->
+
+                                  <!--Button for dislikes-->
+                                  <v-btn
+                                    class="mx-2"
+                                    fab
+                                    x-small
+                                    color="primary"
+                                    ><v-icon>mdi-thumb-down</v-icon>
+                                  </v-btn>
+                                  <!--End of button for dislikes-->
+
+                                  <!--Dialog for adding comment-->
+                                  <v-dialog width="600px">
+                                    <template v-slot:activator="{ on, attrs }">
+                                      <v-btn
+                                        class="mx-2"
+                                        fab
+                                        x-small
+                                        v-bind="attrs"
+                                        v-on="on"
+                                        color="primary"
+                                        ><v-icon>mdi-pencil</v-icon>
+                                      </v-btn>
+                                    </template>
+                                    <v-card>
+                                      <v-card-title>
+                                        Add a new comment to the post
+                                      </v-card-title>
+                                      <v-card-text>
+                                        <!--Field for comments-->
+                                        <v-textarea
+                                          outlined
+                                          name="input-7-4"
+                                          no-resize
+                                          rows="3"
+                                          label="Comment"
+                                          clearable
+                                          clear-icon="mdi-close-circle"
+                                        ></v-textarea>
+                                        <!--End of field for comments-->
+                                      </v-card-text>
+                                      <v-card-actions>
+                                        <!--Buttons to confirm or cancel action-->
+                                        <v-spacer></v-spacer>
+                                        <v-btn color="error" text>
+                                          Cancel
+                                        </v-btn>
+                                        <v-btn color="primary" text>
+                                          Confirm
+                                        </v-btn>
+                                      </v-card-actions>
+                                    </v-card>
+                                  </v-dialog>
+                                  <!--End of dialog for adding comments-->
+                                </v-col>
+                              </v-row>
+
+                              <br /><br />
+                              <!--Expansion panels for showing comments-->
+                              <v-expansion-panels>
+                                <v-expansion-panel
+                                  v-for="(item, i) in 1"
+                                  :key="i"
+                                >
+                                  <v-expansion-panel-header>
+                                    Show all comments
+                                  </v-expansion-panel-header>
+                                  <v-expansion-panel-content
+                                    v-for="comment in comments"
+                                    :key="comment.id"
+                                  >
+                                    <h3>{{ comment.username }}</h3>
+                                    {{ comment.description }}
+                                  </v-expansion-panel-content>
+                                </v-expansion-panel>
+                              </v-expansion-panels>
+                              <!--End of expansion panels-->
+                            </v-card-text>
+                          </v-card>
+                        </v-dialog>
+                        <!--End of dialog for choosing photo-->
 
                         <v-btn icon>
                           <v-icon>mdi-bookmark</v-icon>
-                        </v-btn>
-
-                        <v-btn icon>
-                          <v-icon>mdi-share-variant</v-icon>
                         </v-btn>
                       </v-card-actions>
                     </v-card>
@@ -502,7 +726,7 @@
           <!--End of tab for photos and videos-->
 
           <!--Tab for stories-->
-         <v-tab-item>
+          <v-tab-item>
             <v-card class="mx-auto" max-width="500">
               <v-container fluid>
                 <v-row dense>
@@ -524,14 +748,6 @@
                         <v-spacer></v-spacer>
 
                         <v-btn icon>
-                          <v-icon>mdi-heart</v-icon>
-                        </v-btn>
-
-                        <v-btn icon>
-                          <v-icon>mdi-bookmark</v-icon>
-                        </v-btn>
-
-                        <v-btn icon>
                           <v-icon>mdi-share-variant</v-icon>
                         </v-btn>
                       </v-card-actions>
@@ -550,14 +766,6 @@
                       ></video>
                       <v-card-actions>
                         <v-spacer></v-spacer>
-
-                        <v-btn icon>
-                          <v-icon>mdi-heart</v-icon>
-                        </v-btn>
-
-                        <v-btn icon>
-                          <v-icon>mdi-bookmark</v-icon>
-                        </v-btn>
 
                         <v-btn icon>
                           <v-icon>mdi-share-variant</v-icon>
@@ -593,6 +801,18 @@ import axios from "axios";
 export default {
   data() {
     return {
+      comments: [
+        {
+          id: 1,
+          description: "Amazing photo!<3 <3 <3",
+          username: "anaperisic12",
+        },
+        {
+          id: 2,
+          description: "WOW!Love this!!!",
+          username: "pipidugacarapa25",
+        },
+      ],
       snackbar: false,
       snackbarText: "",
       loading: false,
@@ -650,7 +870,7 @@ export default {
             flex: 6,
           });
         });
-        
+
         this.stories = [];
         this.user.stories.forEach((story) => {
           this.stories.push({
