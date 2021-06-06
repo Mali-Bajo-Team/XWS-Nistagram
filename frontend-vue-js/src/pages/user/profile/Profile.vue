@@ -529,6 +529,7 @@ export default {
       },
       openedContenDialog: null,
       selectedFiles: [],
+      user : null,
       posts: [
         {
           _id: "60bccf2be1239cd5cda4192d",
@@ -541,6 +542,19 @@ export default {
     };
   },
   computed: {},
+  mounted() {
+    axios
+      .get(
+        process.env.VUE_APP_BACKEND_URL +
+          process.env.VUE_APP_USER +
+          process.env.VUE_APP_USER_USERNAME +
+          "/pero"
+      )
+      .then((res) => {
+        console.log(res);
+        this.user = res.data;
+      });
+  },
   methods: {
     getImageUrl(post) {
       return (
