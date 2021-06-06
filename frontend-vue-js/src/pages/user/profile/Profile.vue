@@ -132,7 +132,7 @@
         <!--Column for add content button-->
         <v-col class="text-right mr-5 mb-5">
           <!--Button for adding new content-->
-          <v-dialog width="600px">
+          <v-dialog width="600px" v-model="openedContenDialog">
             <v-tabs v-model="tabs" icons-and-text>
               <v-tabs-slider></v-tabs-slider>
               <v-tab>Regular posts<v-icon>mdi-camera</v-icon></v-tab>
@@ -251,14 +251,12 @@
                         <!--Step 3-->
                         <v-stepper-content step="3">
                           <h3>
-                            Are you sure you want to publish a chosen content?
+                              Congratulations, you have successfully posted the desired content!
                           </h3>
 
                           <v-spacer></v-spacer>
                           <br />
-                          <v-btn color="primary"> Confirm </v-btn>
-
-                          <v-btn text> Cancel </v-btn>
+                           <v-btn color="primary" @click="openedContenDialog=false"> Close </v-btn>
                         </v-stepper-content>
                         <!--End of step 3-->
                       </v-stepper-items>
@@ -371,14 +369,12 @@
                         <!--Step 3-->
                         <v-stepper-content step="3">
                           <h3>
-                            Are you sure you want to publish a chosen content?
+                            Congratulations, you have successfully posted the desired content!
                           </h3>
 
                           <v-spacer></v-spacer>
                           <br />
-                          <v-btn color="primary"> Confirm </v-btn>
-
-                          <v-btn text> Cancel </v-btn>
+                          <v-btn color="primary" @click="openedContenDialog=false"> Close </v-btn>
                         </v-stepper-content>
                         <!--End of step 3-->
                       </v-stepper-items>
@@ -507,7 +503,7 @@ export default {
         country: "",
         phone: "",
       },
-
+      openedContenDialog: null,
       selectedFiles: [],
     };
   },
