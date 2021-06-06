@@ -440,7 +440,7 @@
                     :key="post.post_id"
                     :cols="post.flex"
                   >
-                    <v-card>
+                    <v-card v-if="post.type == 'image'">
                       <v-img
                         :src="getImageUrl(post)"
                         class="white--text align-end"
@@ -464,14 +464,16 @@
                         </v-btn>
                       </v-card-actions>
                     </v-card>
-                    
-                    <!-- <v-card>
-                      <video 
-                      
-                      :src=getVideoSrc()
-                      class="white--text align-end"
+
+                    <v-card v-if="post.type == 'video'">
+                      <video
+                        controls
+                        :src="getVideoSrc()"
+                        class="white--text align-end"
                         gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                        height="200px" ></video>
+                        height="200px"
+                        width="100%"
+                      ></video>
                       <v-card-actions>
                         <v-spacer></v-spacer>
 
@@ -487,9 +489,7 @@
                           <v-icon>mdi-share-variant</v-icon>
                         </v-btn>
                       </v-card-actions>
-                    </v-card> -->
-
-                    
+                    </v-card>
                   </v-col>
                 </v-row>
               </v-container>
@@ -570,20 +570,21 @@ export default {
       .then((res) => {
         this.user = res.data;
         this.posts = [];
+        let counter = 0;
         this.user.posts.forEach((post) => {
-          console.log(post);
           this.posts.push({
             _id: post.post_id,
             path: post.first_content.path,
             type: post.first_content.type,
-            flex: 12,
+            flex: 6,
           });
+          counter = counter + 1;
         });
       });
   },
   methods: {
-    getVideoSrc(){
-      return "http://localhost:8000/upload/kod.mkv"
+    getVideoSrc() {
+      return "http://localhost:8000/upload/kod.mkv";
     },
     getImageUrl(post) {
       return (
