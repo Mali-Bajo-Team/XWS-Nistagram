@@ -14,7 +14,11 @@ import (
 func InitializeRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/file/", server.UploadFileEndpoint).Methods("POST")
 	router.HandleFunc("/file/{name}", server.GetFileEndpoint).Methods("GET")
+
 	router.HandleFunc("/post/", server.CreatePostEndpoint).Methods("POST")
+	router.HandleFunc("/post/comment/{id}", server.CreatePostCommentEndpoint).Methods("POST")
+	router.HandleFunc("/post/comment/{id}", server.GetPostCommentsEndpoint).Methods("GET")
+
 	router.HandleFunc("/user/", server.CreateUserEndpoint).Methods("POST")
 	router.HandleFunc("/user/id/{id}", server.GetUserByIDEndpoint).Methods("GET")
 	router.HandleFunc("/user/username/{username}", server.GetUserByUsernameEndpoint).Methods("GET")
@@ -49,9 +53,9 @@ func (contentServerRef *ContentServer) UploadFileEndpoint(responseWriter http.Re
 	renderJSON(responseWriter, allContent)
 }
 
-func (contentServerRef *ContentServer) GetFileEndpoint(response http.ResponseWriter, request *http.Request){
+func (contentServerRef *ContentServer) GetFileEndpoint(response http.ResponseWriter, request *http.Request) {
 	params := mux.Vars(request)
-	http.ServeFile(response,request,"./post-content/" + params["name"])
+	http.ServeFile(response, request, "./post-content/"+params["name"])
 }
 
 func (contentServerRef *ContentServer) CreateUserEndpoint(response http.ResponseWriter, request *http.Request) {
@@ -72,6 +76,27 @@ func (contentServerRef *ContentServer) CreatePostEndpoint(response http.Response
 	post.ID = documentId.InsertedID.(primitive.ObjectID)
 	contentServerRef.postStore.UpdateUserPosts(post)
 	renderJSON(response, post)
+}
+
+func (contentServerRef *ContentServer) CreatePostCommentEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	var comment model.Comment
+	_ = json.NewDecoder(request.Body).Decode(&comment)
+	params := mux.Vars(request)
+	contentServerRef.postStore.UpdatePostComments(comment, params["id"])
+	renderJSON(response, comment)
+}
+
+func (contentServerRef *ContentServer) GetPostCommentsEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	params := mux.Vars(request)
+	var result = contentServerRef.postStore.GetPostByID(params["id"])
+	var post model.RegularPost
+	err := result.Decode(&post)
+	if err != nil {
+		return 
+	}
+	renderJSON(response, post.Comments)
 }
 
 func (contentServerRef *ContentServer) CreateStoryEndpoint(response http.ResponseWriter, request *http.Request) {
@@ -134,4 +159,3 @@ func (contentServerRef *ContentServer) GetUserStoriesByIDEndpoint(response http.
 	}
 	renderJSON(response, user.Stories)
 }
-
