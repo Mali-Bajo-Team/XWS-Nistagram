@@ -13,7 +13,7 @@ public class RegistrationRequest {
     @Column
     private RequestStatus requestStatus;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.EAGER, optional = false)
     private Agent agent;
 
     public Long getId() {

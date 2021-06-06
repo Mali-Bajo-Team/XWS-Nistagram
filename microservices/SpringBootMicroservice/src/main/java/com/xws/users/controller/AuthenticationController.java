@@ -47,6 +47,6 @@ public class AuthenticationController {
 	public ResponseEntity<UserAccount> addUser(@RequestBody @Valid UserRegisterDTO userRequest) {
 		UserAccount addedAccount = regularUserRegistrationService.registerRegularUser(userRequest);
 		return new ResponseEntity<>(addedAccount, HttpStatus.CREATED);
-	}
+	}	
 
 }

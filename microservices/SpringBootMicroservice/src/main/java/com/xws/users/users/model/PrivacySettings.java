@@ -1,65 +1,56 @@
 package com.xws.users.users.model;
 
-import com.xws.users.users.model.roles.Agent;
-import com.xws.users.users.model.roles.RegularUser;
-
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 public class PrivacySettings {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(nullable = false)
-    private boolean isPrivate;
+	@Column(nullable = false)
+	private boolean isPrivate;
 
-    @Column
-    private boolean allowMessagesFromNotFollowed;
+	@Column(nullable = false)
+	private boolean allowMessagesFromNotFollowed;
 
-    @Column
-    private boolean allowTags;
+	@Column(nullable = false)
+	private boolean allowTags;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    private RegularUser regularUser;
+	public Long getId() {
+		return id;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public boolean isPrivate() {
+		return isPrivate;
+	}
 
-    public boolean isPrivate() {
-        return isPrivate;
-    }
+	public void setPrivate(boolean aPrivate) {
+		isPrivate = aPrivate;
+	}
 
-    public void setPrivate(boolean aPrivate) {
-        isPrivate = aPrivate;
-    }
+	public boolean isAllowMessagesFromNotFollowed() {
+		return allowMessagesFromNotFollowed;
+	}
 
-    public boolean isAllowMessagesFromNotFollowed() {
-        return allowMessagesFromNotFollowed;
-    }
+	public void setAllowMessagesFromNotFollowed(boolean allowMessagesFromNotFollowed) {
+		this.allowMessagesFromNotFollowed = allowMessagesFromNotFollowed;
+	}
 
-    public void setAllowMessagesFromNotFollowed(boolean allowMessagesFromNotFollowed) {
-        this.allowMessagesFromNotFollowed = allowMessagesFromNotFollowed;
-    }
+	public boolean isAllowTags() {
+		return allowTags;
+	}
 
-    public boolean isAllowTags() {
-        return allowTags;
-    }
+	public void setAllowTags(boolean allowTags) {
+		this.allowTags = allowTags;
+	}
 
-    public void setAllowTags(boolean allowTags) {
-        this.allowTags = allowTags;
-    }
-
-    public RegularUser getRegularUser() {
-        return regularUser;
-    }
-
-    public void setRegularUser(RegularUser regularUser) {
-        this.regularUser = regularUser;
-    }
 }

@@ -1,20 +1,37 @@
 package com.xws.users.users.model.roles;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.xws.users.users.model.Authority;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
+
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.xws.users.users.model.Authority;
+import com.xws.users.users.model.enums.UserAccountStatus;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "discriminator", discriminatorType = DiscriminatorType.STRING)
 public class UserAccount implements UserDetails {
+	
+	private static final long serialVersionUID = 5960567060895796458L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -37,6 +54,9 @@ public class UserAccount implements UserDetails {
 	@Column(name = "last_password_reset_date")
 	private Timestamp lastPasswordResetDate;
 
+	@Column(nullable = false)
+	private UserAccountStatus status;
+
 	public String getUsername() {
 		return username;
 	}
@@ -50,7 +70,7 @@ public class UserAccount implements UserDetails {
 	@JsonIgnore
 	@Override
 	public boolean isAccountNonLocked() {
-		return true;
+		return !status.equals(UserAccountStatus.DEACTIVATED);
 	}
 
 	@JsonIgnore
@@ -61,7 +81,7 @@ public class UserAccount implements UserDetails {
 
 	@Override
 	public boolean isEnabled() {
-		return true;
+		return status.equals(UserAccountStatus.ACTIVE);
 	}
 
 	public Timestamp getLastPasswordResetDate() {
@@ -79,7 +99,6 @@ public class UserAccount implements UserDetails {
 	public void setAuthorities(List<Authority> authorities) {
 		this.authorities = authorities;
 	}
-
 
 	public void setUsername(String username) {
 		this.username = username;
@@ -130,17 +149,37 @@ public class UserAccount implements UserDetails {
 		this.password = password;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof UserAccount)) return false;
-		UserAccount that = (UserAccount) o;
-		return Objects.equals(id, that.id) && Objects.equals(email, that.email) && Objects.equals(password, that.password) && Objects.equals(name, that.name) && Objects.equals(surname, that.surname) && Objects.equals(username, that.username);
+	public UserAccountStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(UserAccountStatus status) {
+		this.status = status;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, email, password, name, surname, username);
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		UserAccount other = (UserAccount) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
 	}
 
 	public String getRole() {

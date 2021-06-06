@@ -1,63 +1,83 @@
 package com.xws.users.users.model;
 
-import javax.persistence.*;
-import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+
+import com.xws.users.users.model.roles.RegularUser;
 
 @Entity
 public class VerificationRequest {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column
-    private String realName;
+	@Column(nullable = false)
+	private String realName;
 
-    @Column
-    private String realSurname;
+	@Column(nullable = false)
+	private String realSurname;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<UserCategory> category;
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+	private UserCategory category;
 
-    @Column
-    private String imageOfOfficialDocument;
+	@Column(nullable = false)
+	private String imageOfOfficialDocument;
 
-    public Long getId() {
-        return id;
-    }
+	@OneToOne(fetch = FetchType.EAGER, optional = false)
+	private RegularUser requester;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getRealName() {
-        return realName;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setRealName(String realName) {
-        this.realName = realName;
-    }
+	public String getRealName() {
+		return realName;
+	}
 
-    public String getRealSurname() {
-        return realSurname;
-    }
+	public void setRealName(String realName) {
+		this.realName = realName;
+	}
 
-    public void setRealSurname(String realSurname) {
-        this.realSurname = realSurname;
-    }
+	public String getRealSurname() {
+		return realSurname;
+	}
 
-    public List<UserCategory> getCategory() {
-        return category;
-    }
+	public void setRealSurname(String realSurname) {
+		this.realSurname = realSurname;
+	}
 
-    public void setCategory(List<UserCategory> category) {
-        this.category = category;
-    }
+	public UserCategory getCategory() {
+		return category;
+	}
 
-    public String getImageOfOfficialDocument() {
-        return imageOfOfficialDocument;
-    }
+	public void setCategory(UserCategory category) {
+		this.category = category;
+	}
 
-    public void setImageOfOfficialDocument(String imageOfOfficialDocument) {
-        this.imageOfOfficialDocument = imageOfOfficialDocument;
-    }
+	public String getImageOfOfficialDocument() {
+		return imageOfOfficialDocument;
+	}
+
+	public void setImageOfOfficialDocument(String imageOfOfficialDocument) {
+		this.imageOfOfficialDocument = imageOfOfficialDocument;
+	}
+
+	public RegularUser getRequester() {
+		return requester;
+	}
+
+	public void setRequester(RegularUser requester) {
+		this.requester = requester;
+	}
+
 }

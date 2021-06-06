@@ -1,163 +1,137 @@
 package com.xws.users.users.model.roles;
 
-import com.xws.users.users.model.FollowRequest;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import com.xws.users.users.model.PrivacySettings;
 import com.xws.users.users.model.Relationship;
 import com.xws.users.users.model.UserCategory;
-import com.xws.users.users.model.enums.ProfileStatus;
-
-import javax.persistence.*;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 
 @Entity
 @DiscriminatorValue("RegularUser")
 public class RegularUser extends UserAccount {
-    @Column
-    private String bio;
+	
+	private static final long serialVersionUID = -2124604854672473186L;
 
-    @Column
-    private String profileImagePath;
+	@Column
+	private String bio;
 
-    @Temporal(TemporalType.DATE)
-    @Column
-    private Date dateOfBirth;
+	@Column
+	private String profileImagePath;
 
-    @Column
-    private String gender;
+	@Temporal(TemporalType.DATE)
+	@Column
+	private Date dateOfBirth;
 
-    @Column
-    private ProfileStatus profileStatus;
+	@Column
+	private String gender;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = true)
-    private UserCategory userCategory;
+	@OneToOne(fetch = FetchType.LAZY, optional = true)
+	private UserCategory userCategory;
 
-    @Column
-    private String phoneNumber;
+	@Column
+	private String phoneNumber;
 
-    @Column(name = "linkToWebSite")
-    private String linkToWebSite;
+	@Column(name = "linkToWebSite")
+	private String linkToWebSite;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = true)
-    private PrivacySettings privacySettings;
+	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL)
+	private PrivacySettings privacySettings;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private Set<FollowRequest> requests;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "towards")
+	private List<Relationship> inRelationships;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private Set<FollowRequest> accountsToFollow;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "from")
+	private List<Relationship> outRelationships;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<Relationship> inRelationships;
+	public String getBio() {
+		return bio;
+	}
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<Relationship> outRelationships;
+	public void setBio(String bio) {
+		this.bio = bio;
+	}
 
-    public void setUserCategory(UserCategory userCategory) {
-        this.userCategory = userCategory;
-    }
+	public String getProfileImagePath() {
+		return profileImagePath;
+	}
 
-    public PrivacySettings getPrivacySettings() {
-        return privacySettings;
-    }
+	public void setProfileImagePath(String profileImagePath) {
+		this.profileImagePath = profileImagePath;
+	}
 
-    public void setPrivacySettings(PrivacySettings privacySettings) {
-        this.privacySettings = privacySettings;
-    }
+	public Date getDateOfBirth() {
+		return dateOfBirth;
+	}
 
-    public Set<FollowRequest> getRequests() {
-        return requests;
-    }
+	public void setDateOfBirth(Date dateOfBirth) {
+		this.dateOfBirth = dateOfBirth;
+	}
 
-    public void setRequests(Set<FollowRequest> requests) {
-        this.requests = requests;
-    }
+	public String getGender() {
+		return gender;
+	}
 
-    public Set<FollowRequest> getAccountsToFollow() {
-        return accountsToFollow;
-    }
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
 
-    public void setAccountsToFollow(Set<FollowRequest> accountsToFollow) {
-        this.accountsToFollow = accountsToFollow;
-    }
+	public UserCategory getUserCategory() {
+		return userCategory;
+	}
 
-    public String getBio() {
-        return bio;
-    }
+	public void setUserCategory(UserCategory userCategory) {
+		this.userCategory = userCategory;
+	}
 
-    public void setBio(String bio) {
-        this.bio = bio;
-    }
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
 
-    public String getProfileImagePath() {
-        return profileImagePath;
-    }
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
 
-    public void setProfileImagePath(String profileImagePath) {
-        this.profileImagePath = profileImagePath;
-    }
+	public String getLinkToWebSite() {
+		return linkToWebSite;
+	}
 
-    public Date getDateOfBirth() {
-        return dateOfBirth;
-    }
+	public void setLinkToWebSite(String linkToWebSite) {
+		this.linkToWebSite = linkToWebSite;
+	}
 
-    public void setDateOfBirth(Date dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
+	public PrivacySettings getPrivacySettings() {
+		return privacySettings;
+	}
 
-    public String getGender() {
-        return gender;
-    }
+	public void setPrivacySettings(PrivacySettings privacySettings) {
+		this.privacySettings = privacySettings;
+	}
 
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
+	public List<Relationship> getInRelationships() {
+		return inRelationships;
+	}
 
-    public ProfileStatus getProfileStatus() {
-        return profileStatus;
-    }
+	public void setInRelationships(List<Relationship> inRelationships) {
+		this.inRelationships = inRelationships;
+	}
 
-    public void setProfileStatus(ProfileStatus profileStatus) {
-        this.profileStatus = profileStatus;
-    }
+	public List<Relationship> getOutRelationships() {
+		return outRelationships;
+	}
 
-    public UserCategory getUserCategory() {
-        return userCategory;
-    }
+	public void setOutRelationships(List<Relationship> outRelationships) {
+		this.outRelationships = outRelationships;
+	}
 
-    public void setUserCategory(String UserCategory) {
-        this.userCategory = userCategory;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getLinkToWebSite() {
-        return linkToWebSite;
-    }
-
-    public void setLinkToWebSite(String linkToWebSite) {
-        this.linkToWebSite = linkToWebSite;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof RegularUser)) return false;
-        if (!super.equals(o)) return false;
-        RegularUser that = (RegularUser) o;
-        return Objects.equals(bio, that.bio) && Objects.equals(profileImagePath, that.profileImagePath) && Objects.equals(dateOfBirth, that.dateOfBirth) && Objects.equals(gender, that.gender) && profileStatus == that.profileStatus && Objects.equals(userCategory, that.userCategory) && Objects.equals(phoneNumber, that.phoneNumber) && Objects.equals(linkToWebSite, that.linkToWebSite);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), bio, profileImagePath, dateOfBirth, gender, profileStatus, userCategory, phoneNumber, linkToWebSite);
-    }
 }

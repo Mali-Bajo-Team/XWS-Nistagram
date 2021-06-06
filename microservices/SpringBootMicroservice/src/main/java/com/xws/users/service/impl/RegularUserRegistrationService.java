@@ -1,19 +1,21 @@
 package com.xws.users.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.xws.users.dto.UserRegisterDTO;
 import com.xws.users.repository.IUserRepository;
 import com.xws.users.service.IAuthorityService;
 import com.xws.users.service.IRegularUserRegistrationService;
 import com.xws.users.users.model.Authority;
-import com.xws.users.users.model.enums.ProfileStatus;
+import com.xws.users.users.model.PrivacySettings;
+import com.xws.users.users.model.enums.UserAccountStatus;
 import com.xws.users.users.model.roles.RegularUser;
 import com.xws.users.users.model.roles.UserAccount;
 import com.xws.users.util.security.exceptions.USConflictException;
-import org.apache.catalina.User;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class RegularUserRegistrationService implements IRegularUserRegistrationService {
@@ -46,12 +48,20 @@ public class RegularUserRegistrationService implements IRegularUserRegistrationS
 		newRegularUser.setSurname(userRequest.getSurname());
 		newRegularUser.setEmail(userRequest.getEmail());
 		newRegularUser.setUsername(userRequest.getUsername());
-		newRegularUser.setPassword( passwordEncoder.encode(userRequest.getPassword()));
+		newRegularUser.setPassword(passwordEncoder.encode(userRequest.getPassword()));
 		newRegularUser.setGender(userRequest.getGender());
-		newRegularUser.setProfileStatus(ProfileStatus.ACTIVE);
-		List<Authority> auth = authService.findByName("ROLE_REGULAR_USER");
-        newRegularUser.setAuthorities(auth);
+		newRegularUser.setStatus(UserAccountStatus.ACTIVE);
+		List<Authority> auth = authService.findByName("ROLE_REGULAR");
+		newRegularUser.setAuthorities(auth);
+		addPrivacySettings(newRegularUser);
 		RegularUser addedPatient = regularUserRepository.save(newRegularUser);
 		return addedPatient;
+	}
+
+	private void addPrivacySettings(RegularUser newRegularUser) {
+		PrivacySettings privacySettings = new PrivacySettings();
+		privacySettings.setPrivate(false);
+		privacySettings.setAllowMessagesFromNotFollowed(true);
+		privacySettings.setAllowTags(true);
 	}
 }
