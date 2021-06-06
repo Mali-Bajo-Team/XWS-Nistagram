@@ -437,7 +437,7 @@
                 <v-row dense>
                   <v-col
                     v-for="post in posts"
-                    :key="post.title"
+                    :key="post.post_id"
                     :cols="post.flex"
                   >
                     <v-card>
@@ -447,7 +447,6 @@
                         gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                         height="200px"
                       >
-                        <v-card-title v-text="post.title"></v-card-title>
                       </v-img>
 
                       <v-card-actions>
@@ -529,30 +528,31 @@ export default {
       },
       openedContenDialog: null,
       selectedFiles: [],
-      user : null,
-      posts: [
-        {
-          _id: "60bccf2be1239cd5cda4192d",
-          title: "Pre-fab homes",
-          path: "mxvxhrpqibyw_1622986539993-poveznik.png",
-          type: "image",
-          flex: 12,
-        },
-      ],
+      user: null,
+      posts: [],
     };
   },
   computed: {},
   mounted() {
+    // Get user by username and his posts
     axios
       .get(
         process.env.VUE_APP_BACKEND_URL +
           process.env.VUE_APP_USER +
           process.env.VUE_APP_USER_USERNAME +
-          "/pero"
+          "/pero" // TODO: Put here username from logged user
       )
       .then((res) => {
-        console.log(res);
         this.user = res.data;
+        this.posts = [];
+        this.user.posts.forEach((post) => {
+          this.posts.push({
+            _id: post.post_id,
+            path: post.first_content.path,
+            type: "image",
+            flex: 12,
+          });
+        });
       });
   },
   methods: {
