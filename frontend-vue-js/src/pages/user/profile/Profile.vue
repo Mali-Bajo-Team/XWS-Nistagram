@@ -544,31 +544,100 @@
             <v-tabs-items v-model="tabs2">
                 <!--Tab for photos and videos-->
                 <v-tab-item>
-                    <v-col
-                        v-for="n in 9"
-                        :key="n"
-                        class="d-flex child-flex"
-                        cols="4"
+                    <!--Dialog for choosing photo-->
+                    <v-dialog
+
+                    width="600px"
+                   
                     >
-                        <v-img
-                            :src="`https://picsum.photos/500/300?image=${n * 5 + 10}`"
-                            aspect-ratio="1"
-                            class="grey lighten-2"
-                        >
-                            <template v-slot:placeholder>
-                                <v-row
-                                    class="fill-height ma-0"
-                                    align="center"
-                                    justify="center"
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                                outlined
+                                rounded
+                                medium
+                                color="primary"
+                                v-bind="attrs"
+                                v-on="on"
+                            >
+                                <v-icon left>
+                                    mdi-pencil
+                                </v-icon>
+                                    Edit profile
+                            </v-btn>
+                        </template>
+                        <!--Card for comments-->
+                        <v-card>
+                            <v-card-title>
+                                <v-img
+                                    
+                                    lazy-src="https://picsum.photos/id/11/10/6"
+                                   
+                                    src="https://picsum.photos/id/11/500/300"
+                                ></v-img>
+                            </v-card-title>
+                            <v-card-actions>
+                                <!--Dialog for adding comment-->
+                                <v-dialog
+                                     width="600px"
                                 >
-                                    <v-progress-circular
-                                    indeterminate
-                                    color="grey lighten-5"
-                                    ></v-progress-circular>
-                                </v-row>
-                            </template>
-                        </v-img>
-                    </v-col>
+
+                               
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-btn
+                                            outlined
+                                            rounded
+                                            medium
+                                            v-bind="attrs"
+                                            v-on="on"
+                                            color="primary"
+                                        ><v-icon>mdi-pencil</v-icon>
+                                        Comment
+                                        </v-btn>
+                                    </template>
+                                    <v-card>
+                                        <v-card-title>
+                                            Add a new comment to the post
+                                        </v-card-title>
+                                        <v-card-text>
+                                            <!--Field for comments-->
+                                           <v-textarea
+                                                    outlined
+                                                    name="input-7-4"
+                                                    no-resize
+                                                    rows="3"
+                                                    label="Comment"
+                                                    clearable
+                                                    clear-icon="mdi-close-circle"
+
+                                                ></v-textarea>
+                                            <!--End of field for comments-->
+                                        </v-card-text>
+                                        <v-card-actions>
+                                            <!--Buttons to confirm or cancel action-->
+                                            <v-spacer></v-spacer>
+                                                <v-btn
+
+                                                    color="error"
+                                                    text
+                                                >
+                                                    Cancel
+                                                </v-btn>
+                                                <v-btn
+                                                    color="primary"
+                                                    text
+                                                >
+                                                    Confirm
+                                                </v-btn>
+                                        </v-card-actions>
+                                    </v-card>
+                                </v-dialog>
+                                <!--End of dialogu for adding comments-->
+                                
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+                    <!--End of dialog for choosing photo-->
+                    
    
                 </v-tab-item>
                 <!--End of tab for photos and videos-->
