@@ -6,13 +6,16 @@ import (
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"io"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
 )
 
 func InitializeRouter(router *mux.Router, server *ContentServer) {
+	//TODO: Rename this to file instead of upload
 	router.HandleFunc("/upload/", server.UploadFileEndpoint).Methods("POST")
+	router.HandleFunc("/upload/{name}", server.GetFileEndpoint).Methods("GET")
 	router.HandleFunc("/post/", server.CreatePostEndpoint).Methods("POST")
 	router.HandleFunc("/user/", server.CreateUserEndpoint).Methods("POST")
 	router.HandleFunc("/user/{id}", server.GetUserByIDEndpoint).Methods("GET")
@@ -32,8 +35,8 @@ func (contentServerRef *ContentServer) UploadFileEndpoint(responseWriter http.Re
 			infile, err := hdr.Open()
 			// open destination
 			var outfile *os.File
-			var filePath = "./post-content/" + createUniqueName() + "-" + hdr.Filename
-			if outfile, err = os.Create(filePath); nil != err {
+			var filePath = createUniqueName() + "-" + hdr.Filename
+			if outfile, err = os.Create("./post-content/" + filePath); nil != err {
 				return
 			}
 			content := initializeContent(filePath, hdr)
@@ -45,6 +48,17 @@ func (contentServerRef *ContentServer) UploadFileEndpoint(responseWriter http.Re
 		}
 	}
 	renderJSON(responseWriter, allContent)
+}
+
+func (contentServerRef *ContentServer) GetFileEndpoint(response http.ResponseWriter, request *http.Request){
+	params := mux.Vars(request)
+	img, err := os.Open( "./post-content/" + params["name"])
+	if err != nil {
+		log.Fatal(err) // perhaps handle this nicer
+	}
+	defer img.Close()
+	response.Header().Set("Content-Type", "image/jpeg") // <-- set the content-type header
+	io.Copy(response, img)
 }
 
 func (contentServerRef *ContentServer) CreateUserEndpoint(response http.ResponseWriter, request *http.Request) {
