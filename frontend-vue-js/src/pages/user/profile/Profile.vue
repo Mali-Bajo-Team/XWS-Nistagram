@@ -505,11 +505,6 @@ export default {
       tabs2: null,
       e1: 1,
       e2: 1,
-      pictures: [
-        {
-          path: "https://picsum.photos/200/300",
-        },
-      ],
       my_post: {
         title: "",
         // location: null,
@@ -542,12 +537,6 @@ export default {
           type: "image",
           flex: 12,
         },
-
-        // {
-        //   title: "Best airlines3",
-        //   src: "https://cdn.vuetifyjs.com/images/cards/plane.jpg",
-        //   flex: 6,
-        // },
       ],
     };
   },

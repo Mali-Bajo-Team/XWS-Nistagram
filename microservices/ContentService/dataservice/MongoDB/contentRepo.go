@@ -97,12 +97,19 @@ func (postStoreRef *PostStore) UpdateUserStories(story model.Story) *mongo.Updat
 
 func (postStoreRef *PostStore) GetUserByID(objectID primitive.ObjectID) *mongo.SingleResult {
 	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
-
 	result := collectionUsers.FindOne(
 		context.Background(),
 		bson.M{"_id": objectID},
 	)
+	return result
+}
 
+func (postStoreRef *PostStore) GetUserByUsername(username string) *mongo.SingleResult {
+	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
+	result := collectionUsers.FindOne(
+		context.Background(),
+		bson.M{"username": username},
+	)
 	return result
 }
 
