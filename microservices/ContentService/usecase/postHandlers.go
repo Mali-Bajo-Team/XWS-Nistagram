@@ -15,6 +15,7 @@ func InitializeRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/upload/", server.UploadFileEndpoint).Methods("POST")
 	router.HandleFunc("/post/", server.CreatePostEndpoint).Methods("POST")
 	router.HandleFunc("/user/", server.CreateUserEndpoint).Methods("POST")
+	router.HandleFunc("/user/{id}", server.GetUserByIDEndpoint).Methods("GET")
 	router.HandleFunc("/story/", server.CreateStoryEndpoint).Methods("POST")
 }
 
@@ -72,4 +73,17 @@ func (contentServerRef *ContentServer) CreateStoryEndpoint(response http.Respons
 	story.ID = documentId.InsertedID.(primitive.ObjectID)
 	contentServerRef.postStore.UpdateUserStories(story)
 	renderJSON(response, story)
+}
+
+func (contentServerRef *ContentServer) GetUserByIDEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	params := mux.Vars(request)
+	objectID, _ := primitive.ObjectIDFromHex(params["id"])
+	var result = contentServerRef.postStore.GetUserByID(objectID)
+	var user model.User
+	err := result.Decode(&user)
+	if err != nil {
+		return
+	}
+	renderJSON(response, user)
 }
