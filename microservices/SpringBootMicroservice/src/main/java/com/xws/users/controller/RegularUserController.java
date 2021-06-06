@@ -23,7 +23,7 @@ public class RegularUserController {
     @Autowired
     private RegularUserService regularUserService;
 
-
+    @PreAuthorize("hasRole('REGULAR')")
     @PostMapping("/getUser")
     public ResponseEntity<RegularUserUpdateDTO> addUser(@RequestBody RegularUserUpdateDTO regularUserUpdateDTO) {
         RegularUser regularUser = regularUserService.findByUsername(regularUserUpdateDTO.getUsername());

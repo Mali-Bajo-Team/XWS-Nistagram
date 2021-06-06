@@ -75,39 +75,48 @@
                   prepend-icon="mdi-camera"
                 ></v-file-input>
                 <v-text-field
+                  v-model="form.name"
                   prepend-icon="mdi-account"
                   label="Name"
                 ></v-text-field>
                 <v-text-field
+                  v-model="form.surname"
                   prepend-icon="mdi-account"
                   label="Surname"
                 ></v-text-field>
                 <v-text-field
+                  v-model="form.username"
                   prepend-icon="mdi-account-circle"
                   label="Username"
                 ></v-text-field>
                 <v-text-field
+                  v-model="form.email"
                   prepend-icon="mdi-email"
                   label="Email"
                 ></v-text-field>
                 <v-text-field
+                  v-model="form.phoneNumber"
                   prepend-icon="mdi-phone"
                   label="Phone number"
                 ></v-text-field>
                 <v-text-field
+                  v-model="form.birthayDate"
                   label="Birthday date"
                   prepend-icon="mdi-cake-variant"
                   readonly
                 ></v-text-field>
                 <v-text-field
+                  v-model="form.gender"
                   prepend-icon="mdi-human-male-female"
                   label="Gender"
                 ></v-text-field>
                 <v-text-field
+                  v-model="form.webSite"
                   prepend-icon="mdi-web"
                   label="Web site"
                 ></v-text-field>
                 <v-textarea
+                  v-model="form.bio"
                   outlined
                   name="input-7-4"
                   no-resize
@@ -121,7 +130,7 @@
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="error" text> Cancel </v-btn>
-                <v-btn color="primary" text> Save </v-btn>
+                <v-btn color="primary" text  @click="saveChanges()"> Save </v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -523,6 +532,7 @@
 
 <script>
 import axios from "axios";
+import { getParsedToken } from "./../../../util/token";
 export default {
   data() {
     return {
@@ -542,6 +552,7 @@ export default {
         content: [],
       },
       isForCloseFriends: false,
+      regularUser: {},
       form: {
         email: "",
         password: "",
@@ -550,10 +561,13 @@ export default {
         showRepeatPassword: false,
         name: "",
         surname: "",
-        address: "",
-        city: "",
-        country: "",
-        phone: "",
+        username: "",
+        phoneNumber: "",
+        birthayDate: "", 
+        gender: "", 
+        webSite: "",
+        biography: "",
+        photoUrl: ""
       },
       openedContenDialog: null,
       selectedFiles: [],
@@ -563,6 +577,36 @@ export default {
   },
   computed: {},
   mounted() {
+     this.axios
+      .post(
+        process.env.VUE_APP_BACKEND_URL +
+          process.env.VUE_APP_PATIENT_PROFILE_ENDPOINT,
+        {
+          username: getParsedToken().sub,
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+          },
+        }
+      )
+      .then((resp) => {
+        this.regularUser = resp.data;
+        this.form.email = this.regularUser.email;
+        this.form.name = this.regularUser.name;
+        this.form.surname = this.regularUser.surname;
+        this.form.username = this.regularUser.username;
+        this.form.phoneNumber = this.regularUser.phoneNumber;
+        this.form.birthayDate = this.regularUser.dateOfBirth;
+        this.form.gender = this.regularUser.gender;
+        this.form.biography = this.regularUser.bio;
+        this.form.photoUrl = this.regularUser.photoUrl;
+        this.form.webSite = this.regularUser.website;
+        this.form.bio = this.regularUser.bio;
+      })
+      .catch((error) => {
+        alert("Error: " + error);
+      });
     // Get user by username and his posts
     axios
       .get(
@@ -585,6 +629,44 @@ export default {
       });
   },
   methods: {
+    saveChanges() {
+      this.axios
+        .put(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_REGULAR_USER_ENDPOINT,
+          {
+            username: this.form.username,
+            name: this.form.name,
+            email:  this.form.email,
+            surname: this.form.surname,
+            phoneNumber : this.form.phoneNumber,
+            dateOfBirth : this.form.dateOfBirth,
+            gender : this.form.gender,
+            linkToWebSite : this.form.linkToWebSite,
+            bio : this.form.bio,
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((resp) => {
+          alert("Successfully changed.");
+           this.regularUser = resp.data;
+           this.form.username = this.regularUser.username;
+           this.form.name = this.regularUser.name;
+           this.form.surname = this.regularUser.surname;
+           this.form.phoneNumber = this.regularUser.phoneNumber;
+           this.form.dateOfBirth = this.regularUser.dateOfBirth;
+           this.form.gender = this.regularUser.gender;
+           this.form.linkToWebSite = this.regularUser.linkToWebSite;
+           this.form.bio = this.regularUser.bio;
+        })
+        .catch((error) => {
+          alert("Error: " + error);
+        });
+    },
     getImageUrl(post) {
       return (
         process.env.VUE_APP_BACKEND_URL +
