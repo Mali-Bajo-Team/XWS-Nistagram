@@ -15,6 +15,9 @@ public class RegularUserUpdateDTO {
     private String website;
     private String bio;
 
+    public RegularUserUpdateDTO() {
+    }
+
     public RegularUserUpdateDTO(RegularUser regularUser) {
         this.name = regularUser.getName();
         this.surname = regularUser.getSurname();
