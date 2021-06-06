@@ -7,11 +7,11 @@
 
         <v-form>
           <v-text-field
-            v-model="form.email"
-            :error-messages="emailErrors"
-            label="Email"
-            @blur="$v.form.email.$touch()"
-            @input="$v.form.email.$touch()"
+            v-model="form.username"
+            :error-messages="usernameErrors"
+            label="Username"
+            @blur="$v.form.username.$touch()"
+            @input="$v.form.username.$touch()"
           ></v-text-field>
 
           <v-text-field
@@ -73,7 +73,7 @@
 
 <script>
 import { validationMixin } from "vuelidate";
-import { required, email, minLength } from "vuelidate/lib/validators";
+import { required, minLength } from "vuelidate/lib/validators";
 
 import { saveToken } from "./../../../util/token"
 
@@ -85,7 +85,7 @@ export default {
       snackbarText: "",
       loading: false,
       form: {
-        email: "",
+        username: "",
         password: "",
         showPassword: false,
       },
@@ -97,9 +97,8 @@ export default {
         required,
         minLength: minLength(6),
       },
-      email: {
-        required,
-        email,
+      username: {
+        required
       },
     },
   },
@@ -111,11 +110,10 @@ export default {
       !this.$v.form.password.minLength && errors.push("Password is too short.");
       return errors;
     },
-    emailErrors() {
+    usernameErrors() {
       const errors = [];
-      if (!this.$v.form.email.$dirty) return errors;
-      !this.$v.form.email.required && errors.push("Email is required.");
-      !this.$v.form.email.email && errors.push("Email is not valid.");
+      if (!this.$v.form.username.$dirty) return errors;
+      !this.$v.form.username.required && errors.push("Username is required.");
       return errors;
     },
   },
@@ -126,7 +124,7 @@ export default {
           process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_LOGIN_ENDPOINT,
           {
             password: this.form.password,
-            email: this.form.email,
+            username: this.form.username,
           }
         )
         .then((response) => {
@@ -162,7 +160,7 @@ export default {
     reset() {
       console.log(process.env.VUE_APP_BACKEND_URL);
       this.$v.$reset();
-      this.form.email = "";
+      this.form.username = "";
       this.form.password = "";
     },
   },
