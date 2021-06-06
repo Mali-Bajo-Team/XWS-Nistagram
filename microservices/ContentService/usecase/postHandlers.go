@@ -6,7 +6,6 @@ import (
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"io"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -57,34 +56,20 @@ func (contentServerRef *ContentServer) CreateUserEndpoint(response http.Response
 
 func (contentServerRef *ContentServer) CreatePostEndpoint(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("content-type", "application/json")
-
 	var post model.RegularPost
 	_ = json.NewDecoder(request.Body).Decode(&post)
 	var documentId = contentServerRef.postStore.CreatePost(post)
 	post.ID = documentId.InsertedID.(primitive.ObjectID)
-
 	contentServerRef.postStore.UpdateUserPosts(post)
-
-	insertPostToTheUser(post)
 	renderJSON(response, post)
-}
-
-// TODO: On post insert, add that post to the user array of posts/stories
-func insertPostToTheUser(post model.RegularPost) {
-	// TODO: Find that user
-	log.Println(post.MyPost.PostCreatorRef)
-
-
-
-	// TODO: Add post to its array of posts
 }
 
 func (contentServerRef *ContentServer) CreateStoryEndpoint(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("content-type", "application/json")
-
 	var story model.Story
 	_ = json.NewDecoder(request.Body).Decode(&story)
 	var documentId = contentServerRef.postStore.CreateStory(story)
 	story.ID = documentId.InsertedID.(primitive.ObjectID)
+	contentServerRef.postStore.UpdateUserStories(story)
 	renderJSON(response, story)
 }

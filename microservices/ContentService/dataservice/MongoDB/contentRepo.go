@@ -42,12 +42,44 @@ func (postStoreRef *PostStore) UpdateUserPosts(post model.RegularPost) *mongo.Up
 	var userPosts []model.UserPost
 	var userPost model.UserPost
 	userPost.PostID = post.ID
-	userPost.FirstContent = post.MyPost.Contents[0]
+	userPost.FirstContent = post.MyPost.Content[0]
 	userPosts = append(userPosts, userPost)
 
 	update := bson.M{
 		"$addToSet": bson.M{
 			"posts": bson.M{"$each": userPosts},
+		},
+	}
+
+	result, err := collectionUsers.UpdateOne(
+		context.Background(),
+		bson.M{"_id": objectId},
+		update,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return result
+}
+
+func (postStoreRef *PostStore) UpdateUserStories(story model.Story) *mongo.UpdateResult {
+	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
+	// convert id string to ObjectId
+	objectId, err := primitive.ObjectIDFromHex(story.MyPost.PostCreatorRef)
+	if err != nil{
+		log.Println("Invalid id")
+	}
+
+	var userStories []model.UserStory
+	var userStory model.UserStory
+	userStory.StoryID = story.ID
+	userStory.FirstContent = story.MyPost.Content[0]
+	userStories = append(userStories, userStory)
+
+	update := bson.M{
+		"$addToSet": bson.M{
+			"stories": bson.M{"$each": userStories},
 		},
 	}
 
