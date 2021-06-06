@@ -585,8 +585,13 @@
                                     <v-expansion-panel-header>
                                         Show all comments
                                     </v-expansion-panel-header>
-                                    <v-expansion-panel-content>
-                                        Ovde idu komentari korisnika
+                                    <v-expansion-panel-content
+                                        v-for="comment in comments"
+                                        :key=comment.id
+                                    >
+                                        <h3>{{comment.username}}</h3>
+                                        {{comment.description}}
+                                        
                                     </v-expansion-panel-content>
                                     </v-expansion-panel>
                                 </v-expansion-panels>
@@ -708,6 +713,18 @@ export default {
       pictures:[
           {
               path:"https://picsum.photos/200/300",
+          }
+      ],
+      comments:[
+          {
+              id:1,
+              description:"Amazing photo!<3 <3 <3",
+              username:"anaperisic12"
+          },
+          {
+              id:2,
+              description:"WOW!Love this!!!",
+              username:"pipidugacarapa25"
           }
       ],
       form: {
