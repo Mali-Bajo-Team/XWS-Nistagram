@@ -138,7 +138,7 @@ public class UserAccount implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return null;
+		return authorities;
 	}
 
 	public String getPassword() {

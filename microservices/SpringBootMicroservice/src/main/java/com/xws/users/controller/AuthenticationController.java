@@ -35,9 +35,10 @@ public class AuthenticationController {
 	// Then he only knows his username and password and forwards it to the backend.
 	@PostMapping("/login")
 	public ResponseEntity<UserTokenState> createAuthenticationToken(
-            @RequestBody @Valid JwtAuthenticationRequest authenticationRequest, HttpServletResponse response) {
+			@RequestBody @Valid JwtAuthenticationRequest authenticationRequest, HttpServletResponse response) {
 
-		UserTokenState token = userService.logIn(authenticationRequest.getEmail(), authenticationRequest.getPassword());
+		UserTokenState token = userService.logIn(authenticationRequest.getUsername(),
+				authenticationRequest.getPassword());
 
 		return ResponseEntity.ok(token);
 	}
@@ -47,6 +48,6 @@ public class AuthenticationController {
 	public ResponseEntity<UserAccount> addUser(@RequestBody @Valid UserRegisterDTO userRequest) {
 		UserAccount addedAccount = regularUserRegistrationService.registerRegularUser(userRequest);
 		return new ResponseEntity<>(addedAccount, HttpStatus.CREATED);
-	}	
+	}
 
 }
