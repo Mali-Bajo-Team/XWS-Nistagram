@@ -3,6 +3,7 @@ package com.xws.users.service.impl;
 import com.xws.users.repository.IRegularUserRepository;
 import com.xws.users.service.IRegularUserService;
 import com.xws.users.users.model.roles.RegularUser;
+import com.xws.users.users.model.roles.UserAccount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,4 +16,6 @@ public class RegularUserService implements IRegularUserService {
     public RegularUser findByUsername(String username) {
         return regularUserRepository.findByUsername(username);
     }
+
+    public RegularUser save(RegularUser regularUser) { return regularUserRepository.save(regularUser); }
 }
