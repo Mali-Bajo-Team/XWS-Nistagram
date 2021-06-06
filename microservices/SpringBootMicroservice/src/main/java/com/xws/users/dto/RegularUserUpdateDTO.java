@@ -13,6 +13,7 @@ public class RegularUserUpdateDTO {
     private Date birthdaydate;
     private String gender;
     private String website;
+    private String bio;
 
     public RegularUserUpdateDTO(RegularUser regularUser) {
         this.name = regularUser.getName();
@@ -23,7 +24,12 @@ public class RegularUserUpdateDTO {
         this.birthdaydate = regularUser.getDateOfBirth();
         this.gender = regularUser.getGender();
         this.website = regularUser.getLinkToWebSite();
+        this.bio = regularUser.getBio();
     }
+
+    public String getBio() { return bio; }
+
+    public void setBio(String bio) { this.bio = bio; }
 
     public String getName() {
         return name;

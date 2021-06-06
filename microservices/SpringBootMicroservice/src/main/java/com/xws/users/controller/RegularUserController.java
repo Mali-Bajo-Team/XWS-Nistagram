@@ -32,7 +32,16 @@ public class RegularUserController {
         if (regularUserForUpdate == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+
         regularUserForUpdate.setName(regularUser.getName());
+        regularUserForUpdate.setSurname(regularUser.getSurname());
+        regularUserForUpdate.setUsername(regularUser.getUsername());
+        regularUserForUpdate.setEmail(regularUser.getEmail());
+        regularUserForUpdate.setPhoneNumber(regularUser.getPhoneNumber());
+        regularUserForUpdate.setDateOfBirth(regularUser.getDateOfBirth());
+        regularUserForUpdate.setGender(regularUser.getGender());
+        regularUserForUpdate.setLinkToWebSite(regularUser.getLinkToWebSite());
+        regularUserForUpdate.setBio(regularUser.getBio());
 
         regularUser = regularUserService.save(regularUserForUpdate);
         return new ResponseEntity<>(new RegularUserUpdateDTO(regularUser), HttpStatus.OK);
