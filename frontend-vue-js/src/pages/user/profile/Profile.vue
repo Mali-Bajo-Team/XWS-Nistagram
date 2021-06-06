@@ -440,6 +440,7 @@
                     :key="post.post_id"
                     :cols="post.flex"
                   >
+                    <!-- Image previw -->
                     <v-card v-if="post.type == 'image'">
                       <v-img
                         :src="getImageUrl(post)"
@@ -464,11 +465,13 @@
                         </v-btn>
                       </v-card-actions>
                     </v-card>
+                    <!-- End of the image previw -->
 
+                    <!-- Video previw -->
                     <v-card v-if="post.type == 'video'">
                       <video
                         controls
-                        :src="getVideoSrc()"
+                        :src="getImageUrl(post)"
                         class="white--text align-end"
                         gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                         height="200px"
@@ -490,6 +493,7 @@
                         </v-btn>
                       </v-card-actions>
                     </v-card>
+                    <!-- End of the video previw -->
                   </v-col>
                 </v-row>
               </v-container>
@@ -570,7 +574,6 @@ export default {
       .then((res) => {
         this.user = res.data;
         this.posts = [];
-        let counter = 0;
         this.user.posts.forEach((post) => {
           this.posts.push({
             _id: post.post_id,
@@ -578,23 +581,20 @@ export default {
             type: post.first_content.type,
             flex: 6,
           });
-          counter = counter + 1;
         });
       });
   },
   methods: {
-    getVideoSrc() {
-      return "http://localhost:8000/upload/kod.mkv";
-    },
     getImageUrl(post) {
       return (
         process.env.VUE_APP_BACKEND_URL +
-        process.env.VUE_APP_FILE_UPLOAD_ENDPOINT +
+        process.env.VUE_APP_FILE_FILE_ENDPOINT +
         post.path
       );
     },
     createPost() {
       // TODO: Move this to ENV !!!
+      this.my_post.post_creator_ref= this.user._id
       axios
         .post("http://localhost:8000/post/", {
           my_post: this.my_post,
@@ -626,10 +626,16 @@ export default {
       });
 
       // TODO: Move this to ENV !!!
-      axios.post("http://localhost:8000/upload/", fd).then((res) => {
-        console.log(res);
-        this.my_post.content = res.data;
-      });
+      axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_FILE_FILE_ENDPOINT,
+          fd
+        )
+        .then((res) => {
+          console.log(res);
+          this.my_post.content = res.data;
+        });
     },
     onFileSelected(event) {
       this.selectedFiles = event;
