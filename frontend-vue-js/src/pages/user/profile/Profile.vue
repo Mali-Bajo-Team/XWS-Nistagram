@@ -502,7 +502,74 @@
           <!--End of tab for photos and videos-->
 
           <!--Tab for stories-->
-          <v-tab-item> STORIES </v-tab-item>
+         <v-tab-item>
+            <v-card class="mx-auto" max-width="500">
+              <v-container fluid>
+                <v-row dense>
+                  <v-col
+                    v-for="story in stories"
+                    :key="story.post_id"
+                    :cols="story.flex"
+                  >
+                    <!-- Image previw -->
+                    <v-card v-if="story.type == 'image'">
+                      <v-img
+                        :src="getImageUrl(story)"
+                        class="white--text align-end"
+                        gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                        height="200px"
+                      >
+                      </v-img>
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+
+                        <v-btn icon>
+                          <v-icon>mdi-heart</v-icon>
+                        </v-btn>
+
+                        <v-btn icon>
+                          <v-icon>mdi-bookmark</v-icon>
+                        </v-btn>
+
+                        <v-btn icon>
+                          <v-icon>mdi-share-variant</v-icon>
+                        </v-btn>
+                      </v-card-actions>
+                    </v-card>
+                    <!-- End of the image previw -->
+
+                    <!-- Video previw -->
+                    <v-card v-if="story.type == 'video'">
+                      <video
+                        controls
+                        :src="getImageUrl(story)"
+                        class="white--text align-end"
+                        gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                        height="200px"
+                        width="100%"
+                      ></video>
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+
+                        <v-btn icon>
+                          <v-icon>mdi-heart</v-icon>
+                        </v-btn>
+
+                        <v-btn icon>
+                          <v-icon>mdi-bookmark</v-icon>
+                        </v-btn>
+
+                        <v-btn icon>
+                          <v-icon>mdi-share-variant</v-icon>
+                        </v-btn>
+                      </v-card-actions>
+                    </v-card>
+                    <!-- End of the video previw -->
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card>
+          </v-tab-item>
           <!--End of tab for stories-->
 
           <!--Tab for saved/favorites-->
@@ -559,6 +626,7 @@ export default {
       selectedFiles: [],
       user: null,
       posts: [],
+      stories: [],
     };
   },
   computed: {},
@@ -582,6 +650,16 @@ export default {
             flex: 6,
           });
         });
+        
+        this.stories = [];
+        this.user.stories.forEach((story) => {
+          this.stories.push({
+            _id: story.post_id,
+            path: story.first_content.path,
+            type: story.first_content.type,
+            flex: 6,
+          });
+        });
       });
   },
   methods: {
@@ -593,21 +671,28 @@ export default {
       );
     },
     createPost() {
-      this.my_post.post_creator_ref= this.user._id
+      this.my_post.post_creator_ref = this.user._id;
       axios
-        .post(process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_POST + "/", {
-          my_post: this.my_post,
-        })
+        .post(
+          process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_POST + "/",
+          {
+            my_post: this.my_post,
+          }
+        )
         .then((res) => {
           console.log(res);
         });
     },
     createStory() {
+      this.my_post.post_creator_ref = this.user._id;
       axios
-        .post(process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_STORY + "/", {
-          my_post: this.my_post,
-          is_for_close_friends: this.isForCloseFriends,
-        })
+        .post(
+          process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_STORY + "/",
+          {
+            my_post: this.my_post,
+            is_for_close_friends: this.isForCloseFriends,
+          }
+        )
         .then((res) => {
           console.log(res);
         });
@@ -622,7 +707,7 @@ export default {
           fd.append("video", selectedFile, selectedFile.name);
         }
       });
-      
+
       axios
         .post(
           process.env.VUE_APP_BACKEND_URL +
