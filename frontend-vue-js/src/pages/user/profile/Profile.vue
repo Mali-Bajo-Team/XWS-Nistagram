@@ -448,7 +448,6 @@
                         height="200px"
                       >
                       </v-img>
-
                       <v-card-actions>
                         <v-spacer></v-spacer>
 
@@ -465,6 +464,32 @@
                         </v-btn>
                       </v-card-actions>
                     </v-card>
+                    
+                    <v-card>
+                      <video 
+                      
+                      :src=getVideoSrc()
+                      class="white--text align-end"
+                        gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                        height="200px" ></video>
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+
+                        <v-btn icon>
+                          <v-icon>mdi-heart</v-icon>
+                        </v-btn>
+
+                        <v-btn icon>
+                          <v-icon>mdi-bookmark</v-icon>
+                        </v-btn>
+
+                        <v-btn icon>
+                          <v-icon>mdi-share-variant</v-icon>
+                        </v-btn>
+                      </v-card-actions>
+                    </v-card>
+
+                    
                   </v-col>
                 </v-row>
               </v-container>
@@ -546,16 +571,20 @@ export default {
         this.user = res.data;
         this.posts = [];
         this.user.posts.forEach((post) => {
+          console.log(post);
           this.posts.push({
             _id: post.post_id,
             path: post.first_content.path,
-            type: "image",
+            type: post.first_content.type,
             flex: 12,
           });
         });
       });
   },
   methods: {
+    getVideoSrc(){
+      return "http://localhost:8000/upload/kod.mkv"
+    },
     getImageUrl(post) {
       return (
         process.env.VUE_APP_BACKEND_URL +
