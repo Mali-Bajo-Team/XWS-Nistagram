@@ -63,6 +63,35 @@ func (postStoreRef *PostStore) UpdateUserPosts(post model.RegularPost) *mongo.Up
 	return result
 }
 
+func (postStoreRef *PostStore) UpdatePostComments(comment model.Comment, postID string) *mongo.UpdateResult {
+	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
+	// convert id string to ObjectId
+	objectId, err := primitive.ObjectIDFromHex(postID)
+	if err != nil{
+		log.Println("Invalid id")
+	}
+
+	var postComments []model.Comment
+	postComments = append(postComments, comment)
+
+	update := bson.M{
+		"$addToSet": bson.M{
+			"comments": bson.M{"$each": postComments},
+		},
+	}
+
+	result, err := collectionPosts.UpdateOne(
+		context.Background(),
+		bson.M{"_id": objectId},
+		update,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return result
+}
+
 func (postStoreRef *PostStore) UpdateUserStories(story model.Story) *mongo.UpdateResult {
 	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
 	// convert id string to ObjectId
