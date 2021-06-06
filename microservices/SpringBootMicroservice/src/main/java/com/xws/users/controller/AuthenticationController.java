@@ -1,21 +1,23 @@
 package com.xws.users.controller;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.xws.users.dto.JwtAuthenticationRequest;
 import com.xws.users.dto.UserRegisterDTO;
 import com.xws.users.dto.UserTokenState;
 import com.xws.users.service.IRegularUserRegistrationService;
 import com.xws.users.service.IUserService;
 import com.xws.users.users.model.roles.UserAccount;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import java.util.Date;
 
 // Controller in charge of user authentication
 @RestController
@@ -49,6 +51,6 @@ public class AuthenticationController {
 		UserAccount addedAccount = regularUserRegistrationService.registerRegularUser(userRequest);
 		addedAccount.setPassword(null);
 		return new ResponseEntity<>(addedAccount, HttpStatus.CREATED);
-	}
+	}	
 
 }
