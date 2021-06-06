@@ -575,6 +575,23 @@
                                     src="https://picsum.photos/id/11/500/300"
                                 ></v-img>
                             </v-card-title>
+                            <v-card-text>
+                                <!--Expansion panels for showing comments-->
+                                <v-expansion-panels>
+                                    <v-expansion-panel
+                                        v-for="(item,i) in 1"
+                                        :key="i"
+                                    >
+                                    <v-expansion-panel-header>
+                                        Show all comments
+                                    </v-expansion-panel-header>
+                                    <v-expansion-panel-content>
+                                        Ovde idu komentari korisnika
+                                    </v-expansion-panel-content>
+                                    </v-expansion-panel>
+                                </v-expansion-panels>
+                                <!--End of expansion panels-->
+                            </v-card-text>
                             <v-card-actions>
                                 <!--Dialog for adding comment-->
                                 <v-dialog
@@ -634,9 +651,14 @@
                                 <!--End of dialogu for adding comments-->
                                 
                             </v-card-actions>
+                             <!--Show comments-->
+                   
                         </v-card>
+
                     </v-dialog>
                     <!--End of dialog for choosing photo-->
+                    
+                   
                     
    
                 </v-tab-item>
