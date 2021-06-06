@@ -2,6 +2,7 @@ version: "3.8"
 services:
 
   gateway:
+    restart: always
     image: nginx:1.19.8-alpine
     ports:
       - 8081:8080
@@ -13,14 +14,31 @@ services:
       - ./Gateway/api_backends.conf:/etc/nginx/api_backends.conf
       - ./Gateway/api_gateway.conf:/etc/nginx/api_gateway.conf
       - ./Gateway/api_json_errors.conf:/etc/nginx/api_json_errors.conf
-      
 
-  test-service:
+  user-service:
+    restart: always
     build:
-      context: ./GoLangMicroservice
+      context: ./SpringBootMicroservice
       dockerfile: Dockerfile
     networks:
           - backend
+    depends_on:
+          - user-service-db
+    environment:
+          - SPRING_DATASOURCE_URL=jdbc:postgresql://user-service-db:5432/xwsusersdb
+          - SPRING_DATASOURCE_USERNAME=postgres
+          - SPRING_DATASOURCE_PASSWORD=admin
+          - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
+
+  user-service-db:
+    networks:
+          - backend
+    image: postgres:latest
+    environment:
+          - POSTGRES_PASSWORD=admin
+          - POSTGRES_USER=postgres
+          - POSTGRES_DB=xwsusersdb
+    restart: always
 
 networks:
   backend:
