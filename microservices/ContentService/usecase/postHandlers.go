@@ -12,9 +12,14 @@ import (
 )
 
 func InitializeRouter(router *mux.Router, server *ContentServer) {
-	router.HandleFunc("/upload/", server.UploadFileEndpoint).Methods("POST")
+	router.HandleFunc("/file/", server.UploadFileEndpoint).Methods("POST")
+	router.HandleFunc("/file/{name}", server.GetFileEndpoint).Methods("GET")
 	router.HandleFunc("/post/", server.CreatePostEndpoint).Methods("POST")
 	router.HandleFunc("/user/", server.CreateUserEndpoint).Methods("POST")
+	router.HandleFunc("/user/id/{id}", server.GetUserByIDEndpoint).Methods("GET")
+	router.HandleFunc("/user/username/{username}", server.GetUserByUsernameEndpoint).Methods("GET")
+	router.HandleFunc("/user/post/{id}", server.GetUserPostsByIDEndpoint).Methods("GET")
+	router.HandleFunc("/user/story/{id}", server.GetUserStoriesByIDEndpoint).Methods("GET")
 	router.HandleFunc("/story/", server.CreateStoryEndpoint).Methods("POST")
 }
 
@@ -29,8 +34,8 @@ func (contentServerRef *ContentServer) UploadFileEndpoint(responseWriter http.Re
 			infile, err := hdr.Open()
 			// open destination
 			var outfile *os.File
-			var filePath = "./post-content/" + createUniqueName() + "-" + hdr.Filename
-			if outfile, err = os.Create(filePath); nil != err {
+			var filePath = createUniqueName() + "-" + hdr.Filename
+			if outfile, err = os.Create("./post-content/" + filePath); nil != err {
 				return
 			}
 			content := initializeContent(filePath, hdr)
@@ -42,6 +47,11 @@ func (contentServerRef *ContentServer) UploadFileEndpoint(responseWriter http.Re
 		}
 	}
 	renderJSON(responseWriter, allContent)
+}
+
+func (contentServerRef *ContentServer) GetFileEndpoint(response http.ResponseWriter, request *http.Request){
+	params := mux.Vars(request)
+	http.ServeFile(response,request,"./post-content/" + params["name"])
 }
 
 func (contentServerRef *ContentServer) CreateUserEndpoint(response http.ResponseWriter, request *http.Request) {
@@ -73,3 +83,55 @@ func (contentServerRef *ContentServer) CreateStoryEndpoint(response http.Respons
 	contentServerRef.postStore.UpdateUserStories(story)
 	renderJSON(response, story)
 }
+
+func (contentServerRef *ContentServer) GetUserByIDEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	params := mux.Vars(request)
+	objectID, _ := primitive.ObjectIDFromHex(params["id"])
+	var result = contentServerRef.postStore.GetUserByID(objectID)
+	var user model.User
+	err := result.Decode(&user)
+	if err != nil {
+		return
+	}
+	renderJSON(response, user)
+}
+
+func (contentServerRef *ContentServer) GetUserByUsernameEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	params := mux.Vars(request)
+	var result = contentServerRef.postStore.GetUserByUsername(params["username"])
+	var user model.User
+	err := result.Decode(&user)
+	if err != nil {
+		return
+	}
+	renderJSON(response, user)
+}
+
+func (contentServerRef *ContentServer) GetUserPostsByIDEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	params := mux.Vars(request)
+	objectID, _ := primitive.ObjectIDFromHex(params["id"])
+	var result = contentServerRef.postStore.GetUserByID(objectID)
+	var user model.User
+	err := result.Decode(&user)
+	if err != nil {
+		return
+	}
+	renderJSON(response, user.Posts)
+}
+
+func (contentServerRef *ContentServer) GetUserStoriesByIDEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	params := mux.Vars(request)
+	objectID, _ := primitive.ObjectIDFromHex(params["id"])
+	var result = contentServerRef.postStore.GetUserByID(objectID)
+	var user model.User
+	err := result.Decode(&user)
+	if err != nil {
+		return
+	}
+	renderJSON(response, user.Stories)
+}
+

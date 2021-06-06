@@ -29,6 +29,8 @@ func main() {
 
 	usecase.InitializeRouter(router, server)
 	handler := configCORS(router)
+	//handler := configCORS(router)
+	//fs:=http.FileServer(http.Dir("/post-content"))
 
 	// start server
 	srv := &http.Server{Addr: "0.0.0.0:8000", Handler: handler}

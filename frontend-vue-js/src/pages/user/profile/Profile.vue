@@ -1,7 +1,6 @@
 <template>
   <v-row class="pa-5">
     <v-spacer></v-spacer>
-
     <v-col sm="8" md="12" lg="4" cols="12">
       <!-- Images, number of posts, followers, following -->
       <v-row>
@@ -251,12 +250,18 @@
                         <!--Step 3-->
                         <v-stepper-content step="3">
                           <h3>
-                              Congratulations, you have successfully posted the desired content!
+                            Congratulations, you have successfully posted the
+                            desired content!
                           </h3>
 
                           <v-spacer></v-spacer>
                           <br />
-                           <v-btn color="primary" @click="openedContenDialog=false"> Close </v-btn>
+                          <v-btn
+                            color="primary"
+                            @click="openedContenDialog = false"
+                          >
+                            Close
+                          </v-btn>
                         </v-stepper-content>
                         <!--End of step 3-->
                       </v-stepper-items>
@@ -369,12 +374,18 @@
                         <!--Step 3-->
                         <v-stepper-content step="3">
                           <h3>
-                            Congratulations, you have successfully posted the desired content!
+                            Congratulations, you have successfully posted the
+                            desired content!
                           </h3>
 
                           <v-spacer></v-spacer>
                           <br />
-                          <v-btn color="primary" @click="openedContenDialog=false"> Close </v-btn>
+                          <v-btn
+                            color="primary"
+                            @click="openedContenDialog = false"
+                          >
+                            Close
+                          </v-btn>
                         </v-stepper-content>
                         <!--End of step 3-->
                       </v-stepper-items>
@@ -421,26 +432,72 @@
         <v-tabs-items v-model="tabs2">
           <!--Tab for photos and videos-->
           <v-tab-item>
-            <v-col v-for="n in 9" :key="n" class="d-flex child-flex" cols="4">
-              <v-img
-                :src="`https://picsum.photos/500/300?image=${n * 5 + 10}`"
-                aspect-ratio="1"
-                class="grey lighten-2"
-              >
-                <template v-slot:placeholder>
-                  <v-row
-                    class="fill-height ma-0"
-                    align="center"
-                    justify="center"
+            <v-card class="mx-auto" max-width="500">
+              <v-container fluid>
+                <v-row dense>
+                  <v-col
+                    v-for="post in posts"
+                    :key="post.post_id"
+                    :cols="post.flex"
                   >
-                    <v-progress-circular
-                      indeterminate
-                      color="grey lighten-5"
-                    ></v-progress-circular>
-                  </v-row>
-                </template>
-              </v-img>
-            </v-col>
+                    <!-- Image previw -->
+                    <v-card v-if="post.type == 'image'">
+                      <v-img
+                        :src="getImageUrl(post)"
+                        class="white--text align-end"
+                        gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                        height="200px"
+                      >
+                      </v-img>
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+
+                        <v-btn icon>
+                          <v-icon>mdi-heart</v-icon>
+                        </v-btn>
+
+                        <v-btn icon>
+                          <v-icon>mdi-bookmark</v-icon>
+                        </v-btn>
+
+                        <v-btn icon>
+                          <v-icon>mdi-share-variant</v-icon>
+                        </v-btn>
+                      </v-card-actions>
+                    </v-card>
+                    <!-- End of the image previw -->
+
+                    <!-- Video previw -->
+                    <v-card v-if="post.type == 'video'">
+                      <video
+                        controls
+                        :src="getImageUrl(post)"
+                        class="white--text align-end"
+                        gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                        height="200px"
+                        width="100%"
+                      ></video>
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+
+                        <v-btn icon>
+                          <v-icon>mdi-heart</v-icon>
+                        </v-btn>
+
+                        <v-btn icon>
+                          <v-icon>mdi-bookmark</v-icon>
+                        </v-btn>
+
+                        <v-btn icon>
+                          <v-icon>mdi-share-variant</v-icon>
+                        </v-btn>
+                      </v-card-actions>
+                    </v-card>
+                    <!-- End of the video previw -->
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card>
           </v-tab-item>
           <!--End of tab for photos and videos-->
 
@@ -476,11 +533,6 @@ export default {
       tabs2: null,
       e1: 1,
       e2: 1,
-      pictures: [
-        {
-          path: "https://picsum.photos/200/300",
-        },
-      ],
       my_post: {
         title: "",
         // location: null,
@@ -505,14 +557,45 @@ export default {
       },
       openedContenDialog: null,
       selectedFiles: [],
+      user: null,
+      posts: [],
     };
   },
   computed: {},
+  mounted() {
+    // Get user by username and his posts
+    axios
+      .get(
+        process.env.VUE_APP_BACKEND_URL +
+          process.env.VUE_APP_USER +
+          process.env.VUE_APP_USER_USERNAME +
+          "/pero" // TODO: Put here username from logged user
+      )
+      .then((res) => {
+        this.user = res.data;
+        this.posts = [];
+        this.user.posts.forEach((post) => {
+          this.posts.push({
+            _id: post.post_id,
+            path: post.first_content.path,
+            type: post.first_content.type,
+            flex: 6,
+          });
+        });
+      });
+  },
   methods: {
+    getImageUrl(post) {
+      return (
+        process.env.VUE_APP_BACKEND_URL +
+        process.env.VUE_APP_FILE_FILE_ENDPOINT +
+        post.path
+      );
+    },
     createPost() {
-      // TODO: Move this to ENV !!!
+      this.my_post.post_creator_ref= this.user._id
       axios
-        .post("http://localhost:8000/post/", {
+        .post(process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_POST + "/", {
           my_post: this.my_post,
         })
         .then((res) => {
@@ -520,9 +603,8 @@ export default {
         });
     },
     createStory() {
-      // TODO: Move this to ENV !!!
       axios
-        .post("http://localhost:8000/story/", {
+        .post(process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_STORY + "/", {
           my_post: this.my_post,
           is_for_close_friends: this.isForCloseFriends,
         })
@@ -540,12 +622,17 @@ export default {
           fd.append("video", selectedFile, selectedFile.name);
         }
       });
-
-      // TODO: Move this to ENV !!!
-      axios.post("http://localhost:8000/upload/", fd).then((res) => {
-        console.log(res);
-        this.my_post.content = res.data;
-      });
+      
+      axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_FILE_FILE_ENDPOINT,
+          fd
+        )
+        .then((res) => {
+          console.log(res);
+          this.my_post.content = res.data;
+        });
     },
     onFileSelected(event) {
       this.selectedFiles = event;
