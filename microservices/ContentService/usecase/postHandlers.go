@@ -12,9 +12,8 @@ import (
 )
 
 func InitializeRouter(router *mux.Router, server *ContentServer) {
-	//TODO: Rename this to file instead of upload
-	router.HandleFunc("/upload/", server.UploadFileEndpoint).Methods("POST")
-	router.HandleFunc("/upload/{name}", server.GetFileEndpoint).Methods("GET")
+	router.HandleFunc("/file/", server.UploadFileEndpoint).Methods("POST")
+	router.HandleFunc("/file/{name}", server.GetFileEndpoint).Methods("GET")
 	router.HandleFunc("/post/", server.CreatePostEndpoint).Methods("POST")
 	router.HandleFunc("/user/", server.CreateUserEndpoint).Methods("POST")
 	router.HandleFunc("/user/id/{id}", server.GetUserByIDEndpoint).Methods("GET")
