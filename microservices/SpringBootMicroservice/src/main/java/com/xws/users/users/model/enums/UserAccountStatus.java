@@ -1,6 +1,6 @@
 package com.xws.users.users.model.enums;
 
-public enum ProfileStatus {
+public enum UserAccountStatus {
     UNCOFIRMED,
     ACTIVE,
     DEACTIVATED

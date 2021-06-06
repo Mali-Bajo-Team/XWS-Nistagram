@@ -14,5 +14,5 @@ public interface IUserService {
 
 	UserAccount changePassword(String oldPassword, String newPassword);
 	
-	UserTokenState logIn(String email, String password);
+	UserTokenState logIn(String username, String password);
 }
