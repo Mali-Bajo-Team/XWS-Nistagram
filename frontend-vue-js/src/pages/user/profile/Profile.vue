@@ -305,6 +305,7 @@
                             accept="image/png, image/jpeg, image/bmp"
                             label="Choose a photo or video"
                             prepend-icon="mdi-camera"
+                            @change="onFileSelected"
                           ></v-file-input>
                           <!--End of file input-->
 
@@ -338,7 +339,10 @@
                           <!--End of tagging-->
 
                           <!--Only available to close friends-->
-                          <v-checkbox label="Only available to close friends">
+                          <v-checkbox
+                            v-model="isForCloseFriends"
+                            label="Only available to close friends"
+                          >
                           </v-checkbox>
 
                           <!--Add description-->
@@ -353,7 +357,10 @@
                           ></v-textarea>
                           <!--End of description-->
 
-                          <v-btn color="primary" @click="e2 = 3">
+                          <v-btn
+                            color="primary"
+                            @click="createStory(), (e2 = 3)"
+                          >
                             Continue
                           </v-btn>
 
@@ -486,6 +493,7 @@ export default {
         add_link: "/",
         content: [],
       },
+      isForCloseFriends: false,
       form: {
         email: "",
         password: "",
@@ -515,6 +523,17 @@ export default {
           console.log(res);
         });
     },
+    createStory() {
+      // TODO: Move this to ENV !!!
+      axios
+        .post("http://localhost:8000/story/", {
+          my_post: this.my_post,
+          is_for_close_friends: this.isForCloseFriends,
+        })
+        .then((res) => {
+          console.log(res);
+        });
+    },
     createContent() {
       const fd = new FormData();
 
@@ -529,7 +548,7 @@ export default {
       // TODO: Move this to ENV !!!
       axios.post("http://localhost:8000/upload/", fd).then((res) => {
         console.log(res);
-        this.my_post.content = res.data
+        this.my_post.content = res.data;
       });
     },
     onFileSelected(event) {
