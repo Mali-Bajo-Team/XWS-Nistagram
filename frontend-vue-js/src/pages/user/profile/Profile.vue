@@ -576,6 +576,99 @@
                                 ></v-img>
                             </v-card-title>
                             <v-card-text>
+                                <v-row>
+                                    <v-col>
+                                    <!--The number of likes and comments-->
+                                    <v-icon medium>mdi-heart</v-icon>700
+                                    <v-icon medium right>mdi-comment</v-icon>10
+                                    </v-col>
+
+                                    <v-col class="text-right mr-5 mb-5">
+
+                                        <!--Button for likes-->
+                                        <v-btn
+                                                    class="mx-2"
+                                                    fab
+                                                    x-small
+                                                    color="primary"
+                                                ><v-icon>mdi-thumb-up</v-icon>
+                                                
+                                        </v-btn>
+                                        <!--End of button for likes-->
+
+                                        <!--Button for dislikes-->
+                                        <v-btn
+                                                    class="mx-2"
+                                                    fab
+                                                    x-small
+                                                    color="primary"
+                                                ><v-icon>mdi-thumb-down</v-icon>
+                                                
+                                                </v-btn>
+                                        <!--End of button for dislikes-->
+
+                                        <!--Dialog for adding comment-->
+                                        <v-dialog
+                                            width="600px"
+                                        >
+
+                                    
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-btn
+                                                    class="mx-2"
+                                                    fab
+                                                    x-small
+                                                    v-bind="attrs"
+                                                    v-on="on"
+                                                    color="primary"
+                                                ><v-icon>mdi-pencil</v-icon>
+                                                
+                                                </v-btn>
+                                            </template>
+                                            <v-card>
+                                                <v-card-title>
+                                                    Add a new comment to the post
+                                                </v-card-title>
+                                                <v-card-text>
+                                                    <!--Field for comments-->
+                                                <v-textarea
+                                                            outlined
+                                                            name="input-7-4"
+                                                            no-resize
+                                                            rows="3"
+                                                            label="Comment"
+                                                            clearable
+                                                            clear-icon="mdi-close-circle"
+
+                                                        ></v-textarea>
+                                                    <!--End of field for comments-->
+                                                </v-card-text>
+                                                <v-card-actions>
+                                                    <!--Buttons to confirm or cancel action-->
+                                                    <v-spacer></v-spacer>
+                                                        <v-btn
+
+                                                            color="error"
+                                                            text
+                                                        >
+                                                            Cancel
+                                                        </v-btn>
+                                                        <v-btn
+                                                            color="primary"
+                                                            text
+                                                        >
+                                                            Confirm
+                                                        </v-btn>
+                                                </v-card-actions>
+                                            </v-card>
+                                        </v-dialog>
+                                        <!--End of dialog for adding comments-->
+                                    </v-col>
+                                </v-row>
+
+
+                                
+                                <br><br>
                                 <!--Expansion panels for showing comments-->
                                 <v-expansion-panels>
                                     <v-expansion-panel
@@ -597,66 +690,7 @@
                                 </v-expansion-panels>
                                 <!--End of expansion panels-->
                             </v-card-text>
-                            <v-card-actions>
-                                <!--Dialog for adding comment-->
-                                <v-dialog
-                                     width="600px"
-                                >
-
-                               
-                                    <template v-slot:activator="{ on, attrs }">
-                                        <v-btn
-                                            outlined
-                                            rounded
-                                            medium
-                                            v-bind="attrs"
-                                            v-on="on"
-                                            color="primary"
-                                        ><v-icon>mdi-pencil</v-icon>
-                                        Comment
-                                        </v-btn>
-                                    </template>
-                                    <v-card>
-                                        <v-card-title>
-                                            Add a new comment to the post
-                                        </v-card-title>
-                                        <v-card-text>
-                                            <!--Field for comments-->
-                                           <v-textarea
-                                                    outlined
-                                                    name="input-7-4"
-                                                    no-resize
-                                                    rows="3"
-                                                    label="Comment"
-                                                    clearable
-                                                    clear-icon="mdi-close-circle"
-
-                                                ></v-textarea>
-                                            <!--End of field for comments-->
-                                        </v-card-text>
-                                        <v-card-actions>
-                                            <!--Buttons to confirm or cancel action-->
-                                            <v-spacer></v-spacer>
-                                                <v-btn
-
-                                                    color="error"
-                                                    text
-                                                >
-                                                    Cancel
-                                                </v-btn>
-                                                <v-btn
-                                                    color="primary"
-                                                    text
-                                                >
-                                                    Confirm
-                                                </v-btn>
-                                        </v-card-actions>
-                                    </v-card>
-                                </v-dialog>
-                                <!--End of dialogu for adding comments-->
-                                
-                            </v-card-actions>
-                             <!--Show comments-->
+                    
                    
                         </v-card>
 
