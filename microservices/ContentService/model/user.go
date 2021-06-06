@@ -1,7 +1,6 @@
 package model
 
 import (
-
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -11,8 +10,8 @@ type User struct {
 	ProfileImage       string             `json:"profile_image,omitempty" bson:"profile_image,omitempty"`
 	IsPrivate          bool               `json:"is_private,omitempty" bson:"is_private,omitempty"`
 
-	Posts              []UserPost     `json:"posts,omitempty" bson:"posts,omitempty"`
-	Stories            []UserStory    `json:"stories,omitempty" bson:"stories,omitempty"`
+	Posts              []UserPost         `json:"posts,omitempty" bson:"posts,omitempty"`
+	Stories            []UserStory        `json:"stories,omitempty" bson:"stories,omitempty"`
 
 	Collections        []Collection       `json:"collections,omitempty" bson:"collections,omitempty"`
 	CollectionsRef     []interface{}      `json:"collections_ref,omitempty" bson:"collections_ref,omitempty"`
