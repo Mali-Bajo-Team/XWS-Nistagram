@@ -68,6 +68,25 @@ func (postStoreRef *PostStore) UpdatePostComments(comment model.Comment, postID 
 	return result
 }
 
+func (postStoreRef *PostStore) GetPostByID(postID string) *mongo.SingleResult {
+	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
+	// convert id string to ObjectId
+	objectId, err := primitive.ObjectIDFromHex(postID)
+	if err != nil{
+		log.Println("Invalid id")
+	}
+
+	result := collectionPosts.FindOne(
+		context.Background(),
+		bson.M{"_id": objectId},
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return result
+}
+
 func (postStoreRef *PostStore) UpdateUserStories(story model.Story) *mongo.UpdateResult {
 	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
 	// convert id string to ObjectId
@@ -99,7 +118,6 @@ func (postStoreRef *PostStore) UpdateUserStories(story model.Story) *mongo.Updat
 
 	return result
 }
-
 
 func (postStoreRef *PostStore) CloseConnection() error{
 	return postStoreRef.ourClient.Disconnect(context.Background())
