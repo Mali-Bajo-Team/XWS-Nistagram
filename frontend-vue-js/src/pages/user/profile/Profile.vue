@@ -593,10 +593,9 @@ export default {
       );
     },
     createPost() {
-      // TODO: Move this to ENV !!!
       this.my_post.post_creator_ref= this.user._id
       axios
-        .post("http://localhost:8000/post/", {
+        .post(process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_POST + "/", {
           my_post: this.my_post,
         })
         .then((res) => {
@@ -604,9 +603,8 @@ export default {
         });
     },
     createStory() {
-      // TODO: Move this to ENV !!!
       axios
-        .post("http://localhost:8000/story/", {
+        .post(process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_STORY + "/", {
           my_post: this.my_post,
           is_for_close_friends: this.isForCloseFriends,
         })
@@ -624,8 +622,7 @@ export default {
           fd.append("video", selectedFile, selectedFile.name);
         }
       });
-
-      // TODO: Move this to ENV !!!
+      
       axios
         .post(
           process.env.VUE_APP_BACKEND_URL +
