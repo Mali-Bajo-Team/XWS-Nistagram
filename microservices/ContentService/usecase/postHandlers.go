@@ -54,7 +54,8 @@ func (contentServerRef *ContentServer) GetFileEndpoint(response http.ResponseWri
 	params := mux.Vars(request)
 	img, err := os.Open( "./post-content/" + params["name"])
 	if err != nil {
-		log.Fatal(err) // perhaps handle this nicer
+		log.Println("File with " + params["name"] + " name does not exist!")
+		return
 	}
 	defer img.Close()
 	response.Header().Set("Content-Type", "image/jpeg") // <-- set the content-type header
