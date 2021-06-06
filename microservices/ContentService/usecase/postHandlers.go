@@ -6,7 +6,6 @@ import (
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"io"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -52,14 +51,7 @@ func (contentServerRef *ContentServer) UploadFileEndpoint(responseWriter http.Re
 
 func (contentServerRef *ContentServer) GetFileEndpoint(response http.ResponseWriter, request *http.Request){
 	params := mux.Vars(request)
-	img, err := os.Open( "./post-content/" + params["name"])
-	if err != nil {
-		log.Println("File with " + params["name"] + " name does not exist!")
-		return
-	}
-	defer img.Close()
-	response.Header().Set("Content-Type", "image/jpeg") // <-- set the content-type header
-	io.Copy(response, img)
+	http.ServeFile(response,request,"./post-content/" + params["name"])
 }
 
 func (contentServerRef *ContentServer) CreateUserEndpoint(response http.ResponseWriter, request *http.Request) {

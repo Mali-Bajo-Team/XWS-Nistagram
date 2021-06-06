@@ -1,7 +1,6 @@
 <template>
   <v-row class="pa-5">
     <v-spacer></v-spacer>
-
     <v-col sm="8" md="12" lg="4" cols="12">
       <!-- Images, number of posts, followers, following -->
       <v-row>
@@ -437,18 +436,18 @@
               <v-container fluid>
                 <v-row dense>
                   <v-col
-                    v-for="card in cards"
-                    :key="card.title"
-                    :cols="card.flex"
+                    v-for="post in posts"
+                    :key="post.title"
+                    :cols="post.flex"
                   >
                     <v-card>
                       <v-img
-                        :src="card.src"
+                        :src="getImageUrl(post)"
                         class="white--text align-end"
                         gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                         height="200px"
                       >
-                        <v-card-title v-text="card.title"></v-card-title>
+                        <v-card-title v-text="post.title"></v-card-title>
                       </v-img>
 
                       <v-card-actions>
@@ -535,37 +534,32 @@ export default {
       },
       openedContenDialog: null,
       selectedFiles: [],
-      cards: [
+      posts: [
         {
+          _id: "60bccf2be1239cd5cda4192d",
           title: "Pre-fab homes",
-          src: "https://cdn.vuetifyjs.com/images/cards/house.jpg",
-          flex: 6,
+          path: "mxvxhrpqibyw_1622986539993-poveznik.png",
+          type: "image",
+          flex: 12,
         },
-        {
-          title: "Favorite road trips",
-          src: "https://cdn.vuetifyjs.com/images/cards/road.jpg",
-          flex: 6,
-        },
-        {
-          title: "Best airlines",
-          src: "https://cdn.vuetifyjs.com/images/cards/plane.jpg",
-          flex: 6,
-        },
-        {
-          title: "Best airlines2",
-          src: "https://cdn.vuetifyjs.com/images/cards/plane.jpg",
-          flex: 6,
-        },
-        {
-          title: "Best airlines3",
-          src: "https://cdn.vuetifyjs.com/images/cards/plane.jpg",
-          flex: 6,
-        },
+
+        // {
+        //   title: "Best airlines3",
+        //   src: "https://cdn.vuetifyjs.com/images/cards/plane.jpg",
+        //   flex: 6,
+        // },
       ],
     };
   },
   computed: {},
   methods: {
+    getImageUrl(post) {
+      return (
+        process.env.VUE_APP_BACKEND_URL +
+        process.env.VUE_APP_FILE_UPLOAD_ENDPOINT +
+        post.path
+      );
+    },
     createPost() {
       // TODO: Move this to ENV !!!
       axios
