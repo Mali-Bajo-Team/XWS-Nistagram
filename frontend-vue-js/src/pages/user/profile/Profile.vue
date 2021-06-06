@@ -455,12 +455,7 @@
                         <!--Dialog for choosing photo-->
                         <v-dialog width="600px">
                           <template v-slot:activator="{ on, attrs }">
-                            <v-btn
-                    
-                              v-bind="attrs"
-                              v-on="on"
-                              icon
-                            >
+                            <v-btn v-bind="attrs" v-on="on" icon>
                               <v-icon right> mdi-plus-circle </v-icon>
                             </v-btn>
                           </template>
@@ -592,15 +587,10 @@
                       <v-card-actions>
                         <v-spacer></v-spacer>
 
-                       <!--Dialog for choosing photo-->
+                        <!--Dialog for choosing photo-->
                         <v-dialog width="600px">
                           <template v-slot:activator="{ on, attrs }">
-                            <v-btn
-                    
-                              v-bind="attrs"
-                              v-on="on"
-                              icon
-                            >
+                            <v-btn v-bind="attrs" v-on="on" icon>
                               <v-icon right> mdi-plus-circle </v-icon>
                             </v-btn>
                           </template>
@@ -861,25 +851,29 @@ export default {
       )
       .then((res) => {
         this.user = res.data;
-        this.posts = [];
-        this.user.posts.forEach((post) => {
-          this.posts.push({
-            _id: post.post_id,
-            path: post.first_content.path,
-            type: post.first_content.type,
-            flex: 6,
+        if (this.user.posts != null) {
+          this.posts = [];
+          this.user.posts.forEach((post) => {
+            this.posts.push({
+              _id: post.post_id,
+              path: post.first_content.path,
+              type: post.first_content.type,
+              flex: 6,
+            });
           });
-        });
+        }
 
-        this.stories = [];
-        this.user.stories.forEach((story) => {
-          this.stories.push({
-            _id: story.post_id,
-            path: story.first_content.path,
-            type: story.first_content.type,
-            flex: 6,
+        if (this.user.stories != null) {
+          this.stories = [];
+          this.user.stories.forEach((story) => {
+            this.stories.push({
+              _id: story.post_id,
+              path: story.first_content.path,
+              type: story.first_content.type,
+              flex: 6,
+            });
           });
-        });
+        }
       });
   },
   methods: {
