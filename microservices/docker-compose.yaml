@@ -39,8 +39,42 @@ services:
           - POSTGRES_USER=postgres
           - POSTGRES_DB=xwsusersdb
     restart: always
+    volumes:
+      - user-service-db-volume:/var/lib/postgresql/data
+
+  content-service:
+    restart: always
+    build:
+      context: ./ContentService
+      dockerfile: Dockerfile
+    networks:
+          - backend
+    depends_on:
+          - content-service-db
+    environment:
+          - MONGO_PATH=mongodb://content-service-db:27017
+    volumes:
+          - content-service-file-volume:/dist/post-content/
+
+  content-service-db:
+    networks:
+      - backend
+    image: mongo:4.4.5
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - content-service-db-volume:/data/db
+
+volumes: 
+  content-service-file-volume: 
+    
+  content-service-db-volume:
+    
+  user-service-db-volume:
 
 networks:
   backend:
     name: nistagram
     driver: bridge
+
