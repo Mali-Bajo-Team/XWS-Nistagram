@@ -1,26 +1,25 @@
 package usecase
 
 import (
-	"content_service/dataservice"
+	"content_service/dataservice/MongoDB"
 )
 
 type ContentServer struct {
-	postStore *dataservice.PostStore
+	postStore *MongoDB.PostStore
 }
 
-const name = "post_service"
-
 func NewContentServer() (*ContentServer, error) {
-	store, err := dataservice.NewPostStore()
+	postStore, err := MongoDB.NewPostStore()
 	if err != nil {
 		return nil, err
 	}
 
 	return &ContentServer{
-		postStore: store,
+		postStore: postStore,
 	}, nil
 }
 
-func (contentServerRef *ContentServer) CloseDB() error {
-	return contentServerRef.postStore.Close()
+
+func (contentServerRef *ContentServer) CloseConnectionToMongoDB() error {
+	return contentServerRef.postStore.CloseConnection()
 }

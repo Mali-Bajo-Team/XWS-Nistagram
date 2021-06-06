@@ -43,7 +43,7 @@ public class AuthenticationController {
 	}
 
 	// Endpoint to register a new user
-	@PostMapping("/signup")
+	@PostMapping("/singup")
 	public ResponseEntity<UserAccount> addUser(@RequestBody @Valid UserRegisterDTO userRequest) {
 		UserAccount addedAccount = regularUserRegistrationService.registerRegularUser(userRequest);
 		return new ResponseEntity<>(addedAccount, HttpStatus.CREATED);
