@@ -16,6 +16,8 @@ func InitializeRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/post/", server.CreatePostEndpoint).Methods("POST")
 	router.HandleFunc("/user/", server.CreateUserEndpoint).Methods("POST")
 	router.HandleFunc("/user/{id}", server.GetUserByIDEndpoint).Methods("GET")
+	router.HandleFunc("/user/post/{id}", server.GetUserPostsByIDEndpoint).Methods("GET")
+	router.HandleFunc("/user/story/{id}", server.GetUserStoriesByIDEndpoint).Methods("GET")
 	router.HandleFunc("/story/", server.CreateStoryEndpoint).Methods("POST")
 }
 
@@ -87,3 +89,30 @@ func (contentServerRef *ContentServer) GetUserByIDEndpoint(response http.Respons
 	}
 	renderJSON(response, user)
 }
+
+func (contentServerRef *ContentServer) GetUserPostsByIDEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	params := mux.Vars(request)
+	objectID, _ := primitive.ObjectIDFromHex(params["id"])
+	var result = contentServerRef.postStore.GetUserByID(objectID)
+	var user model.User
+	err := result.Decode(&user)
+	if err != nil {
+		return
+	}
+	renderJSON(response, user.Posts)
+}
+
+func (contentServerRef *ContentServer) GetUserStoriesByIDEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	params := mux.Vars(request)
+	objectID, _ := primitive.ObjectIDFromHex(params["id"])
+	var result = contentServerRef.postStore.GetUserByID(objectID)
+	var user model.User
+	err := result.Decode(&user)
+	if err != nil {
+		return
+	}
+	renderJSON(response, user.Stories)
+}
+
