@@ -11,11 +11,6 @@ import (
 	"time"
 )
 
-func enableCors(responseWriter http.ResponseWriter) {
-	responseWriter.Header().Set("Content-Type", "text/html; charset=utf-8")
-	responseWriter.Header().Set("Access-Control-Allow-Origin", "*")
-}
-
 // renderJSON renders 'v' as JSON and writes it as a response into w.
 func renderJSON(responseWriter http.ResponseWriter, model interface{}) {
 	marshalJson, err := json.Marshal(model)

@@ -200,6 +200,14 @@
 
                         <!--Step 2-->
                         <v-stepper-content step="2">
+                          <!-- Chose a title -->
+                          <v-text-field
+                            v-model="my_post.title"
+                            label="Choose a title"
+                            prepend-icon="mdi-home"
+                          >
+                          </v-text-field>
+                          <!-- End of title-->
                           <!--Choose a location-->
                           <v-combobox
                             label="Choose a location"
@@ -218,6 +226,7 @@
 
                           <!--Add description-->
                           <v-textarea
+                            v-model="my_post.description"
                             outlined
                             name="input-7-4"
                             no-resize
@@ -228,7 +237,10 @@
                           ></v-textarea>
                           <!--End of description-->
 
-                          <v-btn color="primary" @click="e1 = 3">
+                          <v-btn
+                            color="primary"
+                            @click="createPost(), (e1 = 3)"
+                          >
                             Continue
                           </v-btn>
 
@@ -466,6 +478,14 @@ export default {
           path: "https://picsum.photos/200/300",
         },
       ],
+      my_post: {
+        title: "",
+        // location: null,
+        description: "",
+        is_add: false,
+        add_link: "/",
+        content: [],
+      },
       form: {
         email: "",
         password: "",
@@ -479,13 +499,23 @@ export default {
         country: "",
         phone: "",
       },
+
       selectedFiles: [],
     };
   },
   computed: {},
   methods: {
+    createPost() {
+      // TODO: Move this to ENV !!!
+      axios
+        .post("http://localhost:8000/post/", {
+          my_post: this.my_post,
+        })
+        .then((res) => {
+          console.log(res);
+        });
+    },
     createContent() {
-      alert("test");
       const fd = new FormData();
 
       this.selectedFiles.forEach((selectedFile) => {
@@ -499,6 +529,7 @@ export default {
       // TODO: Move this to ENV !!!
       axios.post("http://localhost:8000/upload/", fd).then((res) => {
         console.log(res);
+        this.my_post.content = res.data
       });
     },
     onFileSelected(event) {

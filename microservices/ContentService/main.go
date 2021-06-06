@@ -4,6 +4,8 @@ import (
 	"content_service/usecase"
 	"context"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
+
 	"log"
 	"net/http"
 	"os"
@@ -16,6 +18,7 @@ func main() {
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 
 	router := mux.NewRouter()
+
 	router.StrictSlash(true)
 	server, err := usecase.NewContentServer()
 	if err != nil {
@@ -25,9 +28,10 @@ func main() {
 	defer server.CloseConnectionToMongoDB()
 
 	usecase.InitializeRouter(router, server)
+	handler := configCORS(router)
 
 	// start server
-	srv := &http.Server{Addr: "0.0.0.0:8000", Handler: router}
+	srv := &http.Server{Addr: "0.0.0.0:8000", Handler: handler}
 	go func() {
 		log.Println("server starting")
 		if err := srv.ListenAndServe(); err != nil {
@@ -52,5 +56,11 @@ func main() {
 	log.Println("server stopped")
 }
 
-
-
+func configCORS(router *mux.Router) http.Handler {
+	myCORS := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:8081"},
+		AllowCredentials: true,
+	})
+	handler := myCORS.Handler(router)
+	return handler
+}

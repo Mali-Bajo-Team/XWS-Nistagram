@@ -7,7 +7,7 @@ type Post struct {
 	AddLink     string             `json:"add_link,omitempty" bson:"add_link,omitempty"`
 	TimeStamp   string             `json:"time_stamp,omitempty" bson:"time_stamp,omitempty"`
 
-	Contents        []Content     `json:"contents,omitempty" bson:"contents,omitempty"`
+	Contents        []Content     `json:"content,omitempty" bson:"content,omitempty"`
 	Tagged          []User        `json:"tagged,omitempty" bson:"tagged,omitempty"`
 	TaggedRef       []interface{} `json:"tagged_ref,omitempty" bson:"tagged_ref,omitempty"`
 	Tags            []Hashtag     `json:"tags,omitempty" bson:"tags,omitempty"`
