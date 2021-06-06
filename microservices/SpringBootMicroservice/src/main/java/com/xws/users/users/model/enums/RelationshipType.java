@@ -5,6 +5,6 @@ public enum RelationshipType {
     MUTED,
     REJECT_MESSAGES,
     ACCEPT_MESSAGES,
-    FOLLOWING,
+    FOLLOWED,
     CLOSE_FRIEND
 }

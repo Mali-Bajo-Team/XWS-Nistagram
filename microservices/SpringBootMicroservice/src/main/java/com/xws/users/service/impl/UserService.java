@@ -62,9 +62,9 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public UserTokenState logIn(String email, String password) {
+    public UserTokenState logIn(String username, String password) {
         Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(email, password));
+                .authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
         // Insert the user into the current security context
         SecurityContextHolder.getContext().setAuthentication(authentication);

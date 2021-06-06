@@ -85,14 +85,14 @@ public class TokenUtils {
     // JWT token validation function
     public Boolean validateToken(String token, UserDetails userDetails) {
         UserAccount user = (UserAccount) userDetails;
-        final String email = getEmailFromToken(token);
+        final String username = getUsernameFromToken(token);
         final Date created = getIssuedAtDateFromToken(token);
 
-        return (email != null && email.equals(userDetails.getUsername())
+        return (username != null && username.equals(userDetails.getUsername())
                 && !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate()));
     }
 
-    public String getEmailFromToken(String token) {
+    public String getUsernameFromToken(String token) {
         String email;
         try {
             final Claims claims = this.getAllClaimsFromToken(token);

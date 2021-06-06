@@ -1,58 +1,68 @@
 package com.xws.users.users.model;
 
-import com.xws.users.users.model.roles.RegularUser;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.*;
-import java.util.Date;
-import java.util.List;
+import com.xws.users.users.model.roles.RegularUser;
 
 @Entity
 public class FollowRequest {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column
-    private Date dateOfCreation;
+	@CreationTimestamp
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column
+	private Date dateOfCreation;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<RegularUser> requster;
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+	private RegularUser requster;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<RegularUser> accountToFollow;
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+	private RegularUser accountToFollow;
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public Date getDateOfCreation() {
-        return dateOfCreation;
-    }
+	public Date getDateOfCreation() {
+		return dateOfCreation;
+	}
 
-    public void setDateOfCreation(Date dateOfCreation) {
-        this.dateOfCreation = dateOfCreation;
-    }
+	public void setDateOfCreation(Date dateOfCreation) {
+		this.dateOfCreation = dateOfCreation;
+	}
 
-    public List<RegularUser> getRequster() {
-        return requster;
-    }
+	public RegularUser getRequster() {
+		return requster;
+	}
 
-    public void setRequster(List<RegularUser> requster) {
-        this.requster = requster;
-    }
+	public void setRequster(RegularUser requster) {
+		this.requster = requster;
+	}
 
-    public List<RegularUser> getAccountToFollow() {
-        return accountToFollow;
-    }
+	public RegularUser getAccountToFollow() {
+		return accountToFollow;
+	}
 
-    public void setAccountToFollow(List<RegularUser> accountToFollow) {
-        this.accountToFollow = accountToFollow;
-    }
+	public void setAccountToFollow(RegularUser accountToFollow) {
+		this.accountToFollow = accountToFollow;
+	}
+
 }
