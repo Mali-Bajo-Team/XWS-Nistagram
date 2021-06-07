@@ -18,10 +18,11 @@ func InitializeRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/post/", server.CreatePostEndpoint).Methods("POST")
 	// TODO: Find some better naming
 	router.HandleFunc("/user/highlights/{userid}", server.CreateUserHighlightEndpoint).Methods("POST")
-	router.HandleFunc("/user/highlights/{userid}", server.GetUserHighlightEndpoint).Methods("GET")
+	router.HandleFunc("/user/highlights/{userid}", server.GetUserHighlightsEndpoint).Methods("GET")
 	router.HandleFunc("/user/highlight/{highlightid}/{userid}", server.UpdateUserHighlightEndpoint).Methods("POST")
 
 	router.HandleFunc("/user/collections/{userid}", server.CreateUserCollectionsEndpoint).Methods("POST")
+	router.HandleFunc("/user/collections/{userid}", server.GetUserCollectionsEndpoint).Methods("GET")
 	router.HandleFunc("/user/collection/{collectionid}/{userid}", server.UpdateUserCollectionEndpoint).Methods("POST")
 
 	router.HandleFunc("/user/saved/{userid}", server.AddPostToSavedEndpoint).Methods("POST")
@@ -120,14 +121,6 @@ func (contentServerRef *ContentServer) CreateUserHighlightEndpoint(response http
 	renderJSON(response, storyHighlight)
 }
 
-/*
-{
-        "_id": "60be712c4bdf2ccc447f9ccd",
-        "path": "fanynttmdmxv_1623093548921-kod.mkv",
-        "type": "video"
-    }
-*/
-
 func (contentServerRef *ContentServer) CreateUserCollectionsEndpoint(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("content-type", "application/json")
 	var collection model.Collection
@@ -147,10 +140,16 @@ func (contentServerRef *ContentServer) AddPostToSavedEndpoint(response http.Resp
 	renderJSON(response, regularPost)
 }
 
-func (contentServerRef *ContentServer) GetUserHighlightEndpoint(response http.ResponseWriter, request *http.Request) {
+func (contentServerRef *ContentServer) GetUserHighlightsEndpoint(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("content-type", "application/json")
 	params := mux.Vars(request)
 	renderJSON(response, contentServerRef.postStore.GetUserStoryHighlights(params["userid"]))
+}
+
+func (contentServerRef *ContentServer) GetUserCollectionsEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	params := mux.Vars(request)
+	renderJSON(response, contentServerRef.postStore.GetUserCollections(params["userid"]))
 }
 
 func (contentServerRef *ContentServer) GetSavedPostsEndpoint(response http.ResponseWriter, request *http.Request) {

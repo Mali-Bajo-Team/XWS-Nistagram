@@ -243,6 +243,28 @@ func (postStoreRef *PostStore) GetUserStoryHighlights(userID string) []model.Sto
 	return userTemp.StoryHighlights
 }
 
+func (postStoreRef *PostStore) GetUserCollections(userID string) []model.Collection {
+	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
+	// convert id string to ObjectId
+	objectId, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		log.Println("Invalid id")
+	}
+
+	result := collectionUsers.FindOne(
+		context.Background(),
+		bson.M{"_id": objectId},
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var userTemp model.User
+	result.Decode(&userTemp)
+
+	return userTemp.Collections
+}
+
 func (postStoreRef *PostStore) AddStoryContentOnStoryHighlight(story model.Story, userID string, highlightID string) *mongo.InsertOneResult {
 	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
 	// convert id string to ObjectId
@@ -284,6 +306,7 @@ func (postStoreRef *PostStore) AddStoryContentOnStoryHighlight(story model.Story
 }
 
 func (postStoreRef *PostStore) AddPostToCollection(post model.RegularPost, userID string, collectionID string) *mongo.InsertOneResult {
+	// TODO: Improve this with more sophisticated way
 	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
 	// convert id string to ObjectId
 	objectUserID, err := primitive.ObjectIDFromHex(userID)
