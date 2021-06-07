@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.xws.users.dto.FollowRequestDTO;
+import com.xws.users.dto.FollowerDTO;
 import com.xws.users.dto.RegularUserMiniDTO;
 import com.xws.users.service.IRelationshipService;
 import com.xws.users.users.model.FollowRequest;
@@ -43,16 +44,10 @@ public class RelationshipController {
 
 	@GetMapping("followers")
 	@PreAuthorize("hasRole('REGULAR')")
-	public ResponseEntity<List<RegularUserMiniDTO>> findFollowers(Authentication authentication) {
+	public ResponseEntity<List<FollowerDTO>> findFollowers(Authentication authentication) {
 		UserAccount user = (UserAccount) authentication.getPrincipal();
-
-		List<RegularUser> followers = relationshipService.findFollowers(user.getId());
-		List<RegularUserMiniDTO> retVal = new ArrayList<RegularUserMiniDTO>();
-		for (RegularUser ruser : followers) {
-			retVal.add(new RegularUserMiniDTO(ruser));
-		}
-
-		return ResponseEntity.ok(retVal);
+		
+		return ResponseEntity.ok(relationshipService.findFollowers(user.getId()));
 	}
 
 	@PostMapping("follow/{username}")
@@ -122,6 +117,40 @@ public class RelationshipController {
 			return ResponseEntity.ok(RelationshipType.NONE);
 		else 
 			return ResponseEntity.ok(relationship.getRelationshipType());
+	}
+	
+	@GetMapping("close-friends")
+	@PreAuthorize("hasRole('REGULAR')")
+	public ResponseEntity<List<RegularUserMiniDTO>> findCloseFriends(Authentication authentication) {
+		UserAccount user = (UserAccount) authentication.getPrincipal();
+
+		List<RegularUser> closeFriends = relationshipService.findCloseFriends(user.getId());
+		List<RegularUserMiniDTO> retVal = new ArrayList<RegularUserMiniDTO>();
+		for (RegularUser ruser : closeFriends) {
+			retVal.add(new RegularUserMiniDTO(ruser));
+		}
+
+		return ResponseEntity.ok(retVal);
+	}
+	
+	@PostMapping("close-friends/add/{username}")
+	@PreAuthorize("hasRole('REGULAR')")
+	public ResponseEntity<Void> addToClose(@PathVariable(required = true) String username, Authentication authentication) {
+		UserAccount user = (UserAccount) authentication.getPrincipal();
+
+		relationshipService.addToCloseFriends(user.getUsername(), username);
+
+		return ResponseEntity.noContent().build();
+	}
+	
+	@PostMapping("close-friends/remove/{username}")
+	@PreAuthorize("hasRole('REGULAR')")
+	public ResponseEntity<Void> removeFromClose(@PathVariable(required = true) String username, Authentication authentication) {
+		UserAccount user = (UserAccount) authentication.getPrincipal();
+
+		relationshipService.removeFromCloseFriends(user.getUsername(), username);
+
+		return ResponseEntity.noContent().build();
 	}
 	
 }

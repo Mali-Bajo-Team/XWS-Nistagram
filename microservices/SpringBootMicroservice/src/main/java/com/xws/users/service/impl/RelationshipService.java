@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.xws.users.dto.FollowerDTO;
 import com.xws.users.repository.IFollowRequestRepository;
 import com.xws.users.repository.IRegularUserRepository;
 import com.xws.users.repository.IRelationshipRepository;
@@ -31,17 +32,18 @@ public class RelationshipService implements IRelationshipService {
 	private IFollowRequestRepository followRequestRepository;
 
 	@Override
-	public List<RegularUser> findFollowers(Long id) {
+	public List<FollowerDTO> findFollowers(Long id) {
 		RegularUser user = userRepository.findById(id).orElse(null);
 		if (user == null)
 			throw new USAuthenticationException("User not found.");
 
-		List<RegularUser> followers = new ArrayList<RegularUser>();
+		List<FollowerDTO> followers = new ArrayList<FollowerDTO>();
 
 		for (Relationship relationship : user.getInRelationships()) {
-			if (relationship.getRelationshipType().equals(RelationshipType.FOLLOWED)
-					|| relationship.getRelationshipType().equals(RelationshipType.CLOSE_FRIEND)) {
-				followers.add(relationship.getFrom());
+			if (relationship.getRelationshipType().equals(RelationshipType.FOLLOWED)) {
+				followers.add(new FollowerDTO(relationship.getFrom(), false));
+			} else if (relationship.getRelationshipType().equals(RelationshipType.CLOSE_FRIEND)) {
+				followers.add(new FollowerDTO(relationship.getFrom(), true));
 			}
 		}
 
@@ -107,7 +109,7 @@ public class RelationshipService implements IRelationshipService {
 
 		relationshipRepository.save(existingRelationship);
 	}
-	
+
 	@Override
 	public void unfollow(String fromUsername, String towardsUsername) {
 		RegularUser from = userRepository.findByUsername(fromUsername);
@@ -118,7 +120,7 @@ public class RelationshipService implements IRelationshipService {
 			throw new USConflictException("User with the requested username does not exist.");
 
 		Relationship existingRelationship = relationshipRepository.findByFromAndTowards(from, towards);
-		
+
 		if (!(existingRelationship != null
 				&& (existingRelationship.getRelationshipType().equals(RelationshipType.FOLLOWED)
 						|| existingRelationship.getRelationshipType().equals(RelationshipType.CLOSE_FRIEND)))) {
@@ -189,6 +191,46 @@ public class RelationshipService implements IRelationshipService {
 		Relationship existingRelationship = relationshipRepository.findByFromAndTowards(from, towards);
 
 		return existingRelationship;
+	}
+
+	@Override
+	public List<RegularUser> findCloseFriends(Long id) {
+		RegularUser user = userRepository.findById(id).orElse(null);
+		if (user == null)
+			throw new USAuthenticationException("User not found.");
+
+		List<RegularUser> closeFriends = new ArrayList<RegularUser>();
+
+		for (Relationship relationship : user.getInRelationships()) {
+			if (relationship.getRelationshipType().equals(RelationshipType.CLOSE_FRIEND)) {
+				closeFriends.add(relationship.getFrom());
+			}
+		}
+
+		return closeFriends;
+	}
+
+	@Override
+	public void addToCloseFriends(String username, String closeFriendUsername) {
+		Relationship relationship = findRelationship(closeFriendUsername, username);
+
+		if (!(relationship != null && (relationship.getRelationshipType().equals(RelationshipType.FOLLOWED)
+				|| relationship.getRelationshipType().equals(RelationshipType.CLOSE_FRIEND))))
+			throw new USConflictException("The requested user doesn't follow.");
+
+		relationship.setRelationshipType(RelationshipType.CLOSE_FRIEND);
+		relationshipRepository.save(relationship);
+	}
+
+	@Override
+	public void removeFromCloseFriends(String username, String closeFriendUsername) {
+		Relationship relationship = findRelationship(closeFriendUsername, username);
+
+		if (!(relationship != null && relationship.getRelationshipType().equals(RelationshipType.CLOSE_FRIEND)))
+			throw new USConflictException("The requested user isn't a close friend.");
+
+		relationship.setRelationshipType(RelationshipType.FOLLOWED);
+		relationshipRepository.save(relationship);
 	}
 
 }
