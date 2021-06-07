@@ -23,6 +23,7 @@ func InitializeRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/post/comment/{id}", server.GetPostCommentsEndpoint).Methods("GET")
 
 	router.HandleFunc("/user/", server.CreateUserEndpoint).Methods("POST")
+	router.HandleFunc("/user/update/", server.UpdateUserEndpoint).Methods("POST")
 	router.HandleFunc("/user/id/{id}", server.GetUserByIDEndpoint).Methods("GET")
 	router.HandleFunc("/user/username/{username}", server.GetUserByUsernameEndpoint).Methods("GET")
 	router.HandleFunc("/user/post/{id}", server.GetUserPostsByIDEndpoint).Methods("GET")
@@ -69,6 +70,17 @@ func (contentServerRef *ContentServer) CreateUserEndpoint(response http.Response
 	var documentId = contentServerRef.postStore.CreateUser(user)
 	user.ID = documentId.InsertedID.(primitive.ObjectID)
 	renderJSON(response, user)
+}
+
+func (contentServerRef *ContentServer) UpdateUserEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+
+	var userupdate model.UserUpdate
+
+	_ = json.NewDecoder(request.Body).Decode(&userupdate)
+	contentServerRef.postStore.UpdateUser(userupdate)
+
+	renderJSON(response, userupdate)
 }
 
 func (contentServerRef *ContentServer) CreatePostEndpoint(response http.ResponseWriter, request *http.Request) {

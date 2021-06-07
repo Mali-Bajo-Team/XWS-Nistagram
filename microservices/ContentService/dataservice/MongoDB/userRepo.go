@@ -10,7 +10,23 @@ import (
 	"time"
 )
 
-func (postStoreRef *PostStore) CreateUser(user model.User) *mongo.InsertOneResult{
+func (postStoreRef *PostStore) UpdateUser(user model.UserUpdate) *mongo.UpdateResult {
+	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	update := bson.M{
+		"$set": bson.M{
+			"username": user.NewUsername,
+		},
+	}
+
+	result, _ := collectionUsers.UpdateOne(ctx,
+		bson.M{"_id": user.ID},
+		update)
+
+	return result
+}
+
+func (postStoreRef *PostStore) CreateUser(user model.User) *mongo.InsertOneResult {
 	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	result, _ := collectionUsers.InsertOne(ctx, user)
@@ -39,7 +55,7 @@ func (postStoreRef *PostStore) UpdateUserPosts(post model.RegularPost) *mongo.Up
 	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
 	// convert id string to ObjectId
 	objectId, err := primitive.ObjectIDFromHex(post.MyPost.PostCreatorRef)
-	if err != nil{
+	if err != nil {
 		log.Println("Invalid id")
 	}
 
@@ -66,4 +82,3 @@ func (postStoreRef *PostStore) UpdateUserPosts(post model.RegularPost) *mongo.Up
 
 	return result
 }
-
