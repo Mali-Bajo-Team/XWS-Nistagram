@@ -95,16 +95,18 @@
                   label="Email"
                 ></v-text-field>
                 <v-text-field
-                  v-model="form.phoneNumber"
+                  v-model="form.phonenumber"
                   prepend-icon="mdi-phone"
                   label="Phone number"
                 ></v-text-field>
-                <v-text-field
-                  v-model="form.birthayDate"
-                  label="Birthday date"
-                  prepend-icon="mdi-cake-variant"
-                  readonly
-                ></v-text-field>
+             
+              <p>Date of birth</p>
+              <v-date-picker
+                 v-model="form.birthayDate"
+                label="Date of birth"
+                class="ml-4"
+              ></v-date-picker>
+
                 <v-text-field
                   v-model="form.gender"
                   prepend-icon="mdi-human-male-female"
@@ -1331,6 +1333,7 @@
 
 <script>
 import axios from "axios";
+import { getParsedToken } from "./../../../util/token";
 export default {
   data() {
     return {
@@ -1346,6 +1349,7 @@ export default {
           username: "pipidugacarapa25",
         },
       ],
+      menu: false,
       colors: [
           'indigo',
           'warning',
@@ -1377,6 +1381,7 @@ export default {
         add_link: "/",
         content: [],
       },
+      user_id: "",
       isForCloseFriends: false,
       regularUser: {},
       form: {
@@ -1388,8 +1393,8 @@ export default {
         name: "",
         surname: "",
         username: "",
-        phoneNumber: "",
-        birthayDate: "", 
+        phonenumber: "",
+        birthayDate:  "", 
         gender: "", 
         webSite: "",
         biography: "",
@@ -1420,8 +1425,8 @@ export default {
         this.form.name = this.regularUser.name;
         this.form.surname = this.regularUser.surname;
         this.form.username = this.regularUser.username;
-        this.form.phoneNumber = this.regularUser.phoneNumber;
-        this.form.birthayDate = this.regularUser.dateOfBirth;
+        this.form.phonenumber = this.regularUser.phonenumber;
+        this.form.birthayDate = new Date(this.regularUser.birthdaydate).toISOString().substr(0, 10),
         this.form.gender = this.regularUser.gender;
         this.form.biography = this.regularUser.bio;
         this.form.photoUrl = this.regularUser.photoUrl;
@@ -1437,7 +1442,7 @@ export default {
         process.env.VUE_APP_BACKEND_URL +
           process.env.VUE_APP_USER +
           process.env.VUE_APP_USER_USERNAME +
-          "/pero", // TODO: Fix endpoint to read from header user-username}
+          "/" +  getParsedToken().sub, // TODO: Fix endpoint to read from header user-username}
           {
             headers: {
               Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
@@ -1446,6 +1451,7 @@ export default {
       )
       .then((res) => {
         this.user = res.data;
+        this.user_id = res.data._id;
         if (this.user.posts != null) {
           this.posts = [];
           this.user.posts.forEach((post) => {
@@ -1473,34 +1479,45 @@ export default {
   },
   methods: {
     saveChanges() {
-      this.axios
-        .put(
-          process.env.VUE_APP_BACKEND_URL +
-            process.env.VUE_APP_PROFILE_ENDPOINT,
-          {
-            username: this.form.username,
-            name: this.form.name,
-            email:  this.form.email,
-            surname: this.form.surname,
-            phoneNumber : this.form.phoneNumber,
-            dateOfBirth : this.form.dateOfBirth,
-            gender : this.form.gender,
-            linkToWebSite : this.form.linkToWebSite,
-            bio : this.form.bio,
+      axios.all([
+      axios.put(process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_PROFILE_ENDPOINT, {
+          username: getParsedToken().sub,
+          name: this.form.name,
+          email:  this.form.email,
+          surname: this.form.surname,
+          phonenumber : this.form.phonenumber,
+          birthdaydate : this.form.birthayDate,
+          gender : this.form.gender,
+          website : this.form.webSite,
+          bio : this.form.bio,
+          newusername: this.form.username,
+        },
+        {
+          headers: {
+           Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+          }
+        },
+        ),
+      axios.post(process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_UPDATEUSER_CONTENTENDPOINT, {
+          _id: this.user_id,
+          username: getParsedToken().sub,
+          new_username: this.form.username,
           },
           {
             headers: {
-              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
-            }
+            Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+          }
           },
-        )
-        .then((resp) => {
+      ),
+    ])
+    .then((resp) => {
+          alert(this.form.phonenumber);
           alert("Successfully changed.");
            this.regularUser = resp.data;
            this.form.username = this.regularUser.username;
            this.form.name = this.regularUser.name;
            this.form.surname = this.regularUser.surname;
-           this.form.phoneNumber = this.regularUser.phoneNumber;
+           this.form.phonenumber = this.regularUser.phonenumber;
            this.form.dateOfBirth = this.regularUser.dateOfBirth;
            this.form.gender = this.regularUser.gender;
            this.form.linkToWebSite = this.regularUser.linkToWebSite;
@@ -1508,7 +1525,7 @@ export default {
         })
         .catch((error) => {
           alert("Error: " + error);
-        });
+      });
     },
     getImageUrl(post) {
       return (

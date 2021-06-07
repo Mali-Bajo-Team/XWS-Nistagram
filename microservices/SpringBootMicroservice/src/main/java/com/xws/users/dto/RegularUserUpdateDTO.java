@@ -14,6 +14,7 @@ public class RegularUserUpdateDTO {
     private String gender;
     private String website;
     private String bio;
+    private String newusername;
 
     public RegularUserUpdateDTO() {
     }
@@ -23,11 +24,19 @@ public class RegularUserUpdateDTO {
         this.surname = regularUser.getSurname();
         this.username = regularUser.getUsername();
         this.email = regularUser.getEmail();
-        this.phonenumber = regularUser.getEmail();
+        this.phonenumber = regularUser.getPhoneNumber();
         this.birthdaydate = regularUser.getDateOfBirth();
         this.gender = regularUser.getGender();
         this.website = regularUser.getLinkToWebSite();
         this.bio = regularUser.getBio();
+    }
+
+    public String getNewusername() {
+        return newusername;
+    }
+
+    public void setNewusername(String newusername) {
+        this.newusername = newusername;
     }
 
     public String getBio() { return bio; }
