@@ -24,22 +24,22 @@ export default {
       },
       {
         title: "My profile",
-        to: "profile",
+        to: "/profile",
       },
       {
         title: "Log in",
-        to: "login",
+        to: "/login",
       },
       {
         title: "Register",
-        to: "register",
+        to: "/register",
       },
       {
         title: "Search",
         children: [
           {
             title: "Users",
-            to: "usersearch"
+            to: "/usersearch"
           }
         ],
       }

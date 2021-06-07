@@ -649,7 +649,7 @@
       </v-row>
       <!-- End of edit profile, add content -->
 
-      <!-- Posts, stories, saved, tagged -->
+      <!-- Posts, stories, highlights, saved, tagged -->
       <v-row>
         <v-tabs v-model="tabs2" icons-and-text background-color="transparent">
           <v-tabs-slider></v-tabs-slider>
@@ -667,7 +667,7 @@
                 <v-row dense>
                   <v-col
                     v-for="post in posts"
-                    :key="post.post_id"
+                    :key="post._id"
                     :cols="post.flex"
                   >
                     <!-- Image previw -->
@@ -682,10 +682,15 @@
                       <v-card-actions>
                         <v-spacer></v-spacer>
 
-                        <!--Dialog for choosing photo-->
+                        <!--Dialog for post details-->
                         <v-dialog width="600px">
                           <template v-slot:activator="{ on, attrs }">
-                            <v-btn v-bind="attrs" v-on="on" icon>
+                            <v-btn
+                              v-bind="attrs"
+                              v-on="on"
+                              @click="getCommentsForPost(post._id)"
+                              icon
+                            >
                               <v-icon right> mdi-plus-circle </v-icon>
                             </v-btn>
                           </template>
@@ -746,6 +751,7 @@
                                       <v-card-text>
                                         <!--Field for comments-->
                                         <v-textarea
+                                          v-model="newCommentContent"
                                           outlined
                                           name="input-7-4"
                                           no-resize
@@ -762,7 +768,11 @@
                                         <v-btn color="error" text>
                                           Cancel
                                         </v-btn>
-                                        <v-btn color="primary" text>
+                                        <v-btn
+                                          color="primary"
+                                          text
+                                          @click="createComment(post._id)"
+                                        >
                                           Confirm
                                         </v-btn>
                                       </v-card-actions>
@@ -786,8 +796,8 @@
                                     v-for="comment in comments"
                                     :key="comment.id"
                                   >
-                                    <h3>{{ comment.username }}</h3>
-                                    {{ comment.description }}
+                                    <h3>{{ comment.creator_ref }}</h3>
+                                    {{ comment.content }}
                                   </v-expansion-panel-content>
                                 </v-expansion-panel>
                               </v-expansion-panels>
@@ -795,7 +805,7 @@
                             </v-card-text>
                           </v-card>
                         </v-dialog>
-                        <!--End of dialog for choosing photo-->
+                        <!--End of dialog for post details-->
 
                         <v-btn icon>
                           <v-icon>mdi-bookmark</v-icon>
@@ -833,6 +843,7 @@
                               ></v-img>
                             </v-card-title>
                             <v-card-text>
+                              <!-- Likes, dislikes, add comment -->
                               <v-row>
                                 <v-col>
                                   <!--The number of likes and comments-->
@@ -881,6 +892,7 @@
                                       <v-card-text>
                                         <!--Field for comments-->
                                         <v-textarea
+                                          v-model="newCommentContent"
                                           outlined
                                           name="input-7-4"
                                           no-resize
@@ -897,7 +909,11 @@
                                         <v-btn color="error" text>
                                           Cancel
                                         </v-btn>
-                                        <v-btn color="primary" text>
+                                        <v-btn
+                                          color="primary"
+                                          text
+                                          @click="createComment(post._id)"
+                                        >
                                           Confirm
                                         </v-btn>
                                       </v-card-actions>
@@ -906,6 +922,7 @@
                                   <!--End of dialog for adding comments-->
                                 </v-col>
                               </v-row>
+                              <!-- End of the likes, dislikes, add comment -->
 
                               <br /><br />
                               <!--Expansion panels for showing comments-->
@@ -1284,7 +1301,7 @@
           <!--End of tab for tagged-->
         </v-tabs-items>
       </v-row>
-      <!-- End of posts, stories, saved, tagged -->
+      <!-- End of posts, highlights, stories, saved, tagged -->
     </v-col>
 
     <v-spacer></v-spacer>
@@ -1360,6 +1377,7 @@ export default {
       user: null,
       posts: [],
       stories: [],
+      newCommentContent: "",
     };
   },
   computed: {},
@@ -1392,6 +1410,7 @@ export default {
       .catch((error) => {
         alert("Error: " + error);
       });
+
     // Get user by username and his posts
     axios
       .get(
@@ -1435,6 +1454,43 @@ export default {
       });
   },
   methods: {
+    createComment(postID) {
+      axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_COMMENT +
+            postID,
+          {
+            content: this.newCommentContent,
+            creator_ref: this.user._id,
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        });
+    },
+    getCommentsForPost(postID) {
+      // get comments
+      axios
+        .get(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_COMMENT +
+            postID,
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          this.comments = res.data;
+        });
+    },
     saveChanges() {
       axios
         .all([
