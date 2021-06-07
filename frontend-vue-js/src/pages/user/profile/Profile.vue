@@ -161,6 +161,7 @@
                   accept="image/png, image/jpeg, image/bmp"
                   label="Choose a profile"
                   prepend-icon="mdi-camera"
+                  @change="onFileSelected"
                 ></v-file-input>
               </v-card-text>
               <!--End of edit profile picture-->
@@ -1334,6 +1335,7 @@ export default {
         add_link: "/",
         content: [],
       },
+      profileContent: [],
       user_id: "",
       isForCloseFriends: false,
       regularUser: {},
@@ -1551,6 +1553,27 @@ export default {
         .then((res) => {
           console.log(res);
           this.my_post.content = res.data;
+        });
+    },
+    saveProfilePicture() {
+      const fd = new FormData();
+
+      this.selectedFiles.forEach((selectedFile) => {
+        if (selectedFile.type.includes("image")) {
+          fd.append("image", selectedFile, selectedFile.name);
+        } else {
+          fd.append("video", selectedFile, selectedFile.name);
+        }
+      });
+
+      axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_FILE_ENDPOINT,
+          fd
+        )
+        .then((res) => {
+          console.log(res);
+          this.profileContent = res.data;
         });
     },
     onFileSelected(event) {
