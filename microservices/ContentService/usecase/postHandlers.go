@@ -19,7 +19,11 @@ func InitializeRouter(router *mux.Router, server *ContentServer) {
 	// TODO: Find some better naming
 	router.HandleFunc("/user/highlights/{userid}", server.CreateUserHighlightEndpoint).Methods("POST")
 	router.HandleFunc("/user/highlights/{userid}", server.GetUserHighlightEndpoint).Methods("GET")
-	router.HandleFunc("/user/{highlightid}/{userid}", server.UpdateUserHighlightEndpoint).Methods("POST")
+	router.HandleFunc("/user/highlight/{highlightid}/{userid}", server.UpdateUserHighlightEndpoint).Methods("POST")
+
+	router.HandleFunc("/user/saved/{userid}", server.AddPostToSavedEndpoint).Methods("POST")
+
+
 	// TODO: Find some better naming for reaction-undo-reaction
 	router.HandleFunc("/post/reaction/{id}", server.CreatePostReactionEndpoint).Methods("POST")
 	router.HandleFunc("/post/unreaction/{id}", server.DeletePostReactionEndpoint).Methods("POST")
@@ -110,6 +114,16 @@ func (contentServerRef *ContentServer) CreateUserHighlightEndpoint(response http
 	params := mux.Vars(request)
 	contentServerRef.postStore.CreateStoryHighlight(&storyHighlight, params["userid"])
 	renderJSON(response, storyHighlight)
+}
+
+func (contentServerRef *ContentServer) AddPostToSavedEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	// TODO: Think about change to new object instead of entire regular post
+	var regularPost model.RegularPost
+	_ = json.NewDecoder(request.Body).Decode(&regularPost)
+	params := mux.Vars(request)
+	contentServerRef.postStore.AddPostToSaved(regularPost, params["userid"])
+	renderJSON(response, regularPost)
 }
 
 func (contentServerRef *ContentServer) GetUserHighlightEndpoint(response http.ResponseWriter, request *http.Request) {

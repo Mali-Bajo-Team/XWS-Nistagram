@@ -143,6 +143,35 @@ func (postStoreRef *PostStore) CreateStoryHighlight(storyHighlight *model.StoryH
 	return result
 }
 
+func (postStoreRef *PostStore) AddPostToSaved(regularPost model.RegularPost, userID string) *mongo.UpdateResult {
+	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
+	// convert id string to ObjectId
+	objectId, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		log.Println("Invalid id")
+	}
+
+	var regularPosts []model.RegularPost
+	regularPosts = append(regularPosts, regularPost)
+
+	update := bson.M{
+		"$addToSet": bson.M{
+			"saved.regular_posts": bson.M{"$each": regularPosts},
+		},
+	}
+
+	result, err := collectionUsers.UpdateOne(
+		context.Background(),
+		bson.M{"_id": objectId},
+		update,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return result
+}
+
 func (postStoreRef *PostStore) GetUserStoryHighlights(userID string) []model.StoryHighlight {
 	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
 	// convert id string to ObjectId
