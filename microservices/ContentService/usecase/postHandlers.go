@@ -116,7 +116,7 @@ func (contentServerRef *ContentServer) UpdateUserHighlightEndpoint(response http
 	var story model.Story
 	_ = json.NewDecoder(request.Body).Decode(&story)
 	params := mux.Vars(request)
-	contentServerRef.postStore.UpdateStoryHighlight(story, params["userid"], params["highlightid"])
+	contentServerRef.postStore.AddStoryContentOnStoryHighlight(story, params["userid"], params["highlightid"])
 	renderJSON(response, story)
 }
 

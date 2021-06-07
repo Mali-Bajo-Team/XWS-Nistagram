@@ -141,7 +141,7 @@ func (postStoreRef *PostStore) CreateStoryHighlight(storyHighlight *model.StoryH
 	return result
 }
 
-func (postStoreRef *PostStore) UpdateStoryHighlight(story model.Story, userID string, highlightID string) *mongo.InsertOneResult {
+func (postStoreRef *PostStore) AddStoryContentOnStoryHighlight(story model.Story, userID string, highlightID string) *mongo.InsertOneResult {
 	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
 	// convert id string to ObjectId
 	objectUserID, err := primitive.ObjectIDFromHex(userID)
@@ -153,9 +153,7 @@ func (postStoreRef *PostStore) UpdateStoryHighlight(story model.Story, userID st
 	if err != nil {
 		log.Println("Invalid id")
 	}
-	log.Println(objectHighlightID)
 
-	// TODO: Find that user
 	result := collectionUsers.FindOne(
 		context.Background(),
 		bson.M{"_id": objectUserID},
@@ -163,12 +161,10 @@ func (postStoreRef *PostStore) UpdateStoryHighlight(story model.Story, userID st
 	var userTemp model.User
 	result.Decode(&userTemp)
 
-	rep,_ := collectionUsers.DeleteOne(
+	_, _ = collectionUsers.DeleteOne(
 		context.Background(),
 		bson.M{"_id": objectUserID},
 	)
-	log.Println(rep)
-
 	for idx, highlight := range userTemp.StoryHighlights {
 		if highlight.ID == objectHighlightID {
 			var storyHighlightContent model.StoryHighlightContent
@@ -181,56 +177,7 @@ func (postStoreRef *PostStore) UpdateStoryHighlight(story model.Story, userID st
 		}
 	}
 
-	//userTemp.StoryHighlights = append(userTemp.StoryHighlights, *storyHighlight)
-
 	retVal, _ := collectionUsers.InsertOne(context.Background(), userTemp)
-
-	//// TODO: Delete that element from story_highlights array
-	//var storyHighlights []model.StoryHighlight
-	//storyHighlights = append(storyHighlights, *storyHighlight)
-	//
-	//updatePull := bson.M{
-	//	"$pull": bson.M{
-	//		"story_highlights": bson.M{"$in": storyHighlights},
-	//	},
-	//
-	//}
-	//
-	//result, err := collectionUsers.UpdateOne(
-	//	context.Background(),
-	//	bson.M{"_id": objectUserID},
-	//	updatePull,
-	//)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//result.Decode()
-	//
-	//
-	//
-	//
-	////
-	////var storyHighlights []model.StoryHighlight
-	////storyHighlights = append(storyHighlights, *storyHighlight)
-	//
-	//
-	//// TODO: Add new highlight element to story_highlights array
-	//
-	//updateAddToSet := bson.M{
-	//	"$addToSet": bson.M{
-	//		"story_highlights": bson.M{"$each": storyHighlights},
-	//	},
-	//}
-	//
-	//a, err := collectionUsers.UpdateOne(
-	//	context.Background(),
-	//	bson.M{"_id": objectUserID},
-	//	updateAddToSet,
-	//)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-
 	return retVal
 }
 
