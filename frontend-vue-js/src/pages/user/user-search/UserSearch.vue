@@ -48,6 +48,7 @@
         <v-list-item
           v-for="(user, i) in users"
           :key="i"
+          @click="userClicked(user)"
         >
           <v-list-item-avatar>
             <v-img :src="user.profileImagePath"></v-img>
@@ -137,6 +138,9 @@ export default {
     },
     reset() {
       this.search = ""
+    },
+    userClicked(user) {
+        this.$router.push('/user/' + user.username)
     }
   }
 };
