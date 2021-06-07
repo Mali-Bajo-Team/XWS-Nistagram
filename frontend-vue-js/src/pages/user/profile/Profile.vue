@@ -831,6 +831,7 @@ export default {
         add_link: "/",
         content: [],
       },
+      user_id: "",
       isForCloseFriends: false,
       regularUser: {},
       form: {
@@ -900,6 +901,7 @@ export default {
       )
       .then((res) => {
         this.user = res.data;
+        this.user_id = res.data._id;
         if (this.user.posts != null) {
           this.posts = [];
           this.user.posts.forEach((post) => {
@@ -927,29 +929,38 @@ export default {
   },
   methods: {
     saveChanges() {
-      this.axios
-        .put(
-          process.env.VUE_APP_BACKEND_URL +
-            process.env.VUE_APP_PROFILE_ENDPOINT,
-          {
-            username: getParsedToken().sub,
-            name: this.form.name,
-            email:  this.form.email,
-            surname: this.form.surname,
-            phonenumber : this.form.phonenumber,
-            birthdaydate : this.form.birthayDate,
-            gender : this.form.gender,
-            website : this.form.webSite,
-            bio : this.form.bio,
-            newusername: this.form.username,
+      axios.all([
+      axios.put(process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_PROFILE_ENDPOINT, {
+          username: getParsedToken().sub,
+          name: this.form.name,
+          email:  this.form.email,
+          surname: this.form.surname,
+          phonenumber : this.form.phonenumber,
+          birthdaydate : this.form.birthayDate,
+          gender : this.form.gender,
+          website : this.form.webSite,
+          bio : this.form.bio,
+          newusername: this.form.username,
+        },
+        {
+          headers: {
+           Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+          }
+        },
+        ),
+      axios.post(process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_UPDATEUSER_CONTENTENDPOINT, {
+          _id: this.user_id,
+          username: getParsedToken().sub,
+          new_username: this.form.username,
           },
           {
             headers: {
-              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
-            }
+            Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+          }
           },
-        )
-        .then((resp) => {
+      ),
+    ])
+    .then((resp) => {
           alert(this.form.phonenumber);
           alert("Successfully changed.");
            this.regularUser = resp.data;
@@ -964,7 +975,46 @@ export default {
         })
         .catch((error) => {
           alert("Error: " + error);
-        });
+      });
+
+      // this.axios
+      //   .put(
+      //     process.env.VUE_APP_BACKEND_URL +
+      //       process.env.VUE_APP_PROFILE_ENDPOINT,
+      //     {
+      //       username: getParsedToken().sub,
+      //       name: this.form.name,
+      //       email:  this.form.email,
+      //       surname: this.form.surname,
+      //       phonenumber : this.form.phonenumber,
+      //       birthdaydate : this.form.birthayDate,
+      //       gender : this.form.gender,
+      //       website : this.form.webSite,
+      //       bio : this.form.bio,
+      //       newusername: this.form.username,
+      //     },
+      //     {
+      //       headers: {
+      //         Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+      //       }
+      //     },
+      //   )
+      //   .then((resp) => {
+      //     alert(this.form.phonenumber);
+      //     alert("Successfully changed.");
+      //      this.regularUser = resp.data;
+      //      this.form.username = this.regularUser.username;
+      //      this.form.name = this.regularUser.name;
+      //      this.form.surname = this.regularUser.surname;
+      //      this.form.phonenumber = this.regularUser.phonenumber;
+      //      this.form.dateOfBirth = this.regularUser.dateOfBirth;
+      //      this.form.gender = this.regularUser.gender;
+      //      this.form.linkToWebSite = this.regularUser.linkToWebSite;
+      //      this.form.bio = this.regularUser.bio;
+      //   })
+      //   .catch((error) => {
+      //     alert("Error: " + error);
+      //   });
     },
     getImageUrl(post) {
       return (
