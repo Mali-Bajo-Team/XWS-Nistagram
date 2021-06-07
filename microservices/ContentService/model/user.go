@@ -18,5 +18,4 @@ type User struct {
 	Favorites          []RegularPost      `json:"favorites,omitempty" bson:"favorites,omitempty"`
 	FavoritesRef       []interface{}      `json:"favorites_ref,omitempty" bson:"favorites_ref,omitempty"`
 	StoryHighlights    []StoryHighlight   `json:"story_highlights,omitempty" bson:"story_highlights,omitempty"`
-	StoryHighlightsRef []interface{}      `json:"story_highlights_ref,omitempty" bson:"story_highlights_ref,omitempty"`
 }

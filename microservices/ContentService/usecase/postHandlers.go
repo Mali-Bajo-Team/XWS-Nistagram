@@ -27,6 +27,7 @@ func InitializeRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/user/username/{username}", server.GetUserByUsernameEndpoint).Methods("GET")
 	router.HandleFunc("/user/post/{id}", server.GetUserPostsByIDEndpoint).Methods("GET")
 	router.HandleFunc("/user/story/{id}", server.GetUserStoriesByIDEndpoint).Methods("GET")
+	router.HandleFunc("/user/story/highlight/{id}", server.CreateStoryHighlightEndpoint).Methods("POST")
 	router.HandleFunc("/story/", server.CreateStoryEndpoint).Methods("POST")
 }
 
@@ -130,6 +131,16 @@ func (contentServerRef *ContentServer) CreateStoryEndpoint(response http.Respons
 	renderJSON(response, story)
 }
 
+func (contentServerRef *ContentServer) CreateStoryHighlightEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	var story model.Story
+	_ = json.NewDecoder(request.Body).Decode(&story)
+	var documentId = contentServerRef.postStore.CreateStory(story)
+	story.ID = documentId.InsertedID.(primitive.ObjectID)
+	contentServerRef.postStore.UpdateUserStories(story)
+	renderJSON(response, story)
+}
+
 func (contentServerRef *ContentServer) GetUserByIDEndpoint(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("content-type", "application/json")
 	params := mux.Vars(request)
@@ -180,3 +191,4 @@ func (contentServerRef *ContentServer) GetUserStoriesByIDEndpoint(response http.
 	}
 	renderJSON(response, user.Stories)
 }
+
