@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"time"
+	"os"
 )
 
 type PostStore struct {
@@ -18,9 +19,21 @@ type PostStore struct {
 func NewPostStore() (*PostStore, error) {
 	postStoreRef := &PostStore{}
 
+	mongoPath, present := os.LookupEnv("MONGO_PATH")
+	if !present {
+		mongoPath = "mongodb://localhost:27017"
+	}
+
+	log.Println(mongoPath)
+
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
-	postStoreRef.ourClient, _ = mongo.Connect(ctx, clientOptions)
+	clientOptions := options.Client().ApplyURI(mongoPath)
+	client, err := mongo.Connect(ctx, clientOptions)
+	postStoreRef.ourClient = client
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
 
 	return postStoreRef, nil
 }
