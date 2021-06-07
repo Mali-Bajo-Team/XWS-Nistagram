@@ -717,6 +717,7 @@
                                       <v-card-text>
                                         <!--Field for comments-->
                                         <v-textarea
+                                          v-model="newCommentContent"
                                           outlined
                                           name="input-7-4"
                                           no-resize
@@ -733,7 +734,11 @@
                                         <v-btn color="error" text>
                                           Cancel
                                         </v-btn>
-                                        <v-btn color="primary" text>
+                                        <v-btn
+                                          color="primary"
+                                          text
+                                          @click="createComment(post._id)"
+                                        >
                                           Confirm
                                         </v-btn>
                                       </v-card-actions>
@@ -755,7 +760,7 @@
                                   </v-expansion-panel-header>
                                   <v-expansion-panel-content
                                     v-for="comment in comments"
-                                    :key="comment.creator_ref"
+                                    :key="comment.id"
                                   >
                                     <h3>{{ comment.creator_ref }}</h3>
                                     {{ comment.content }}
@@ -804,6 +809,7 @@
                               ></v-img>
                             </v-card-title>
                             <v-card-text>
+                              <!-- Likes, dislikes, add comment -->
                               <v-row>
                                 <v-col>
                                   <!--The number of likes and comments-->
@@ -852,6 +858,7 @@
                                       <v-card-text>
                                         <!--Field for comments-->
                                         <v-textarea
+                                          v-model="newCommentContent"
                                           outlined
                                           name="input-7-4"
                                           no-resize
@@ -868,7 +875,11 @@
                                         <v-btn color="error" text>
                                           Cancel
                                         </v-btn>
-                                        <v-btn color="primary" text>
+                                        <v-btn
+                                          color="primary"
+                                          text
+                                          @click="createComment(post._id)"
+                                        >
                                           Confirm
                                         </v-btn>
                                       </v-card-actions>
@@ -877,6 +888,7 @@
                                   <!--End of dialog for adding comments-->
                                 </v-col>
                               </v-row>
+                              <!-- End of the likes, dislikes, add comment -->
 
                               <br /><br />
                               <!--Expansion panels for showing comments-->
@@ -1330,6 +1342,7 @@ export default {
       user: null,
       posts: [],
       stories: [],
+      newCommentContent: "",
     };
   },
   computed: {},
@@ -1406,9 +1419,29 @@ export default {
       });
   },
   methods: {
+    createComment(postID) {
+      // alert(postID + " : " + this.newCommentContent);
+      axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_COMMENT +
+            postID,
+          {
+            content: this.newCommentContent,
+            creator_ref: this.user._id,
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        });
+    },
     getCommentsForPost(postID) {
       // get comments
-      alert(postID);
       axios
         .get(
           process.env.VUE_APP_BACKEND_URL +
@@ -1421,7 +1454,6 @@ export default {
           }
         )
         .then((res) => {
-          console.log(res);
           this.comments = res.data;
         });
     },
