@@ -932,15 +932,16 @@ export default {
           process.env.VUE_APP_BACKEND_URL +
             process.env.VUE_APP_PROFILE_ENDPOINT,
           {
-            username: this.form.username,
+            username: getParsedToken().sub,
             name: this.form.name,
             email:  this.form.email,
             surname: this.form.surname,
-            phoneNumber : this.form.phonenumber,
-            dateOfBirth : this.form.birthayDate,
+            phonenumber : this.form.phonenumber,
+            birthdaydate : this.form.birthayDate,
             gender : this.form.gender,
-            linkToWebSite : this.form.webSite,
+            website : this.form.webSite,
             bio : this.form.bio,
+            newusername: this.form.username,
           },
           {
             headers: {

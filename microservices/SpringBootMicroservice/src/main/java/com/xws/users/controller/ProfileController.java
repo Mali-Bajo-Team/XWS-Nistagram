@@ -1,5 +1,6 @@
 package com.xws.users.controller;
 
+import com.xws.users.util.security.exceptions.USConflictException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,25 +37,34 @@ public class ProfileController {
 
     @PreAuthorize("hasRole('REGULAR')")
     @PutMapping(consumes = "application/json")
-    public ResponseEntity<RegularUserUpdateDTO> updateUserAcc(@RequestBody RegularUser regularUser) {
+    public ResponseEntity<RegularUserUpdateDTO> updateUserAcc(@RequestBody RegularUserUpdateDTO regularUserUpdateDTO) {
 
-        RegularUser regularUserForUpdate = regularUserService.findByUsername(regularUser.getUsername());
+        RegularUser regularUserForUpdate = regularUserService.findByUsername(regularUserUpdateDTO.getUsername());
 
-        if (regularUserForUpdate == null) {
+        RegularUser regularUserForNewUsername = regularUserService.findByUsername(regularUserUpdateDTO.getNewusername());
+        if (regularUserForUpdate == null ) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        regularUserForUpdate.setName(regularUser.getName());
-        regularUserForUpdate.setSurname(regularUser.getSurname());
-        regularUserForUpdate.setUsername(regularUser.getUsername());
-        regularUserForUpdate.setEmail(regularUser.getEmail());
-        regularUserForUpdate.setPhoneNumber(regularUser.getPhoneNumber());
-        regularUserForUpdate.setDateOfBirth(regularUser.getDateOfBirth());
-        regularUserForUpdate.setGender(regularUser.getGender());
-        regularUserForUpdate.setLinkToWebSite(regularUser.getLinkToWebSite());
-        regularUserForUpdate.setBio(regularUser.getBio());
+        if (regularUserForNewUsername != null && !isUsernameChanged(regularUserUpdateDTO)) {
+            throw new USConflictException("The username is already taken.");
+        }
 
-        regularUser = regularUserService.save(regularUserForUpdate);
-        return new ResponseEntity<>(new RegularUserUpdateDTO(regularUser), HttpStatus.OK);
+        regularUserForUpdate.setName(regularUserUpdateDTO.getName());
+        regularUserForUpdate.setSurname(regularUserUpdateDTO.getSurname());
+        regularUserForUpdate.setUsername(regularUserUpdateDTO.getNewusername());
+        regularUserForUpdate.setEmail(regularUserUpdateDTO.getEmail());
+        regularUserForUpdate.setPhoneNumber(regularUserUpdateDTO.getPhonenumber());
+        regularUserForUpdate.setDateOfBirth(regularUserUpdateDTO.getBirthdaydate());
+        regularUserForUpdate.setGender(regularUserUpdateDTO.getGender());
+        regularUserForUpdate.setLinkToWebSite(regularUserUpdateDTO.getWebsite());
+        regularUserForUpdate.setBio(regularUserUpdateDTO.getBio());
+
+        RegularUser regularUserForUpdated = regularUserService.save(regularUserForUpdate);
+        return new ResponseEntity<>(new RegularUserUpdateDTO(regularUserForUpdated), HttpStatus.OK);
+    }
+
+    private boolean isUsernameChanged(RegularUserUpdateDTO regularUserUpdateDTO) {
+        return regularUserUpdateDTO.getUsername().equals(regularUserUpdateDTO.getNewusername());
     }
 }
