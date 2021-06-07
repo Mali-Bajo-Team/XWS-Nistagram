@@ -22,6 +22,7 @@ func InitializeRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/user/highlight/{highlightid}/{userid}", server.UpdateUserHighlightEndpoint).Methods("POST")
 
 	router.HandleFunc("/user/collections/{userid}", server.CreateUserCollectionsEndpoint).Methods("POST")
+	router.HandleFunc("/user/collection/{collectionid}/{userid}", server.UpdateUserCollectionEndpoint).Methods("POST")
 
 	router.HandleFunc("/user/saved/{userid}", server.AddPostToSavedEndpoint).Methods("POST")
 	router.HandleFunc("/user/saved/{userid}", server.GetSavedPostsEndpoint).Methods("GET")
@@ -165,6 +166,15 @@ func (contentServerRef *ContentServer) UpdateUserHighlightEndpoint(response http
 	params := mux.Vars(request)
 	contentServerRef.postStore.AddStoryContentOnStoryHighlight(story, params["userid"], params["highlightid"])
 	renderJSON(response, story)
+}
+
+func (contentServerRef *ContentServer) UpdateUserCollectionEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	var post model.RegularPost
+	_ = json.NewDecoder(request.Body).Decode(&post)
+	params := mux.Vars(request)
+	contentServerRef.postStore.AddPostToCollection(post, params["userid"], params["collectionid"])
+	renderJSON(response, post)
 }
 
 func (contentServerRef *ContentServer) DeletePostReactionEndpoint(response http.ResponseWriter, request *http.Request) {

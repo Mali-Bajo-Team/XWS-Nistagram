@@ -283,6 +283,41 @@ func (postStoreRef *PostStore) AddStoryContentOnStoryHighlight(story model.Story
 	return retVal
 }
 
+func (postStoreRef *PostStore) AddPostToCollection(post model.RegularPost, userID string, collectionID string) *mongo.InsertOneResult {
+	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
+	// convert id string to ObjectId
+	objectUserID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		log.Println("Invalid id")
+	}
+
+	objectCollectionID, err := primitive.ObjectIDFromHex(collectionID)
+	if err != nil {
+		log.Println("Invalid id")
+	}
+
+	result := collectionUsers.FindOne(
+		context.Background(),
+		bson.M{"_id": objectUserID},
+	)
+	var userTemp model.User
+	result.Decode(&userTemp)
+
+	_, _ = collectionUsers.DeleteOne(
+		context.Background(),
+		bson.M{"_id": objectUserID},
+	)
+	for idx, collection := range userTemp.Collections {
+		if collection.ID == objectCollectionID {
+			userTemp.Collections[idx].RegularPosts = append(userTemp.Collections[idx].RegularPosts, post)
+			break
+		}
+	}
+
+	retVal, _ := collectionUsers.InsertOne(context.Background(), userTemp)
+	return retVal
+}
+
 func (postStoreRef *PostStore) DeletePostReaction(reaction model.Reaction, postID string) *mongo.UpdateResult {
 	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
 	// convert id string to ObjectId
