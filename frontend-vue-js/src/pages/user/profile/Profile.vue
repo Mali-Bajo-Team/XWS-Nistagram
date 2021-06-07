@@ -145,6 +145,7 @@
               <v-tabs-slider></v-tabs-slider>
               <v-tab>Regular posts<v-icon>mdi-camera</v-icon></v-tab>
               <v-tab>Stories<v-icon>mdi-camera-iris</v-icon></v-tab>
+              <v-tab>Highlights<v-icon>mdi-star-circle-outline</v-icon></v-tab>
               <v-tab>Close friends<v-icon>mdi-star</v-icon></v-tab>
             </v-tabs>
 
@@ -404,6 +405,42 @@
               </v-tab-item>
               <!--End of tab for adding stories-->
 
+              <!--Tab for highlights-->
+              <v-tab-item>
+                  <v-card>
+                      <v-card-title>
+                          Add album for highlights
+                      </v-card-title>
+                      <v-card-text>
+                        <!--Name of album-->
+                        <v-text-field
+                            prepend-icon="mdi-image-album"
+                            label="Name of album"
+                        ></v-text-field>
+                        <!--End of the name of album-->
+
+                        <!--File input of cover image-->
+                        <v-file-input
+                            small-chips
+                            accept="image/png, image/jpeg, image/bmp"
+                            label="Choose a cover photo"
+                            prepend-icon="mdi-camera"
+                            
+                          ></v-file-input>
+                        <!--End of file input of cover image-->
+
+                      </v-card-text>
+                      <!--Buttons for adding or cancelling-->
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="error" text> Cancel </v-btn>
+                        <v-btn color="primary" text> Add </v-btn>
+                      </v-card-actions>
+                  </v-card> 
+              </v-tab-item>
+
+              <!--End of tab for highlights-->
+
               <!--Tab for close friends-->
               <v-tab-item>
                 <v-card>
@@ -435,7 +472,7 @@
           <v-tabs-slider></v-tabs-slider>
           <v-tab>Posts<v-icon>mdi-camera</v-icon></v-tab>
           <v-tab>Stories<v-icon>mdi-camera-iris</v-icon></v-tab>
-          <v-tab>highlights<v-icon>mdi-star</v-icon></v-tab>
+          <v-tab>Highlights<v-icon>mdi-star-circle-outline</v-icon></v-tab>
           <v-tab>Saved<v-icon>mdi-check-circle</v-icon></v-tab>
           <v-tab>Tagged<v-icon>mdi-tag</v-icon></v-tab>
         </v-tabs>
