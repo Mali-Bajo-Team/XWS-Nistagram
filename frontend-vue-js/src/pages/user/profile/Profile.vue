@@ -1133,9 +1133,7 @@
                                         </v-row>
                                            
                                     </v-card-text>
-                                    <v-card-actions>
-                                        
-                                    </v-card-actions>
+                
                                    
                                    
                                 </v-card>
@@ -1147,7 +1145,176 @@
           <!--End of tab for highlights-->
 
           <!--Tab for saved/favorites-->
-          <v-tab-item> SAVED </v-tab-item>
+            <v-tab-item>
+                <v-card class="mx-auto" max-width="500">
+                    <v-container fluid>
+                        <v-row dense>
+                            <v-col
+                               
+                            >
+                                <!-- Image preview -->
+                                <v-card>
+                                    <v-img
+                                        src="https://picsum.photos/350/165?random"
+                                        class="white--text align-end"
+                                        gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                                        height="300px"
+                                    >
+                                    </v-img>
+                                    <v-card-text>
+                                        <v-row>
+                                            <v-col>
+                                                <h3>Perfect holiday</h3>
+                                            </v-col>
+                                            <v-col class="text-right mr-5 mb-5">
+                                                <v-dialog width="600px">
+                                                    <!--Button for showing collection of favorites-->
+                                                    <template v-slot:activator="{ on, attrs }">
+                                                        <v-btn
+                                                            dark
+                                                            x-small 
+                                                            fab 
+                                                            color="primary"
+                                                            v-bind="attrs"
+                                                            v-on="on"
+                                                        >
+                                                        <v-icon dark> mdi-chevron-down </v-icon>
+                                                        </v-btn>
+                                                    </template>
+                                                    <!--Card for favorites-->
+                                                    <v-card>
+                                                        <v-card-title>
+                                                            <v-row>
+                                                                <v-col>
+                                                                    My perfect holiday
+                                                                </v-col>
+                                                                <v-col class="text-right">
+                                                                    <v-dialog
+                                                                        width="600px"
+                                                                    >
+                                                                        <template v-slot:activator="{ on, attrs }"> 
+                                                                            <!--Button for adding saved content to album-->
+                                                                            <v-btn
+                                                                                dark
+                                                                                x-small 
+                                                                                fab 
+                                                                                color="primary"
+                                                                                v-bind="attrs"
+                                                                                v-on="on"
+                                                                                    
+                                                                            >
+                                                                                <v-icon>
+                                                                                    mdi-plus
+                                                                                </v-icon>
+                                                                                
+                                                                            </v-btn>
+                                                                            <!--End of button for adding saved content to album-->
+                                                                        </template>
+                                                                        <v-card>
+                                                                            <v-card-title>
+                                                                                Choose a saved content you want to add to collection
+                                                                            </v-card-title>
+                                                                            <v-col>
+                                                                                <!--Saved images-->
+                                                                                <v-card class="mb-5">
+                                                                                    
+                
+                                                                                
+                                                                                        <v-img
+                                                                                            src="https://picsum.photos/350/165?random"
+                                                                                            class="white--text align-end"
+                                                                                            gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                                                                                            height="300px"
+                                                                                            
+                                                                                        >
+                                                                                            
+                                                                                        </v-img>
+                                                                                        
+                                                                                    <v-card-actions>
+                                                                                        <v-btn
+                                                                                                color="primary"
+                                                                                        >
+                                                                                            CHOOSE
+                                                                                        </v-btn>
+                                                                                    </v-card-actions>
+                                                                                    
+                                                                                    
+                                                                                </v-card>
+                                                                                <v-card>
+                
+                                                                                
+                                                                                        <v-img
+                                                                                            src="https://picsum.photos/350/165?random"
+                                                                                            class="white--text align-end"
+                                                                                            gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                                                                                            height="300px"
+                                                                                        >
+                                                                                            
+                                                                                        </v-img>
+                                                                                        
+                                                                                    <v-card-actions>
+                                                                                        <v-btn
+                                                                                                color="primary"
+                                                                                        >
+                                                                                            CHOOSE
+                                                                                        </v-btn>
+                                                                                    </v-card-actions>
+                                                                                    
+                                                                                    
+                                                                                </v-card>
+                                                                            </v-col>
+                                                                        </v-card>
+                                                                    </v-dialog>
+                                                                </v-col>
+                                                            </v-row>
+                                                            
+                                                             
+                                                        </v-card-title>
+                                                        <!--List of photos-->
+                                                        <v-carousel
+                                                            cycle
+                                                            height="400"
+                                                            hide-delimiter-background
+                                                            show-arrows-on-hover
+                                                        >
+                                                            <v-carousel-item
+                                                                v-for="(slide, i) in slides"
+                                                                :key="i"
+                                                            >
+                                                                <v-sheet
+                                                                    :color="colors[i]"
+                                                                    height="100%"
+                                                                >
+                                                                    <v-row
+                                                                        class="fill-height"
+                                                                        align="center"
+                                                                        justify="center"
+                                                                    >
+                                                                        <div class="text-h2">
+                                                                            {{ slide }} Slide
+                                                                        </div>
+                                                                    </v-row>
+                                                                </v-sheet>
+                                                            </v-carousel-item>
+                                                        </v-carousel>
+                                                        <!--End of list of photos-->
+                                                    </v-card>
+                                                    <!--End for card for favorites-->
+                                                </v-dialog>
+                                               
+                                            </v-col>
+                                        </v-row>
+                                           
+                                    </v-card-text>
+                                    
+                                   
+                                   
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                </v-card>
+            </v-tab-item>
           <!--End of tab for saved/favorites-->
 
           <!--Tab for tagged-->
