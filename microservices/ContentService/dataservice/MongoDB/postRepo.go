@@ -172,6 +172,24 @@ func (postStoreRef *PostStore) AddPostToSaved(regularPost model.RegularPost, use
 	return result
 }
 
+func (postStoreRef *PostStore) GetSavedPosts(userID string) []model.RegularPost {
+	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
+	objectId, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		log.Println("Invalid id")
+	}
+
+	result := collectionUsers.FindOne(
+		context.Background(),
+		bson.M{"_id": objectId},
+	)
+
+	var userTemp model.User
+	result.Decode(&userTemp)
+
+	return userTemp.Saved.RegularPosts
+}
+
 func (postStoreRef *PostStore) GetUserStoryHighlights(userID string) []model.StoryHighlight {
 	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
 	// convert id string to ObjectId

@@ -22,6 +22,7 @@ func InitializeRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/user/highlight/{highlightid}/{userid}", server.UpdateUserHighlightEndpoint).Methods("POST")
 
 	router.HandleFunc("/user/saved/{userid}", server.AddPostToSavedEndpoint).Methods("POST")
+	router.HandleFunc("/user/saved/{userid}", server.GetSavedPostsEndpoint).Methods("GET")
 
 
 	// TODO: Find some better naming for reaction-undo-reaction
@@ -130,6 +131,12 @@ func (contentServerRef *ContentServer) GetUserHighlightEndpoint(response http.Re
 	response.Header().Set("content-type", "application/json")
 	params := mux.Vars(request)
 	renderJSON(response, contentServerRef.postStore.GetUserStoryHighlights(params["userid"]))
+}
+
+func (contentServerRef *ContentServer) GetSavedPostsEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	params := mux.Vars(request)
+	renderJSON(response, contentServerRef.postStore.GetSavedPosts(params["userid"]))
 }
 
 func (contentServerRef *ContentServer) UpdateUserHighlightEndpoint(response http.ResponseWriter, request *http.Request) {
