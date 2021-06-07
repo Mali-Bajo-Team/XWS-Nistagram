@@ -16,7 +16,7 @@ type PostStore struct {
 	ourClient *mongo.Client
 }
 
-func NewPostStore() (*PostStore, error){
+func NewPostStore() (*PostStore, error) {
 	postStoreRef := &PostStore{}
 
 	mongoPath, present := os.LookupEnv("MONGO_PATH")
@@ -38,14 +38,14 @@ func NewPostStore() (*PostStore, error){
 	return postStoreRef, nil
 }
 
-func (postStoreRef *PostStore) CreatePost(post model.RegularPost) *mongo.InsertOneResult{
+func (postStoreRef *PostStore) CreatePost(post model.RegularPost) *mongo.InsertOneResult {
 	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	result, _ := collectionPosts.InsertOne(ctx, post)
 	return result
 }
 
-func (postStoreRef *PostStore) CreateStory(story model.Story) *mongo.InsertOneResult{
+func (postStoreRef *PostStore) CreateStory(story model.Story) *mongo.InsertOneResult {
 	collectionStories := postStoreRef.ourClient.Database("content-service-db").Collection("stories")
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	result, _ := collectionStories.InsertOne(ctx, story)
@@ -56,7 +56,7 @@ func (postStoreRef *PostStore) UpdatePostComments(comment model.Comment, postID 
 	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
 	// convert id string to ObjectId
 	objectId, err := primitive.ObjectIDFromHex(postID)
-	if err != nil{
+	if err != nil {
 		log.Println("Invalid id")
 	}
 
@@ -81,11 +81,71 @@ func (postStoreRef *PostStore) UpdatePostComments(comment model.Comment, postID 
 	return result
 }
 
+func (postStoreRef *PostStore) CreatePostReaction(reaction model.Reaction, postID string) *mongo.UpdateResult {
+	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
+	// convert id string to ObjectId
+	objectId, err := primitive.ObjectIDFromHex(postID)
+	if err != nil {
+		log.Println("Invalid id")
+	}
+
+	var postReactions []model.Reaction
+	postReactions = append(postReactions, reaction)
+
+	update := bson.M{
+		"$addToSet": bson.M{
+			"reactions": bson.M{"$each": postReactions},
+		},
+	}
+
+	result, err := collectionPosts.UpdateOne(
+		context.Background(),
+		bson.M{"_id": objectId},
+		update,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return result
+}
+
+func (postStoreRef *PostStore) DeletePostReaction(reaction model.Reaction, postID string) *mongo.UpdateResult {
+	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
+	// convert id string to ObjectId
+	objectId, err := primitive.ObjectIDFromHex(postID)
+	if err != nil {
+		log.Println("Invalid id")
+	}
+
+	var postReactions []model.Reaction
+	postReactions = append(postReactions, reaction)
+	//reactionCreatorID,_:= primitive.ObjectIDFromHex(reaction.ReactionCreatorRef)
+
+	update := bson.M{
+		"$pull": bson.M{
+			"reactions": bson.M{"$in": postReactions},
+		},
+
+	}
+
+	result, err := collectionPosts.UpdateOne(
+		context.Background(),
+		bson.M{"_id": objectId},
+		update,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return result
+}
+
 func (postStoreRef *PostStore) GetPostByID(postID string) *mongo.SingleResult {
 	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
 	// convert id string to ObjectId
 	objectId, err := primitive.ObjectIDFromHex(postID)
-	if err != nil{
+	if err != nil {
 		log.Println("Invalid id")
 	}
 
@@ -104,7 +164,7 @@ func (postStoreRef *PostStore) UpdateUserStories(story model.Story) *mongo.Updat
 	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
 	// convert id string to ObjectId
 	objectId, err := primitive.ObjectIDFromHex(story.MyPost.PostCreatorRef)
-	if err != nil{
+	if err != nil {
 		log.Println("Invalid id")
 	}
 
@@ -132,6 +192,6 @@ func (postStoreRef *PostStore) UpdateUserStories(story model.Story) *mongo.Updat
 	return result
 }
 
-func (postStoreRef *PostStore) CloseConnection() error{
+func (postStoreRef *PostStore) CloseConnection() error {
 	return postStoreRef.ourClient.Disconnect(context.Background())
 }
