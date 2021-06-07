@@ -797,6 +797,7 @@
 
 <script>
 import axios from "axios";
+import { getParsedToken } from "./../../../util/token";
 export default {
   data() {
     return {
@@ -887,7 +888,7 @@ export default {
         process.env.VUE_APP_BACKEND_URL +
           process.env.VUE_APP_USER +
           process.env.VUE_APP_USER_USERNAME +
-          "/pero", // TODO: Fix endpoint to read from header user-username}
+          "/" +  getParsedToken().sub, // TODO: Fix endpoint to read from header user-username}
           {
             headers: {
               Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
