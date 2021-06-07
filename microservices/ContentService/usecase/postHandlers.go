@@ -21,6 +21,8 @@ func InitializeRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/user/highlights/{userid}", server.GetUserHighlightEndpoint).Methods("GET")
 	router.HandleFunc("/user/highlight/{highlightid}/{userid}", server.UpdateUserHighlightEndpoint).Methods("POST")
 
+	router.HandleFunc("/user/collections/{userid}", server.CreateUserCollectionsEndpoint).Methods("POST")
+
 	router.HandleFunc("/user/saved/{userid}", server.AddPostToSavedEndpoint).Methods("POST")
 	router.HandleFunc("/user/saved/{userid}", server.GetSavedPostsEndpoint).Methods("GET")
 
@@ -115,6 +117,23 @@ func (contentServerRef *ContentServer) CreateUserHighlightEndpoint(response http
 	params := mux.Vars(request)
 	contentServerRef.postStore.CreateStoryHighlight(&storyHighlight, params["userid"])
 	renderJSON(response, storyHighlight)
+}
+
+/*
+{
+        "_id": "60be712c4bdf2ccc447f9ccd",
+        "path": "fanynttmdmxv_1623093548921-kod.mkv",
+        "type": "video"
+    }
+*/
+
+func (contentServerRef *ContentServer) CreateUserCollectionsEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	var collection model.Collection
+	_ = json.NewDecoder(request.Body).Decode(&collection)
+	params := mux.Vars(request)
+	contentServerRef.postStore.CreateCollection(&collection, params["userid"])
+	renderJSON(response, collection)
 }
 
 func (contentServerRef *ContentServer) AddPostToSavedEndpoint(response http.ResponseWriter, request *http.Request) {
