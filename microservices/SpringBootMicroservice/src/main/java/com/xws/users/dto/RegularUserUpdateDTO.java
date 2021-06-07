@@ -23,7 +23,7 @@ public class RegularUserUpdateDTO {
         this.surname = regularUser.getSurname();
         this.username = regularUser.getUsername();
         this.email = regularUser.getEmail();
-        this.phonenumber = regularUser.getEmail();
+        this.phonenumber = regularUser.getPhoneNumber();
         this.birthdaydate = regularUser.getDateOfBirth();
         this.gender = regularUser.getGender();
         this.website = regularUser.getLinkToWebSite();

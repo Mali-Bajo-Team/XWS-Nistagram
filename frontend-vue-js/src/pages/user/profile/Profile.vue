@@ -95,16 +95,18 @@
                   label="Email"
                 ></v-text-field>
                 <v-text-field
-                  v-model="form.phoneNumber"
+                  v-model="form.phonenumber"
                   prepend-icon="mdi-phone"
                   label="Phone number"
                 ></v-text-field>
-                <v-text-field
-                  v-model="form.birthayDate"
-                  label="Birthday date"
-                  prepend-icon="mdi-cake-variant"
-                  readonly
-                ></v-text-field>
+             
+              <p>Date of birth</p>
+              <v-date-picker
+                 v-model="form.birthayDate"
+                label="Date of birth"
+                class="ml-4"
+              ></v-date-picker>
+
                 <v-text-field
                   v-model="form.gender"
                   prepend-icon="mdi-human-male-female"
@@ -813,6 +815,7 @@ export default {
           username: "pipidugacarapa25",
         },
       ],
+      menu: false,
       snackbar: false,
       snackbarText: "",
       loading: false,
@@ -839,8 +842,8 @@ export default {
         name: "",
         surname: "",
         username: "",
-        phoneNumber: "",
-        birthayDate: "", 
+        phonenumber: "",
+        birthayDate:  "", 
         gender: "", 
         webSite: "",
         biography: "",
@@ -871,8 +874,8 @@ export default {
         this.form.name = this.regularUser.name;
         this.form.surname = this.regularUser.surname;
         this.form.username = this.regularUser.username;
-        this.form.phoneNumber = this.regularUser.phoneNumber;
-        this.form.birthayDate = this.regularUser.dateOfBirth;
+        this.form.phonenumber = this.regularUser.phonenumber;
+        this.form.birthayDate = new Date(this.regularUser.birthdaydate).toISOString().substr(0, 10),
         this.form.gender = this.regularUser.gender;
         this.form.biography = this.regularUser.bio;
         this.form.photoUrl = this.regularUser.photoUrl;
@@ -933,10 +936,10 @@ export default {
             name: this.form.name,
             email:  this.form.email,
             surname: this.form.surname,
-            phoneNumber : this.form.phoneNumber,
-            dateOfBirth : this.form.dateOfBirth,
+            phoneNumber : this.form.phonenumber,
+            dateOfBirth : this.form.birthayDate,
             gender : this.form.gender,
-            linkToWebSite : this.form.linkToWebSite,
+            linkToWebSite : this.form.webSite,
             bio : this.form.bio,
           },
           {
@@ -946,12 +949,13 @@ export default {
           },
         )
         .then((resp) => {
+          alert(this.form.phonenumber);
           alert("Successfully changed.");
            this.regularUser = resp.data;
            this.form.username = this.regularUser.username;
            this.form.name = this.regularUser.name;
            this.form.surname = this.regularUser.surname;
-           this.form.phoneNumber = this.regularUser.phoneNumber;
+           this.form.phonenumber = this.regularUser.phonenumber;
            this.form.dateOfBirth = this.regularUser.dateOfBirth;
            this.form.gender = this.regularUser.gender;
            this.form.linkToWebSite = this.regularUser.linkToWebSite;
