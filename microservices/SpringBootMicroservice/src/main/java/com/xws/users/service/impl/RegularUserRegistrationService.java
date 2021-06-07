@@ -63,5 +63,6 @@ public class RegularUserRegistrationService implements IRegularUserRegistrationS
 		privacySettings.setPrivate(false);
 		privacySettings.setAllowMessagesFromNotFollowed(true);
 		privacySettings.setAllowTags(true);
+		newRegularUser.setPrivacySettings(privacySettings);
 	}
 }
