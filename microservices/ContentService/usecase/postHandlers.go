@@ -16,6 +16,7 @@ func InitializeRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/file/{name}", server.GetFileEndpoint).Methods("GET")
 
 	router.HandleFunc("/post/", server.CreatePostEndpoint).Methods("POST")
+	router.HandleFunc("/user/highlight/{userid}", server.UpdateUserHighlightsEndpoint).Methods("POST")
 	// TODO: Find some better naming for reaction-undo-reaction
 	router.HandleFunc("/post/reaction/{id}", server.CreatePostReactionEndpoint).Methods("POST")
 	router.HandleFunc("/post/unreaction/{id}", server.DeletePostReactionEndpoint).Methods("POST")
@@ -27,9 +28,20 @@ func InitializeRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/user/username/{username}", server.GetUserByUsernameEndpoint).Methods("GET")
 	router.HandleFunc("/user/post/{id}", server.GetUserPostsByIDEndpoint).Methods("GET")
 	router.HandleFunc("/user/story/{id}", server.GetUserStoriesByIDEndpoint).Methods("GET")
-	router.HandleFunc("/user/story/highlight/{id}", server.CreateStoryHighlightEndpoint).Methods("POST")
 	router.HandleFunc("/story/", server.CreateStoryEndpoint).Methods("POST")
 }
+
+/*
+
+{
+    "name": "Leto 2020",
+    "cover_image": {
+        "_id": "60be0c841b7038810fcf1372",
+        "path": "dgkfybpdwpoj_1623067780245-kod.mkv",
+        "type": "video"
+    }
+}
+ */
 
 func (contentServerRef *ContentServer) UploadFileEndpoint(responseWriter http.ResponseWriter, request *http.Request) {
 	var allContent []interface{}
@@ -100,6 +112,15 @@ func (contentServerRef *ContentServer) CreatePostReactionEndpoint(response http.
 	renderJSON(response, reaction)
 }
 
+func (contentServerRef *ContentServer) UpdateUserHighlightsEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	var storyHighlight model.StoryHighlight
+	_ = json.NewDecoder(request.Body).Decode(&storyHighlight)
+	params := mux.Vars(request)
+	contentServerRef.postStore.CreateStoryHighlight(&storyHighlight, params["userid"])
+	renderJSON(response, storyHighlight)
+}
+
 func (contentServerRef *ContentServer) DeletePostReactionEndpoint(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("content-type", "application/json")
 	var reaction model.Reaction
@@ -122,16 +143,6 @@ func (contentServerRef *ContentServer) GetPostCommentsEndpoint(response http.Res
 }
 
 func (contentServerRef *ContentServer) CreateStoryEndpoint(response http.ResponseWriter, request *http.Request) {
-	response.Header().Set("content-type", "application/json")
-	var story model.Story
-	_ = json.NewDecoder(request.Body).Decode(&story)
-	var documentId = contentServerRef.postStore.CreateStory(story)
-	story.ID = documentId.InsertedID.(primitive.ObjectID)
-	contentServerRef.postStore.UpdateUserStories(story)
-	renderJSON(response, story)
-}
-
-func (contentServerRef *ContentServer) CreateStoryHighlightEndpoint(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("content-type", "application/json")
 	var story model.Story
 	_ = json.NewDecoder(request.Body).Decode(&story)

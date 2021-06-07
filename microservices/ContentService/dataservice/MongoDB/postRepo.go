@@ -8,8 +8,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
-	"time"
 	"os"
+	"time"
 )
 
 type PostStore struct {
@@ -99,6 +99,37 @@ func (postStoreRef *PostStore) CreatePostReaction(reaction model.Reaction, postI
 	}
 
 	result, err := collectionPosts.UpdateOne(
+		context.Background(),
+		bson.M{"_id": objectId},
+		update,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return result
+}
+
+func (postStoreRef *PostStore) CreateStoryHighlight(storyHighlight *model.StoryHighlight, userID string) *mongo.UpdateResult {
+	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
+	// convert id string to ObjectId
+	objectId, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		log.Println("Invalid id")
+	}
+
+	storyHighlight.ID =  primitive.NewObjectID()
+
+	var storyHighlights []model.StoryHighlight
+	storyHighlights = append(storyHighlights, *storyHighlight)
+
+	update := bson.M{
+		"$addToSet": bson.M{
+			"story_highlights": bson.M{"$each": storyHighlights},
+		},
+	}
+
+	result, err := collectionUsers.UpdateOne(
 		context.Background(),
 		bson.M{"_id": objectId},
 		update,
