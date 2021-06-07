@@ -38,6 +38,8 @@ func NewPostStore() (*PostStore, error) {
 	return postStoreRef, nil
 }
 
+// TODO: Return models instead result's when you get a time :), like GetUserStoryHighlights ret value
+
 func (postStoreRef *PostStore) CreatePost(post model.RegularPost) *mongo.InsertOneResult {
 	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
@@ -139,6 +141,28 @@ func (postStoreRef *PostStore) CreateStoryHighlight(storyHighlight *model.StoryH
 	}
 
 	return result
+}
+
+func (postStoreRef *PostStore) GetUserStoryHighlights(userID string) []model.StoryHighlight {
+	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
+	// convert id string to ObjectId
+	objectId, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		log.Println("Invalid id")
+	}
+
+	result := collectionUsers.FindOne(
+		context.Background(),
+		bson.M{"_id": objectId},
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var userTemp model.User
+	result.Decode(&userTemp)
+
+	return userTemp.StoryHighlights
 }
 
 func (postStoreRef *PostStore) AddStoryContentOnStoryHighlight(story model.Story, userID string, highlightID string) *mongo.InsertOneResult {
