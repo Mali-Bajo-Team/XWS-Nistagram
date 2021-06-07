@@ -61,19 +61,13 @@
                 v-on="on"
               >
                 <v-icon left> mdi-pencil </v-icon>
-                Edit profile
+                Edit profile info
               </v-btn>
             </template>
             <v-card>
               <!--Edit profile fields-->
               <v-card-title class="headline"> Edit your profile </v-card-title>
               <v-card-text>
-                <v-file-input
-                  small-chips
-                  accept="image/png, image/jpeg, image/bmp"
-                  label="Choose a profile"
-                  prepend-icon="mdi-camera"
-                ></v-file-input>
                 <v-text-field
                   v-model="form.name"
                   prepend-icon="mdi-account"
@@ -140,7 +134,47 @@
           </v-dialog>
         </v-col>
         <!--End of the column for edit profile button-->
-
+        <v-col class="pa-3">
+          <!--Dialog and button for editing profile picture-->
+          <v-dialog width="600px">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                outlined
+                rounded
+                medium
+                color="primary"
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon left> mdi-pencil </v-icon>
+                Edit profile picture
+              </v-btn>
+            </template>
+            <v-card>
+              <!--Edit profile picture-->
+              <v-card-title class="headline">
+                Edit your profile picture
+              </v-card-title>
+              <v-card-text>
+                <v-file-input
+                  small-chips
+                  accept="image/png, image/jpeg, image/bmp"
+                  label="Choose a profile"
+                  prepend-icon="mdi-camera"
+                  @change="onFileSelected"
+                ></v-file-input>
+              </v-card-text>
+              <!--End of edit profile picture-->
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="error" text> Cancel </v-btn>
+                <v-btn color="primary" text @click="saveProfilePicture()">
+                  Save
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-col>
         <!--Column for add content button-->
         <v-col class="text-right mr-5 mb-5">
           <!--Button for adding new content-->
@@ -1318,6 +1352,7 @@ export default {
         add_link: "/",
         content: [],
       },
+      profileContent: [],
       user_id: "",
       isForCloseFriends: false,
       regularUser: {},
@@ -1574,6 +1609,27 @@ export default {
         .then((res) => {
           console.log(res);
           this.my_post.content = res.data;
+        });
+    },
+    saveProfilePicture() {
+      const fd = new FormData();
+
+      this.selectedFiles.forEach((selectedFile) => {
+        if (selectedFile.type.includes("image")) {
+          fd.append("image", selectedFile, selectedFile.name);
+        } else {
+          fd.append("video", selectedFile, selectedFile.name);
+        }
+      });
+
+      axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_FILE_ENDPOINT,
+          fd
+        )
+        .then((res) => {
+          console.log(res);
+          this.profileContent = res.data;
         });
     },
     onFileSelected(event) {
