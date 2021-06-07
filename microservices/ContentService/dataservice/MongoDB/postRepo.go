@@ -143,6 +143,84 @@ func (postStoreRef *PostStore) CreateStoryHighlight(storyHighlight *model.StoryH
 	return result
 }
 
+func (postStoreRef *PostStore) CreateCollection(collection *model.Collection, userID string) *mongo.UpdateResult {
+	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
+	// convert id string to ObjectId
+	objectId, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		log.Println("Invalid id")
+	}
+
+	collection.ID =  primitive.NewObjectID()
+
+	var collections []model.Collection
+	collections = append(collections, *collection)
+
+	update := bson.M{
+		"$addToSet": bson.M{
+			"collections": bson.M{"$each": collections},
+		},
+	}
+
+	result, err := collectionUsers.UpdateOne(
+		context.Background(),
+		bson.M{"_id": objectId},
+		update,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return result
+}
+
+func (postStoreRef *PostStore) AddPostToSaved(regularPost model.RegularPost, userID string) *mongo.UpdateResult {
+	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
+	// convert id string to ObjectId
+	objectId, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		log.Println("Invalid id")
+	}
+
+	var regularPosts []model.RegularPost
+	regularPosts = append(regularPosts, regularPost)
+
+	update := bson.M{
+		"$addToSet": bson.M{
+			"saved.regular_posts": bson.M{"$each": regularPosts},
+		},
+	}
+
+	result, err := collectionUsers.UpdateOne(
+		context.Background(),
+		bson.M{"_id": objectId},
+		update,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return result
+}
+
+func (postStoreRef *PostStore) GetSavedPosts(userID string) []model.RegularPost {
+	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
+	objectId, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		log.Println("Invalid id")
+	}
+
+	result := collectionUsers.FindOne(
+		context.Background(),
+		bson.M{"_id": objectId},
+	)
+
+	var userTemp model.User
+	result.Decode(&userTemp)
+
+	return userTemp.Saved.RegularPosts
+}
+
 func (postStoreRef *PostStore) GetUserStoryHighlights(userID string) []model.StoryHighlight {
 	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
 	// convert id string to ObjectId
@@ -163,6 +241,28 @@ func (postStoreRef *PostStore) GetUserStoryHighlights(userID string) []model.Sto
 	result.Decode(&userTemp)
 
 	return userTemp.StoryHighlights
+}
+
+func (postStoreRef *PostStore) GetUserCollections(userID string) []model.Collection {
+	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
+	// convert id string to ObjectId
+	objectId, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		log.Println("Invalid id")
+	}
+
+	result := collectionUsers.FindOne(
+		context.Background(),
+		bson.M{"_id": objectId},
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var userTemp model.User
+	result.Decode(&userTemp)
+
+	return userTemp.Collections
 }
 
 func (postStoreRef *PostStore) AddStoryContentOnStoryHighlight(story model.Story, userID string, highlightID string) *mongo.InsertOneResult {
@@ -197,6 +297,42 @@ func (postStoreRef *PostStore) AddStoryContentOnStoryHighlight(story model.Story
 			storyHighlightContent.Content = story.MyPost.Content
 			highlight.Content = append(highlight.Content, storyHighlightContent)
 			userTemp.StoryHighlights[idx].Content = append(userTemp.StoryHighlights[idx].Content, storyHighlightContent)
+			break
+		}
+	}
+
+	retVal, _ := collectionUsers.InsertOne(context.Background(), userTemp)
+	return retVal
+}
+
+func (postStoreRef *PostStore) AddPostToCollection(post model.RegularPost, userID string, collectionID string) *mongo.InsertOneResult {
+	// TODO: Improve this with more sophisticated way
+	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
+	// convert id string to ObjectId
+	objectUserID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		log.Println("Invalid id")
+	}
+
+	objectCollectionID, err := primitive.ObjectIDFromHex(collectionID)
+	if err != nil {
+		log.Println("Invalid id")
+	}
+
+	result := collectionUsers.FindOne(
+		context.Background(),
+		bson.M{"_id": objectUserID},
+	)
+	var userTemp model.User
+	result.Decode(&userTemp)
+
+	_, _ = collectionUsers.DeleteOne(
+		context.Background(),
+		bson.M{"_id": objectUserID},
+	)
+	for idx, collection := range userTemp.Collections {
+		if collection.ID == objectCollectionID {
+			userTemp.Collections[idx].RegularPosts = append(userTemp.Collections[idx].RegularPosts, post)
 			break
 		}
 	}

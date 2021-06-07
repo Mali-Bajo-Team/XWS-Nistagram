@@ -18,8 +18,17 @@ func InitializeRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/post/", server.CreatePostEndpoint).Methods("POST")
 	// TODO: Find some better naming
 	router.HandleFunc("/user/highlights/{userid}", server.CreateUserHighlightEndpoint).Methods("POST")
-	router.HandleFunc("/user/highlights/{userid}", server.GetUserHighlightEndpoint).Methods("GET")
-	router.HandleFunc("/user/{highlightid}/{userid}", server.UpdateUserHighlightEndpoint).Methods("POST")
+	router.HandleFunc("/user/highlights/{userid}", server.GetUserHighlightsEndpoint).Methods("GET")
+	router.HandleFunc("/user/highlight/{highlightid}/{userid}", server.UpdateUserHighlightEndpoint).Methods("POST")
+
+	router.HandleFunc("/user/collections/{userid}", server.CreateUserCollectionsEndpoint).Methods("POST")
+	router.HandleFunc("/user/collections/{userid}", server.GetUserCollectionsEndpoint).Methods("GET")
+	router.HandleFunc("/user/collection/{collectionid}/{userid}", server.UpdateUserCollectionEndpoint).Methods("POST")
+
+	router.HandleFunc("/user/saved/{userid}", server.AddPostToSavedEndpoint).Methods("POST")
+	router.HandleFunc("/user/saved/{userid}", server.GetSavedPostsEndpoint).Methods("GET")
+
+
 	// TODO: Find some better naming for reaction-undo-reaction
 	router.HandleFunc("/post/reaction/{id}", server.CreatePostReactionEndpoint).Methods("POST")
 	router.HandleFunc("/post/unreaction/{id}", server.DeletePostReactionEndpoint).Methods("POST")
@@ -112,10 +121,41 @@ func (contentServerRef *ContentServer) CreateUserHighlightEndpoint(response http
 	renderJSON(response, storyHighlight)
 }
 
-func (contentServerRef *ContentServer) GetUserHighlightEndpoint(response http.ResponseWriter, request *http.Request) {
+func (contentServerRef *ContentServer) CreateUserCollectionsEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	var collection model.Collection
+	_ = json.NewDecoder(request.Body).Decode(&collection)
+	params := mux.Vars(request)
+	contentServerRef.postStore.CreateCollection(&collection, params["userid"])
+	renderJSON(response, collection)
+}
+
+func (contentServerRef *ContentServer) AddPostToSavedEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	// TODO: Think about change to new object instead of entire regular post
+	var regularPost model.RegularPost
+	_ = json.NewDecoder(request.Body).Decode(&regularPost)
+	params := mux.Vars(request)
+	contentServerRef.postStore.AddPostToSaved(regularPost, params["userid"])
+	renderJSON(response, regularPost)
+}
+
+func (contentServerRef *ContentServer) GetUserHighlightsEndpoint(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("content-type", "application/json")
 	params := mux.Vars(request)
 	renderJSON(response, contentServerRef.postStore.GetUserStoryHighlights(params["userid"]))
+}
+
+func (contentServerRef *ContentServer) GetUserCollectionsEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	params := mux.Vars(request)
+	renderJSON(response, contentServerRef.postStore.GetUserCollections(params["userid"]))
+}
+
+func (contentServerRef *ContentServer) GetSavedPostsEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	params := mux.Vars(request)
+	renderJSON(response, contentServerRef.postStore.GetSavedPosts(params["userid"]))
 }
 
 func (contentServerRef *ContentServer) UpdateUserHighlightEndpoint(response http.ResponseWriter, request *http.Request) {
@@ -125,6 +165,15 @@ func (contentServerRef *ContentServer) UpdateUserHighlightEndpoint(response http
 	params := mux.Vars(request)
 	contentServerRef.postStore.AddStoryContentOnStoryHighlight(story, params["userid"], params["highlightid"])
 	renderJSON(response, story)
+}
+
+func (contentServerRef *ContentServer) UpdateUserCollectionEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	var post model.RegularPost
+	_ = json.NewDecoder(request.Body).Decode(&post)
+	params := mux.Vars(request)
+	contentServerRef.postStore.AddPostToCollection(post, params["userid"], params["collectionid"])
+	renderJSON(response, post)
 }
 
 func (contentServerRef *ContentServer) DeletePostReactionEndpoint(response http.ResponseWriter, request *http.Request) {
