@@ -16,6 +16,10 @@ func InitializeRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/file/{name}", server.GetFileEndpoint).Methods("GET")
 
 	router.HandleFunc("/post/", server.CreatePostEndpoint).Methods("POST")
+	// TODO: Find some better naming
+	router.HandleFunc("/user/highlights/{userid}", server.CreateUserHighlightEndpoint).Methods("POST")
+	router.HandleFunc("/user/highlights/{userid}", server.GetUserHighlightEndpoint).Methods("GET")
+	router.HandleFunc("/user/{highlightid}/{userid}", server.UpdateUserHighlightEndpoint).Methods("POST")
 	// TODO: Find some better naming for reaction-undo-reaction
 	router.HandleFunc("/post/reaction/{id}", server.CreatePostReactionEndpoint).Methods("POST")
 	router.HandleFunc("/post/unreaction/{id}", server.DeletePostReactionEndpoint).Methods("POST")
@@ -99,6 +103,30 @@ func (contentServerRef *ContentServer) CreatePostReactionEndpoint(response http.
 	renderJSON(response, reaction)
 }
 
+func (contentServerRef *ContentServer) CreateUserHighlightEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	var storyHighlight model.StoryHighlight
+	_ = json.NewDecoder(request.Body).Decode(&storyHighlight)
+	params := mux.Vars(request)
+	contentServerRef.postStore.CreateStoryHighlight(&storyHighlight, params["userid"])
+	renderJSON(response, storyHighlight)
+}
+
+func (contentServerRef *ContentServer) GetUserHighlightEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	params := mux.Vars(request)
+	renderJSON(response, contentServerRef.postStore.GetUserStoryHighlights(params["userid"]))
+}
+
+func (contentServerRef *ContentServer) UpdateUserHighlightEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	var story model.Story
+	_ = json.NewDecoder(request.Body).Decode(&story)
+	params := mux.Vars(request)
+	contentServerRef.postStore.AddStoryContentOnStoryHighlight(story, params["userid"], params["highlightid"])
+	renderJSON(response, story)
+}
+
 func (contentServerRef *ContentServer) DeletePostReactionEndpoint(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("content-type", "application/json")
 	var reaction model.Reaction
@@ -180,3 +208,4 @@ func (contentServerRef *ContentServer) GetUserStoriesByIDEndpoint(response http.
 	}
 	renderJSON(response, user.Stories)
 }
+

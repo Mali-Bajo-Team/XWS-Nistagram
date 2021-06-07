@@ -8,8 +8,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
-	"time"
 	"os"
+	"time"
 )
 
 type PostStore struct {
@@ -37,6 +37,8 @@ func NewPostStore() (*PostStore, error) {
 
 	return postStoreRef, nil
 }
+
+// TODO: Return models instead result's when you get a time :), like GetUserStoryHighlights ret value
 
 func (postStoreRef *PostStore) CreatePost(post model.RegularPost) *mongo.InsertOneResult {
 	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
@@ -108,6 +110,99 @@ func (postStoreRef *PostStore) CreatePostReaction(reaction model.Reaction, postI
 	}
 
 	return result
+}
+
+func (postStoreRef *PostStore) CreateStoryHighlight(storyHighlight *model.StoryHighlight, userID string) *mongo.UpdateResult {
+	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
+	// convert id string to ObjectId
+	objectId, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		log.Println("Invalid id")
+	}
+
+	storyHighlight.ID =  primitive.NewObjectID()
+
+	var storyHighlights []model.StoryHighlight
+	storyHighlights = append(storyHighlights, *storyHighlight)
+
+	update := bson.M{
+		"$addToSet": bson.M{
+			"story_highlights": bson.M{"$each": storyHighlights},
+		},
+	}
+
+	result, err := collectionUsers.UpdateOne(
+		context.Background(),
+		bson.M{"_id": objectId},
+		update,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return result
+}
+
+func (postStoreRef *PostStore) GetUserStoryHighlights(userID string) []model.StoryHighlight {
+	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
+	// convert id string to ObjectId
+	objectId, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		log.Println("Invalid id")
+	}
+
+	result := collectionUsers.FindOne(
+		context.Background(),
+		bson.M{"_id": objectId},
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var userTemp model.User
+	result.Decode(&userTemp)
+
+	return userTemp.StoryHighlights
+}
+
+func (postStoreRef *PostStore) AddStoryContentOnStoryHighlight(story model.Story, userID string, highlightID string) *mongo.InsertOneResult {
+	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
+	// convert id string to ObjectId
+	objectUserID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		log.Println("Invalid id")
+	}
+
+	objectHighlightID, err := primitive.ObjectIDFromHex(highlightID)
+	if err != nil {
+		log.Println("Invalid id")
+	}
+
+	result := collectionUsers.FindOne(
+		context.Background(),
+		bson.M{"_id": objectUserID},
+	)
+	var userTemp model.User
+	result.Decode(&userTemp)
+
+	_, _ = collectionUsers.DeleteOne(
+		context.Background(),
+		bson.M{"_id": objectUserID},
+	)
+	for idx, highlight := range userTemp.StoryHighlights {
+		if highlight.ID == objectHighlightID {
+			var storyHighlightContent model.StoryHighlightContent
+			storyHighlightContent.StoryID = story.ID.Hex()
+			storyHighlightContent.IsPrivateStory = story.IsForCloseFriends
+			storyHighlightContent.Content = story.MyPost.Content
+			highlight.Content = append(highlight.Content, storyHighlightContent)
+			userTemp.StoryHighlights[idx].Content = append(userTemp.StoryHighlights[idx].Content, storyHighlightContent)
+			break
+		}
+	}
+
+	retVal, _ := collectionUsers.InsertOne(context.Background(), userTemp)
+	return retVal
 }
 
 func (postStoreRef *PostStore) DeletePostReaction(reaction model.Reaction, postID string) *mongo.UpdateResult {
