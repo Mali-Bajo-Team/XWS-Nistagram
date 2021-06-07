@@ -41,46 +41,36 @@ public class ProfileController {
 
 	@PreAuthorize("hasRole('REGULAR')")
 	@PutMapping(consumes = "application/json")
-	public ResponseEntity<RegularUserUpdateDTO> updateUserAcc(@RequestBody RegularUser regularUser) {
+	public ResponseEntity<RegularUserUpdateDTO> updateUserAcc(@RequestBody RegularUserUpdateDTO regularUserUpdateDTO) {
 
-		RegularUser regularUserForUpdate = regularUserService.findByUsername(regularUser.getUsername());
+		RegularUser regularUserForUpdate = regularUserService.findByUsername(regularUserUpdateDTO.getUsername());
 
-		if (regularUserForUpdate == null) {
+		RegularUser regularUserForNewUsername = regularUserService.findByUsername(regularUserUpdateDTO.getNewusername());
+		if (regularUserForUpdate == null ) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 
-    @PreAuthorize("hasRole('REGULAR')")
-    @PutMapping(consumes = "application/json")
-    public ResponseEntity<RegularUserUpdateDTO> updateUserAcc(@RequestBody RegularUserUpdateDTO regularUserUpdateDTO) {
+		if (regularUserForNewUsername != null && !isUsernameChanged(regularUserUpdateDTO)) {
+			throw new USConflictException("The username is already taken.");
+		}
 
-        RegularUser regularUserForUpdate = regularUserService.findByUsername(regularUserUpdateDTO.getUsername());
+		regularUserForUpdate.setName(regularUserUpdateDTO.getName());
+		regularUserForUpdate.setSurname(regularUserUpdateDTO.getSurname());
+		regularUserForUpdate.setUsername(regularUserUpdateDTO.getNewusername());
+		regularUserForUpdate.setEmail(regularUserUpdateDTO.getEmail());
+		regularUserForUpdate.setPhoneNumber(regularUserUpdateDTO.getPhonenumber());
+		regularUserForUpdate.setDateOfBirth(regularUserUpdateDTO.getBirthdaydate());
+		regularUserForUpdate.setGender(regularUserUpdateDTO.getGender());
+		regularUserForUpdate.setLinkToWebSite(regularUserUpdateDTO.getWebsite());
+		regularUserForUpdate.setBio(regularUserUpdateDTO.getBio());
 
-        RegularUser regularUserForNewUsername = regularUserService.findByUsername(regularUserUpdateDTO.getNewusername());
-        if (regularUserForUpdate == null ) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+		RegularUser regularUserForUpdated = regularUserService.save(regularUserForUpdate);
+		return new ResponseEntity<>(new RegularUserUpdateDTO(regularUserForUpdated), HttpStatus.OK);
+	}
 
-        if (regularUserForNewUsername != null && !isUsernameChanged(regularUserUpdateDTO)) {
-            throw new USConflictException("The username is already taken.");
-        }
-
-        regularUserForUpdate.setName(regularUserUpdateDTO.getName());
-        regularUserForUpdate.setSurname(regularUserUpdateDTO.getSurname());
-        regularUserForUpdate.setUsername(regularUserUpdateDTO.getNewusername());
-        regularUserForUpdate.setEmail(regularUserUpdateDTO.getEmail());
-        regularUserForUpdate.setPhoneNumber(regularUserUpdateDTO.getPhonenumber());
-        regularUserForUpdate.setDateOfBirth(regularUserUpdateDTO.getBirthdaydate());
-        regularUserForUpdate.setGender(regularUserUpdateDTO.getGender());
-        regularUserForUpdate.setLinkToWebSite(regularUserUpdateDTO.getWebsite());
-        regularUserForUpdate.setBio(regularUserUpdateDTO.getBio());
-
-        RegularUser regularUserForUpdated = regularUserService.save(regularUserForUpdate);
-        return new ResponseEntity<>(new RegularUserUpdateDTO(regularUserForUpdated), HttpStatus.OK);
-    }
-
-    private boolean isUsernameChanged(RegularUserUpdateDTO regularUserUpdateDTO) {
-        return regularUserUpdateDTO.getUsername().equals(regularUserUpdateDTO.getNewusername());
-    }
+	private boolean isUsernameChanged(RegularUserUpdateDTO regularUserUpdateDTO) {
+		return regularUserUpdateDTO.getUsername().equals(regularUserUpdateDTO.getNewusername());
+	}
 
 
 	@GetMapping("{username}")

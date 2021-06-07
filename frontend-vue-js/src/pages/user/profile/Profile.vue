@@ -1511,7 +1511,6 @@ export default {
       ),
     ])
     .then((resp) => {
-          alert(this.form.phonenumber);
           alert("Successfully changed.");
            this.regularUser = resp.data;
            this.form.username = this.regularUser.username;
