@@ -679,6 +679,7 @@
                                 <v-col class="text-right mr-5 mb-5">
                                   <!--Button for likes-->
                                   <v-btn
+                                  @click="likePost()"
                                     class="mx-2"
                                     fab
                                     x-small
@@ -689,6 +690,7 @@
 
                                   <!--Button for dislikes-->
                                   <v-btn
+                                  @click="dislikePost()"
                                     class="mx-2"
                                     fab
                                     x-small
@@ -1420,6 +1422,12 @@ export default {
       });
   },
   methods: {
+    likePost(){
+      alert("lajk");
+    },
+    dislikePost(){
+      alert("dislajk");
+    },
     createComment(postID) {
       axios
         .post(
