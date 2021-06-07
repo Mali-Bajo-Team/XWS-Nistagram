@@ -831,7 +831,7 @@
                                         src="https://picsum.photos/350/165?random"
                                         class="white--text align-end"
                                         gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                                        height="200px"
+                                        height="300px"
                                     >
                                     </v-img>
                                     <v-card-text>
@@ -857,7 +857,91 @@
                                                     <!--Card for highlights-->
                                                     <v-card>
                                                         <v-card-title>
-                                                            My perfect holiday
+                                                            <v-row>
+                                                                <v-col>
+                                                                    My perfect holiday
+                                                                </v-col>
+                                                                <v-col class="text-right">
+                                                                    <v-dialog
+                                                                        width="600px"
+                                                                    >
+                                                                        <template v-slot:activator="{ on, attrs }"> 
+                                                                            <!--Button for adding stories to album-->
+                                                                            <v-btn
+                                                                                dark
+                                                                                x-small 
+                                                                                fab 
+                                                                                color="primary"
+                                                                                v-bind="attrs"
+                                                                                v-on="on"
+                                                                                    
+                                                                            >
+                                                                                <v-icon>
+                                                                                    mdi-plus
+                                                                                </v-icon>
+                                                                                
+                                                                            </v-btn>
+                                                                            <!--End of button for adding stories to album-->
+                                                                        </template>
+                                                                        <v-card>
+                                                                            <v-card-title>
+                                                                                Choose a story you want to highlight
+                                                                            </v-card-title>
+                                                                            <v-col>
+                                                                                <!--Stories-->
+                                                                                <v-card class="mb-5">
+                                                                                    
+                
+                                                                                
+                                                                                        <v-img
+                                                                                            src="https://picsum.photos/350/165?random"
+                                                                                            class="white--text align-end"
+                                                                                            gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                                                                                            height="300px"
+                                                                                            
+                                                                                        >
+                                                                                            
+                                                                                        </v-img>
+                                                                                        
+                                                                                    <v-card-actions>
+                                                                                        <v-btn
+                                                                                                color="primary"
+                                                                                        >
+                                                                                            CHOOSE
+                                                                                        </v-btn>
+                                                                                    </v-card-actions>
+                                                                                    
+                                                                                    
+                                                                                </v-card>
+                                                                                <v-card>
+                
+                                                                                
+                                                                                        <v-img
+                                                                                            src="https://picsum.photos/350/165?random"
+                                                                                            class="white--text align-end"
+                                                                                            gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                                                                                            height="300px"
+                                                                                        >
+                                                                                            
+                                                                                        </v-img>
+                                                                                        
+                                                                                    <v-card-actions>
+                                                                                        <v-btn
+                                                                                                color="primary"
+                                                                                        >
+                                                                                            CHOOSE
+                                                                                        </v-btn>
+                                                                                    </v-card-actions>
+                                                                                    
+                                                                                    
+                                                                                </v-card>
+                                                                            </v-col>
+                                                                        </v-card>
+                                                                    </v-dialog>
+                                                                </v-col>
+                                                            </v-row>
+                                                            
+                                                             
                                                         </v-card-title>
                                                         <!--List of photos-->
                                                         <v-carousel
@@ -890,6 +974,7 @@
                                                     </v-card>
                                                     <!--End for card for highlights-->
                                                 </v-dialog>
+                                               
                                             </v-col>
                                         </v-row>
                                            
