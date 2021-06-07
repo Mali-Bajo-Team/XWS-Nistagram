@@ -8,6 +8,7 @@ import UserLanding from './../pages/user/landing/Landing';
 import Login from './../pages/user/login/Login';
 import Registration from './../pages/user/registration/Registration';
 import Profile from './../pages/user/profile/Profile';
+import UserSearch from './../pages/user/user-search/UserSearch';
 
 
 const routes = [
@@ -37,6 +38,11 @@ const routes = [
                 component:Profile,
                 name:'profile',
                 path:'profile'
+            },
+            {
+                component:UserSearch,
+                name:'usersearch',
+                path:'usersearch'
             }
         ]
     },

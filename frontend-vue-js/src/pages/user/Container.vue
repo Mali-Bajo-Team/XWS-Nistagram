@@ -35,19 +35,11 @@ export default {
         to: "register",
       },
       {
-        title: "Tabs",
+        title: "Search",
         children: [
           {
-            title: "Example",
-            to: "/"
-          },
-          {
-            title: "With",
-            to: "/"
-          },
-          {
-            title: "Children",
-            to: "/"
+            title: "Users",
+            to: "usersearch"
           }
         ],
       }
