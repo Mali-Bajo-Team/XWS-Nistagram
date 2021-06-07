@@ -131,6 +131,9 @@ export default {
           let token = response.data.accessToken;
           saveToken(token)
 
+          console.log(token)
+          console.log(localStorage.getItem("JWT-CPIS"))
+
           if(this.$route.params.nextUrl != null){
               this.$router.push(this.$route.params.nextUrl)
           }

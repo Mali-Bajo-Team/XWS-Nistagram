@@ -5,7 +5,7 @@
       <!-- Images, number of posts, followers, following -->
       <v-row>
         <!--First column-->
-        <v-col sm="8" md="12" lg="4" cols="12">
+        <v-col sm="4" md="4" lg="4" cols="4">
           <!--Profile photo-->
           <v-img
             class="rounded-circle"
@@ -797,7 +797,6 @@
 
 <script>
 import axios from "axios";
-import { getParsedToken } from "./../../../util/token";
 export default {
   data() {
     return {
@@ -856,17 +855,14 @@ export default {
   computed: {},
   mounted() {
      this.axios
-      .post(
+      .get(
         process.env.VUE_APP_BACKEND_URL +
-          process.env.VUE_APP_PATIENT_PROFILE_ENDPOINT,
-        {
-          username: getParsedToken().sub,
-        },
-        {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
-          },
-        }
+          process.env.VUE_APP_PROFILE_ENDPOINT,
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+          }
+          }
       )
       .then((resp) => {
         this.regularUser = resp.data;
@@ -891,7 +887,12 @@ export default {
         process.env.VUE_APP_BACKEND_URL +
           process.env.VUE_APP_USER +
           process.env.VUE_APP_USER_USERNAME +
-          "/pero" // TODO: Put here username from logged user
+          "/pero", // TODO: Fix endpoint to read from header user-username}
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            }
+          }
       )
       .then((res) => {
         this.user = res.data;
@@ -925,7 +926,7 @@ export default {
       this.axios
         .put(
           process.env.VUE_APP_BACKEND_URL +
-            process.env.VUE_APP_REGULAR_USER_ENDPOINT,
+            process.env.VUE_APP_PROFILE_ENDPOINT,
           {
             username: this.form.username,
             name: this.form.name,
@@ -940,8 +941,8 @@ export default {
           {
             headers: {
               Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
-            },
-          }
+            }
+          },
         )
         .then((resp) => {
           alert("Successfully changed.");
@@ -962,7 +963,7 @@ export default {
     getImageUrl(post) {
       return (
         process.env.VUE_APP_BACKEND_URL +
-        process.env.VUE_APP_FILE_FILE_ENDPOINT +
+        process.env.VUE_APP_FILE_ENDPOINT +
         post.path
       );
     },
@@ -973,6 +974,11 @@ export default {
           process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_POST + "/",
           {
             my_post: this.my_post,
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            }
           }
         )
         .then((res) => {
@@ -987,6 +993,11 @@ export default {
           {
             my_post: this.my_post,
             is_for_close_friends: this.isForCloseFriends,
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            }
           }
         )
         .then((res) => {
@@ -1007,7 +1018,7 @@ export default {
       axios
         .post(
           process.env.VUE_APP_BACKEND_URL +
-            process.env.VUE_APP_FILE_FILE_ENDPOINT,
+            process.env.VUE_APP_FILE_ENDPOINT,
           fd
         )
         .then((res) => {

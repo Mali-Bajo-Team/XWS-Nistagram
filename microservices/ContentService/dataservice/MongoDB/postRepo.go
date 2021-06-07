@@ -10,7 +10,6 @@ import (
 	"log"
 	"time"
 	"os"
-	"log"
 )
 
 type PostStore struct {

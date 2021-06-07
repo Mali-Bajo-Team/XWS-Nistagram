@@ -38,7 +38,6 @@ const routes = [
                 name:'profile',
                 path:'profile'
             }
-            
         ]
     },
    
