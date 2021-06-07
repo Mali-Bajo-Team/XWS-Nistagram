@@ -142,11 +142,13 @@
         <!--Column for add content button-->
         <v-col class="text-right mr-5 mb-5">
           <!--Button for adding new content-->
-          <v-dialog width="600px" v-model="openedContenDialog">
+          <v-dialog width="700px" v-model="openedContenDialog">
             <v-tabs v-model="tabs" icons-and-text>
               <v-tabs-slider></v-tabs-slider>
               <v-tab>Regular posts<v-icon>mdi-camera</v-icon></v-tab>
               <v-tab>Stories<v-icon>mdi-camera-iris</v-icon></v-tab>
+              <v-tab>Highlights<v-icon>mdi-star-circle-outline</v-icon></v-tab>
+              <v-tab>Saved<v-icon>mdi-check-circle</v-icon></v-tab>
               <v-tab>Close friends<v-icon>mdi-star</v-icon></v-tab>
             </v-tabs>
 
@@ -406,6 +408,195 @@
               </v-tab-item>
               <!--End of tab for adding stories-->
 
+              <!--Tab for highlights-->
+              <v-tab-item>
+                  <v-card>
+                    <v-card-title class="headline">
+                        Choose a cover photo for album
+                    </v-card-title>
+                  <v-card-text>
+                    <!--Stepper-->
+                    <v-stepper v-model="e3">
+                      <v-stepper-header>
+                        <v-stepper-step :complete="e3 > 1" step="1">
+                          Cover photo
+                        </v-stepper-step>
+
+                        <v-divider></v-divider>
+
+                        <v-stepper-step :complete="e3 > 2" step="2">
+                          Name
+                        </v-stepper-step>
+
+                        <v-divider></v-divider>
+
+                        <v-stepper-step step="3"> Confirmation </v-stepper-step>
+                      </v-stepper-header>
+
+                      <v-stepper-items>
+                        <!--Step 1-->
+                        <v-stepper-content step="1">
+                          <!--File input for cover image-->
+                          <v-file-input
+                            small-chips
+                            accept="image/png, image/jpeg, image/bmp"
+                            label="Choose a photo or video"
+                            prepend-icon="mdi-camera"
+                            @change="onFileSelected"
+                          ></v-file-input>
+                          <!--End of file input-->
+
+                          <v-btn
+                            color="primary"
+                            @click="createContent(), (e3 = 2)"
+                          >
+                            Continue
+                          </v-btn>
+
+                          <v-btn text> Cancel </v-btn>
+                        </v-stepper-content>
+                        <!--End of step 1-->
+
+                        <!--Step 2-->
+                        <v-stepper-content step="2">
+                            <!--Name of album-->
+                            <v-text-field
+                                prepend-icon="mdi-image-album"
+                                label="Name of album"
+                            ></v-text-field>
+                            <!--End of the name of album-->
+                         
+                          
+                          <v-btn
+                            color="primary"
+                            @click="(e3 = 3)"
+                          >
+                            Continue
+                          </v-btn>
+
+                          <v-btn text> Cancel </v-btn>
+                        </v-stepper-content>
+                        <!--End of step 2-->
+
+                        <!--Step 3-->
+                        <v-stepper-content step="3">
+                          <h3>
+                            Congratulations, you have successfully chosen the
+                            desired content!
+                          </h3>
+
+                          <v-spacer></v-spacer>
+                          <br />
+                          <v-btn
+                            color="primary"
+                            @click="openedContenDialog = false"
+                          >
+                            Close
+                          </v-btn>
+                        </v-stepper-content>
+                        <!--End of step 3-->
+                      </v-stepper-items>
+                    </v-stepper>
+                  </v-card-text>
+                </v-card>
+              </v-tab-item>
+              <!--End of tab for highlights-->
+
+               <!--Tab for saved content-->
+              <v-tab-item>
+                  <v-card>
+                    <v-card-title class="headline">
+                        Choose a cover photo for album
+                    </v-card-title>
+                  <v-card-text>
+                    <!--Stepper-->
+                    <v-stepper v-model="e4">
+                      <v-stepper-header>
+                        <v-stepper-step :complete="e4 > 1" step="1">
+                          Cover photo
+                        </v-stepper-step>
+
+                        <v-divider></v-divider>
+
+                        <v-stepper-step :complete="e4 > 2" step="2">
+                          Name
+                        </v-stepper-step>
+
+                        <v-divider></v-divider>
+
+                        <v-stepper-step step="3"> Confirmation </v-stepper-step>
+                      </v-stepper-header>
+
+                      <v-stepper-items>
+                        <!--Step 1-->
+                        <v-stepper-content step="1">
+                          <!--File input for cover image-->
+                          <v-file-input
+                            small-chips
+                            accept="image/png, image/jpeg, image/bmp"
+                            label="Choose a photo or video"
+                            prepend-icon="mdi-camera"
+                            @change="onFileSelected"
+                          ></v-file-input>
+                          <!--End of file input-->
+
+                          <v-btn
+                            color="primary"
+                            @click="createContent(), (e4 = 2)"
+                          >
+                            Continue
+                          </v-btn>
+
+                          <v-btn text> Cancel </v-btn>
+                        </v-stepper-content>
+                        <!--End of step 1-->
+
+                        <!--Step 2-->
+                        <v-stepper-content step="2">
+                            <!--Name of album-->
+                            <v-text-field
+                                prepend-icon="mdi-image-album"
+                                label="Name of album"
+                            ></v-text-field>
+                            <!--End of the name of album-->
+                         
+                          
+                          <v-btn
+                            color="primary"
+                            @click="(e4 = 3)"
+                          >
+                            Continue
+                          </v-btn>
+
+                          <v-btn text> Cancel </v-btn>
+                        </v-stepper-content>
+                        <!--End of step 2-->
+
+                        <!--Step 3-->
+                        <v-stepper-content step="3">
+                          <h3>
+                            Congratulations, you have successfully chosen the
+                            desired content!
+                          </h3>
+
+                          <v-spacer></v-spacer>
+                          <br />
+                          <v-btn
+                            color="primary"
+                            @click="openedContenDialog = false"
+                          >
+                            Close
+                          </v-btn>
+                        </v-stepper-content>
+                        <!--End of step 3-->
+                      </v-stepper-items>
+                    </v-stepper>
+                  </v-card-text>
+                </v-card>
+              </v-tab-item>
+              <!--End of tab for saved content-->
+
+
               <!--Tab for close friends-->
               <v-tab-item>
                 <v-card>
@@ -437,6 +628,7 @@
           <v-tabs-slider></v-tabs-slider>
           <v-tab>Posts<v-icon>mdi-camera</v-icon></v-tab>
           <v-tab>Stories<v-icon>mdi-camera-iris</v-icon></v-tab>
+          <v-tab>Highlights<v-icon>mdi-star-circle-outline</v-icon></v-tab>
           <v-tab>Saved<v-icon>mdi-check-circle</v-icon></v-tab>
           <v-tab>Tagged<v-icon>mdi-tag</v-icon></v-tab>
         </v-tabs>
@@ -781,8 +973,350 @@
           </v-tab-item>
           <!--End of tab for stories-->
 
+          <!--Tab for highlights-->
+            <v-tab-item>
+                <v-card class="mx-auto" max-width="500">
+                    <v-container fluid>
+                        <v-row dense>
+                            <v-col
+                               
+                            >
+                                <!-- Image previw -->
+                                <v-card>
+                                    <v-img
+                                        src="https://picsum.photos/350/165?random"
+                                        class="white--text align-end"
+                                        gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                                        height="300px"
+                                    >
+                                    </v-img>
+                                    <v-card-text>
+                                        <v-row>
+                                            <v-col>
+                                                <h3>Perfect holiday</h3>
+                                            </v-col>
+                                            <v-col class="text-right mr-5 mb-5">
+                                                <v-dialog width="600px">
+                                                    <!--Button for showing highlights-->
+                                                    <template v-slot:activator="{ on, attrs }">
+                                                        <v-btn
+                                                            dark
+                                                            x-small 
+                                                            fab 
+                                                            color="primary"
+                                                            v-bind="attrs"
+                                                            v-on="on"
+                                                        >
+                                                        <v-icon dark> mdi-chevron-down </v-icon>
+                                                        </v-btn>
+                                                    </template>
+                                                    <!--Card for highlights-->
+                                                    <v-card>
+                                                        <v-card-title>
+                                                            <v-row>
+                                                                <v-col>
+                                                                    My perfect holiday
+                                                                </v-col>
+                                                                <v-col class="text-right">
+                                                                    <v-dialog
+                                                                        width="600px"
+                                                                    >
+                                                                        <template v-slot:activator="{ on, attrs }"> 
+                                                                            <!--Button for adding stories to album-->
+                                                                            <v-btn
+                                                                                dark
+                                                                                x-small 
+                                                                                fab 
+                                                                                color="primary"
+                                                                                v-bind="attrs"
+                                                                                v-on="on"
+                                                                                    
+                                                                            >
+                                                                                <v-icon>
+                                                                                    mdi-plus
+                                                                                </v-icon>
+                                                                                
+                                                                            </v-btn>
+                                                                            <!--End of button for adding stories to album-->
+                                                                        </template>
+                                                                        <v-card>
+                                                                            <v-card-title>
+                                                                                Choose a story you want to highlight
+                                                                            </v-card-title>
+                                                                            <v-col>
+                                                                                <!--Stories-->
+                                                                                <v-card class="mb-5">
+                                                                                    
+                
+                                                                                
+                                                                                        <v-img
+                                                                                            src="https://picsum.photos/350/165?random"
+                                                                                            class="white--text align-end"
+                                                                                            gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                                                                                            height="300px"
+                                                                                            
+                                                                                        >
+                                                                                            
+                                                                                        </v-img>
+                                                                                        
+                                                                                    <v-card-actions>
+                                                                                        <v-btn
+                                                                                                color="primary"
+                                                                                        >
+                                                                                            CHOOSE
+                                                                                        </v-btn>
+                                                                                    </v-card-actions>
+                                                                                    
+                                                                                    
+                                                                                </v-card>
+                                                                                <v-card>
+                
+                                                                                
+                                                                                        <v-img
+                                                                                            src="https://picsum.photos/350/165?random"
+                                                                                            class="white--text align-end"
+                                                                                            gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                                                                                            height="300px"
+                                                                                        >
+                                                                                            
+                                                                                        </v-img>
+                                                                                        
+                                                                                    <v-card-actions>
+                                                                                        <v-btn
+                                                                                                color="primary"
+                                                                                        >
+                                                                                            CHOOSE
+                                                                                        </v-btn>
+                                                                                    </v-card-actions>
+                                                                                    
+                                                                                    
+                                                                                </v-card>
+                                                                            </v-col>
+                                                                        </v-card>
+                                                                    </v-dialog>
+                                                                </v-col>
+                                                            </v-row>
+                                                            
+                                                             
+                                                        </v-card-title>
+                                                        <!--List of photos-->
+                                                        <v-carousel
+                                                            cycle
+                                                            height="400"
+                                                            hide-delimiter-background
+                                                            show-arrows-on-hover
+                                                        >
+                                                            <v-carousel-item
+                                                                v-for="(slide, i) in slides"
+                                                                :key="i"
+                                                            >
+                                                                <v-sheet
+                                                                    :color="colors[i]"
+                                                                    height="100%"
+                                                                >
+                                                                    <v-row
+                                                                        class="fill-height"
+                                                                        align="center"
+                                                                        justify="center"
+                                                                    >
+                                                                        <div class="text-h2">
+                                                                            {{ slide }} Slide
+                                                                        </div>
+                                                                    </v-row>
+                                                                </v-sheet>
+                                                            </v-carousel-item>
+                                                        </v-carousel>
+                                                        <!--End of list of photos-->
+                                                    </v-card>
+                                                    <!--End for card for highlights-->
+                                                </v-dialog>
+                                               
+                                            </v-col>
+                                        </v-row>
+                                           
+                                    </v-card-text>
+                
+                                   
+                                   
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                </v-card>
+            </v-tab-item>
+          <!--End of tab for highlights-->
+
           <!--Tab for saved/favorites-->
-          <v-tab-item> SAVED </v-tab-item>
+            <v-tab-item>
+                <v-card class="mx-auto" max-width="500">
+                    <v-container fluid>
+                        <v-row dense>
+                            <v-col
+                               
+                            >
+                                <!-- Image preview -->
+                                <v-card>
+                                    <v-img
+                                        src="https://picsum.photos/350/165?random"
+                                        class="white--text align-end"
+                                        gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                                        height="300px"
+                                    >
+                                    </v-img>
+                                    <v-card-text>
+                                        <v-row>
+                                            <v-col>
+                                                <h3>Perfect holiday</h3>
+                                            </v-col>
+                                            <v-col class="text-right mr-5 mb-5">
+                                                <v-dialog width="600px">
+                                                    <!--Button for showing collection of favorites-->
+                                                    <template v-slot:activator="{ on, attrs }">
+                                                        <v-btn
+                                                            dark
+                                                            x-small 
+                                                            fab 
+                                                            color="primary"
+                                                            v-bind="attrs"
+                                                            v-on="on"
+                                                        >
+                                                        <v-icon dark> mdi-chevron-down </v-icon>
+                                                        </v-btn>
+                                                    </template>
+                                                    <!--Card for favorites-->
+                                                    <v-card>
+                                                        <v-card-title>
+                                                            <v-row>
+                                                                <v-col>
+                                                                    My perfect holiday
+                                                                </v-col>
+                                                                <v-col class="text-right">
+                                                                    <v-dialog
+                                                                        width="600px"
+                                                                    >
+                                                                        <template v-slot:activator="{ on, attrs }"> 
+                                                                            <!--Button for adding saved content to album-->
+                                                                            <v-btn
+                                                                                dark
+                                                                                x-small 
+                                                                                fab 
+                                                                                color="primary"
+                                                                                v-bind="attrs"
+                                                                                v-on="on"
+                                                                                    
+                                                                            >
+                                                                                <v-icon>
+                                                                                    mdi-plus
+                                                                                </v-icon>
+                                                                                
+                                                                            </v-btn>
+                                                                            <!--End of button for adding saved content to album-->
+                                                                        </template>
+                                                                        <v-card>
+                                                                            <v-card-title>
+                                                                                Choose a saved content you want to add to collection
+                                                                            </v-card-title>
+                                                                            <v-col>
+                                                                                <!--Saved images-->
+                                                                                <v-card class="mb-5">
+                                                                                    
+                
+                                                                                
+                                                                                        <v-img
+                                                                                            src="https://picsum.photos/350/165?random"
+                                                                                            class="white--text align-end"
+                                                                                            gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                                                                                            height="300px"
+                                                                                            
+                                                                                        >
+                                                                                            
+                                                                                        </v-img>
+                                                                                        
+                                                                                    <v-card-actions>
+                                                                                        <v-btn
+                                                                                                color="primary"
+                                                                                        >
+                                                                                            CHOOSE
+                                                                                        </v-btn>
+                                                                                    </v-card-actions>
+                                                                                    
+                                                                                    
+                                                                                </v-card>
+                                                                                <v-card>
+                
+                                                                                
+                                                                                        <v-img
+                                                                                            src="https://picsum.photos/350/165?random"
+                                                                                            class="white--text align-end"
+                                                                                            gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                                                                                            height="300px"
+                                                                                        >
+                                                                                            
+                                                                                        </v-img>
+                                                                                        
+                                                                                    <v-card-actions>
+                                                                                        <v-btn
+                                                                                                color="primary"
+                                                                                        >
+                                                                                            CHOOSE
+                                                                                        </v-btn>
+                                                                                    </v-card-actions>
+                                                                                    
+                                                                                    
+                                                                                </v-card>
+                                                                            </v-col>
+                                                                        </v-card>
+                                                                    </v-dialog>
+                                                                </v-col>
+                                                            </v-row>
+                                                            
+                                                             
+                                                        </v-card-title>
+                                                        <!--List of photos-->
+                                                        <v-carousel
+                                                            cycle
+                                                            height="400"
+                                                            hide-delimiter-background
+                                                            show-arrows-on-hover
+                                                        >
+                                                            <v-carousel-item
+                                                                v-for="(slide, i) in slides"
+                                                                :key="i"
+                                                            >
+                                                                <v-sheet
+                                                                    :color="colors[i]"
+                                                                    height="100%"
+                                                                >
+                                                                    <v-row
+                                                                        class="fill-height"
+                                                                        align="center"
+                                                                        justify="center"
+                                                                    >
+                                                                        <div class="text-h2">
+                                                                            {{ slide }} Slide
+                                                                        </div>
+                                                                    </v-row>
+                                                                </v-sheet>
+                                                            </v-carousel-item>
+                                                        </v-carousel>
+                                                        <!--End of list of photos-->
+                                                    </v-card>
+                                                    <!--End for card for favorites-->
+                                                </v-dialog>
+                                               
+                                            </v-col>
+                                        </v-row>
+                                           
+                                    </v-card-text>
+                                    
+                                   
+                                   
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                </v-card>
+            </v-tab-item>
           <!--End of tab for saved/favorites-->
 
           <!--Tab for tagged-->
@@ -816,6 +1350,20 @@ export default {
         },
       ],
       menu: false,
+      colors: [
+          'indigo',
+          'warning',
+          'pink darken-2',
+          'red lighten-1',
+          'deep-purple accent-4',
+        ],
+        slides: [
+          'First',
+          'Second',
+          'Third',
+          'Fourth',
+          'Fifth',
+        ],
       snackbar: false,
       snackbarText: "",
       loading: false,
@@ -823,6 +1371,8 @@ export default {
       tabs2: null,
       e1: 1,
       e2: 1,
+      e3: 1,
+      e4: 1,
       my_post: {
         title: "",
         // location: null,
@@ -976,45 +1526,6 @@ export default {
         .catch((error) => {
           alert("Error: " + error);
       });
-
-      // this.axios
-      //   .put(
-      //     process.env.VUE_APP_BACKEND_URL +
-      //       process.env.VUE_APP_PROFILE_ENDPOINT,
-      //     {
-      //       username: getParsedToken().sub,
-      //       name: this.form.name,
-      //       email:  this.form.email,
-      //       surname: this.form.surname,
-      //       phonenumber : this.form.phonenumber,
-      //       birthdaydate : this.form.birthayDate,
-      //       gender : this.form.gender,
-      //       website : this.form.webSite,
-      //       bio : this.form.bio,
-      //       newusername: this.form.username,
-      //     },
-      //     {
-      //       headers: {
-      //         Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
-      //       }
-      //     },
-      //   )
-      //   .then((resp) => {
-      //     alert(this.form.phonenumber);
-      //     alert("Successfully changed.");
-      //      this.regularUser = resp.data;
-      //      this.form.username = this.regularUser.username;
-      //      this.form.name = this.regularUser.name;
-      //      this.form.surname = this.regularUser.surname;
-      //      this.form.phonenumber = this.regularUser.phonenumber;
-      //      this.form.dateOfBirth = this.regularUser.dateOfBirth;
-      //      this.form.gender = this.regularUser.gender;
-      //      this.form.linkToWebSite = this.regularUser.linkToWebSite;
-      //      this.form.bio = this.regularUser.bio;
-      //   })
-      //   .catch((error) => {
-      //     alert("Error: " + error);
-      //   });
     },
     getImageUrl(post) {
       return (
