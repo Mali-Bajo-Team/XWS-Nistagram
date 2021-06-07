@@ -126,6 +126,7 @@
 
 <script>
 import { validationMixin } from "vuelidate";
+import axios from 'axios';
 import {
   required,
   email,
@@ -233,28 +234,33 @@ export default {
   },
   methods: {
     register() {
-        this.axios
-        .post(process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_REGISTRATION_ENDPOINT, {
+      axios.all([
+      axios.post(process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_REGISTRATION_ENDPOINT, {
           username: this.form.username,
           password: this.form.password,
           email: this.form.email,
           name: this.form.name,
           surname: this.form.surname,
           gender: this.form.gender,
-        })
-        .then(() => {
-          this.snackbarText = "Registration successful."
-          this.loading = false
-          this.snackbar = true
-        })
-        .catch(error => {
+        }),
+      axios.post(process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_CREATEUSER_CONTENTENDPOINT, {
+          username: this.form.username,
+      })
+    ])
+    .then(axios.spread((data1, data2) => {
+        this.snackbarText = "Registration successful."
+        this.loading = false
+        this.snackbar = true
+        console.log('data1', data1, 'data2', data2)
+ 
+    })).catch(error => {
           if (error.response && error.response.data)
             this.snackbarText = error.response.data
           else
             this.snackbarText = error.message
           this.loading = false
           this.snackbar = true
-        });
+    });
     },
     submit() {
       this.$v.$touch();
