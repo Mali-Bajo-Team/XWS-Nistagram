@@ -804,6 +804,7 @@
                                             </v-col>
                                             <v-col class="text-right mr-5 mb-5">
                                                 <v-dialog width="600px">
+                                                    <!--Button for showing highlights-->
                                                     <template v-slot:activator="{ on, attrs }">
                                                         <v-btn
                                                             dark
@@ -816,10 +817,12 @@
                                                         <v-icon dark> mdi-chevron-down </v-icon>
                                                         </v-btn>
                                                     </template>
+                                                    <!--Card for highlights-->
                                                     <v-card>
                                                         <v-card-title>
                                                             My perfect holiday
                                                         </v-card-title>
+                                                        <!--List of photos-->
                                                         <v-carousel
                                                             cycle
                                                             height="400"
@@ -846,7 +849,9 @@
                                                                 </v-sheet>
                                                             </v-carousel-item>
                                                         </v-carousel>
+                                                        <!--End of list of photos-->
                                                     </v-card>
+                                                    <!--End for card for highlights-->
                                                 </v-dialog>
                                             </v-col>
                                         </v-row>
