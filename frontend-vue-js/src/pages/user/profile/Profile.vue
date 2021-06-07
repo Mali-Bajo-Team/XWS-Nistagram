@@ -1420,7 +1420,6 @@ export default {
   },
   methods: {
     createComment(postID) {
-      // alert(postID + " : " + this.newCommentContent);
       axios
         .post(
           process.env.VUE_APP_BACKEND_URL +
