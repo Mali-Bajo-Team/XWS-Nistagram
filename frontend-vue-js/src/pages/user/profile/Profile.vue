@@ -435,6 +435,7 @@
           <v-tabs-slider></v-tabs-slider>
           <v-tab>Posts<v-icon>mdi-camera</v-icon></v-tab>
           <v-tab>Stories<v-icon>mdi-camera-iris</v-icon></v-tab>
+          <v-tab>highlights<v-icon>mdi-star</v-icon></v-tab>
           <v-tab>Saved<v-icon>mdi-check-circle</v-icon></v-tab>
           <v-tab>Tagged<v-icon>mdi-tag</v-icon></v-tab>
         </v-tabs>
@@ -778,7 +779,12 @@
             </v-card>
           </v-tab-item>
           <!--End of tab for stories-->
-
+          <v-tab-item> 
+                ANANA
+          </v-tab-item>
+          <!--Tab for highlights-->
+        
+          <!--End of tab for highlights-->
           <!--Tab for saved/favorites-->
           <v-tab-item> SAVED </v-tab-item>
           <!--End of tab for saved/favorites-->
