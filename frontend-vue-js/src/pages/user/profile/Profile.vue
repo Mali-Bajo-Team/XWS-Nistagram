@@ -698,7 +698,7 @@
                                   <!--End of button for dislikes-->
 
                                   <!--Dialog for adding comment-->
-                                  <v-dialog width="600px">
+                                  <v-dialog width="600px" v-model="openedNewCommentDialog">
                                     <template v-slot:activator="{ on, attrs }">
                                       <v-btn
                                         class="mx-2"
@@ -737,7 +737,7 @@
                                         <v-btn
                                           color="primary"
                                           text
-                                          @click="createComment(post._id)"
+                                          @click="createComment(post._id), openedNewCommentDialog = false"
                                         >
                                           Confirm
                                         </v-btn>
@@ -839,7 +839,7 @@
                                   <!--End of button for dislikes-->
 
                                   <!--Dialog for adding comment-->
-                                  <v-dialog width="600px">
+                                  <v-dialog width="600px" v-model="openedNewCommentDialog">
                                     <template v-slot:activator="{ on, attrs }">
                                       <v-btn
                                         class="mx-2"
@@ -878,7 +878,7 @@
                                         <v-btn
                                           color="primary"
                                           text
-                                          @click="createComment(post._id)"
+                                          @click="createComment(post._id),openedNewCommentDialog = false"
                                         >
                                           Confirm
                                         </v-btn>
@@ -1338,6 +1338,7 @@ export default {
         photoUrl: "",
       },
       openedContenDialog: null,
+      openedNewCommentDialog: null,
       selectedFiles: [],
       user: null,
       posts: [],
