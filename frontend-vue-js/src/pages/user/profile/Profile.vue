@@ -140,12 +140,13 @@
         <!--Column for add content button-->
         <v-col class="text-right mr-5 mb-5">
           <!--Button for adding new content-->
-          <v-dialog width="600px" v-model="openedContenDialog">
+          <v-dialog width="700px" v-model="openedContenDialog">
             <v-tabs v-model="tabs" icons-and-text>
               <v-tabs-slider></v-tabs-slider>
               <v-tab>Regular posts<v-icon>mdi-camera</v-icon></v-tab>
               <v-tab>Stories<v-icon>mdi-camera-iris</v-icon></v-tab>
               <v-tab>Highlights<v-icon>mdi-star-circle-outline</v-icon></v-tab>
+              <v-tab>Saved<v-icon>mdi-check-circle</v-icon></v-tab>
               <v-tab>Close friends<v-icon>mdi-star</v-icon></v-tab>
             </v-tabs>
 
@@ -498,6 +499,101 @@
                 </v-card>
               </v-tab-item>
               <!--End of tab for highlights-->
+
+               <!--Tab for saved content-->
+              <v-tab-item>
+                  <v-card>
+                    <v-card-title class="headline">
+                        Choose a cover photo for album
+                    </v-card-title>
+                  <v-card-text>
+                    <!--Stepper-->
+                    <v-stepper v-model="e4">
+                      <v-stepper-header>
+                        <v-stepper-step :complete="e4 > 1" step="1">
+                          Cover photo
+                        </v-stepper-step>
+
+                        <v-divider></v-divider>
+
+                        <v-stepper-step :complete="e4 > 2" step="2">
+                          Name
+                        </v-stepper-step>
+
+                        <v-divider></v-divider>
+
+                        <v-stepper-step step="3"> Confirmation </v-stepper-step>
+                      </v-stepper-header>
+
+                      <v-stepper-items>
+                        <!--Step 1-->
+                        <v-stepper-content step="1">
+                          <!--File input for cover image-->
+                          <v-file-input
+                            small-chips
+                            accept="image/png, image/jpeg, image/bmp"
+                            label="Choose a photo or video"
+                            prepend-icon="mdi-camera"
+                            @change="onFileSelected"
+                          ></v-file-input>
+                          <!--End of file input-->
+
+                          <v-btn
+                            color="primary"
+                            @click="createContent(), (e4 = 2)"
+                          >
+                            Continue
+                          </v-btn>
+
+                          <v-btn text> Cancel </v-btn>
+                        </v-stepper-content>
+                        <!--End of step 1-->
+
+                        <!--Step 2-->
+                        <v-stepper-content step="2">
+                            <!--Name of album-->
+                            <v-text-field
+                                prepend-icon="mdi-image-album"
+                                label="Name of album"
+                            ></v-text-field>
+                            <!--End of the name of album-->
+                         
+                          
+                          <v-btn
+                            color="primary"
+                            @click="(e4 = 3)"
+                          >
+                            Continue
+                          </v-btn>
+
+                          <v-btn text> Cancel </v-btn>
+                        </v-stepper-content>
+                        <!--End of step 2-->
+
+                        <!--Step 3-->
+                        <v-stepper-content step="3">
+                          <h3>
+                            Congratulations, you have successfully chosen the
+                            desired content!
+                          </h3>
+
+                          <v-spacer></v-spacer>
+                          <br />
+                          <v-btn
+                            color="primary"
+                            @click="openedContenDialog = false"
+                          >
+                            Close
+                          </v-btn>
+                        </v-stepper-content>
+                        <!--End of step 3-->
+                      </v-stepper-items>
+                    </v-stepper>
+                  </v-card-text>
+                </v-card>
+              </v-tab-item>
+              <!--End of tab for saved content-->
+
 
               <!--Tab for close friends-->
               <v-tab-item>
@@ -1105,6 +1201,7 @@ export default {
       e1: 1,
       e2: 1,
       e3: 1,
+      e4: 1,
       my_post: {
         title: "",
         // location: null,
