@@ -716,7 +716,7 @@
                                   <!-- Like button-->
                                   <v-btn
                                     color="primary"
-                                    @click="likePost()"
+                                    @click="likePost(post._id)"
                                     class="mx-2"
                                     fab
                                     x-small
@@ -728,7 +728,7 @@
                                   <!-- UnLike button-->
                                   <v-btn
                                     color="red lighten-3"
-                                    @click="unlikePost()"
+                                    @click="unlikePost(post._id)"
                                     class="mx-2"
                                     fab
                                     x-small
@@ -739,7 +739,7 @@
 
                                   <!-- Dislike button-->
                                   <v-btn
-                                    @click="dislikePost()"
+                                    @click="dislikePost(post._id)"
                                     class="mx-2"
                                     fab
                                     x-small
@@ -750,7 +750,7 @@
 
                                   <!-- UnDislike button-->
                                   <v-btn
-                                    @click="undislikePost()"
+                                    @click="undislikePost(post._id)"
                                     class="mx-2"
                                     fab
                                     x-small
@@ -1521,17 +1521,90 @@ export default {
           this.comments = this.entirePost.comments;
         });
     },
-    likePost() {
-      alert('like');
+    likePost(postID) {
+      // alert('like' + postID);
+      // like post
+       axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_REACTION +
+            postID,
+          {
+            reaction_creator_ref: this.user._id,
+            reaction_type: "like"
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        });
     },
-    dislikePost() {
-      alert('dislike');
+    dislikePost(postID) {
+      // dislike post
+      axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_REACTION +
+            postID,
+          {
+            reaction_creator_ref: this.user._id,
+            reaction_type: "dislike"
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        });
     },
-    unlikePost() {
-      alert('unlike');
+    unlikePost(postID) {
+      // unlike post
+       axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_UNREACTION +
+            postID,
+          {
+            reaction_creator_ref: this.user._id,
+            reaction_type: "like"
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        });
     },
-    undislikePost() {
-      alert('undislike');
+    undislikePost(postID) {
+      // undislike post
+      axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_UNREACTION +
+            postID,
+          {
+            reaction_creator_ref: this.user._id,
+            reaction_type: "dislike"
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        });
     },
     createComment(postID) {
       axios
