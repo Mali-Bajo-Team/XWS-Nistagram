@@ -24,21 +24,21 @@
 
         <!--Column for the number of posts-->
         <v-col class="pa-4 mt-2">
-          <h3>250</h3>
+          <h3>{{posts.length}}</h3>
           Posts
         </v-col>
         <!--End of the number of posts-->
 
         <!--Column for the number of followers-->
         <v-col class="pa-4 mt-2">
-          <h3>1406</h3>
+          <h3>{{followers.length}}</h3>
           Followers
         </v-col>
         <!--End of the number of followers-->
 
         <!--Column for the number of following-->
         <v-col class="pa-4 mt-2">
-          <h3>950</h3>
+          <h3>{{following.length}}</h3>
           Following
         </v-col>
         <!--Column for the number of following-->
@@ -1593,7 +1593,6 @@ export default {
       e4: 1,
       my_post: {
         title: "",
-        post_location: null,
         location_name: "",
         hashtags: "",
         description: "",
