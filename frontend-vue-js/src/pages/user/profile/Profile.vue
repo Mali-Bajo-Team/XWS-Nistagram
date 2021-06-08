@@ -1928,7 +1928,10 @@ export default {
             }
           )
           .then((res) => {
+            console.log("------ highlight start ------ ");
             console.log(res);
+            this.user.story_highlights = res.data;
+            console.log("------ highlight end ------ ");
           })
           .catch((error) => {
             console.log(error);
@@ -1936,7 +1939,7 @@ export default {
       });
   },
   methods: {
-    addToSaved(post){
+    addToSaved(post) {
       this.axios
         .post(
           process.env.VUE_APP_BACKEND_URL +
@@ -1944,12 +1947,14 @@ export default {
             this.user._id,
           {
             _id: post._id,
-            my_post:{
-              content: [{
-                path: post.path,
-                type: post.type,
-              }]
-            }
+            my_post: {
+              content: [
+                {
+                  path: post.path,
+                  type: post.type,
+                },
+              ],
+            },
           },
           {
             headers: {
@@ -1963,7 +1968,6 @@ export default {
         .catch((error) => {
           console.log(error);
         });
-
     },
     getStoryByID(storyID) {
       for (let tempStory of this.stories) {
