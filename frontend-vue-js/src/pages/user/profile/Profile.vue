@@ -1277,20 +1277,33 @@
                                   show-arrows-on-hover
                                 >
                                   <v-carousel-item
-                                    v-for="(slide, i) in slides"
+                                    v-for="(slide, i) in storyHighlight.content"
                                     :key="i"
                                   >
-                                    <v-sheet :color="colors[i]" height="100%">
-                                      <v-row
-                                        class="fill-height"
-                                        align="center"
-                                        justify="center"
-                                      >
-                                        <div class="text-h2">
-                                          {{ slide }} Slide
-                                        </div>
-                                      </v-row>
-                                    </v-sheet>
+
+
+
+
+
+<video
+                                    v-if="getStoryByID(slide.story_id).type == 'video'"
+                                    controls
+                                    :src="getImageUrlByPATH(getStoryByID(slide.story_id).path)"
+                                    class="white--text align-end"
+                                    gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                                    height="200px"
+                                    width="100%"
+                                  ></video>
+
+                                  <v-img
+                                    v-if="getStoryByID(slide.story_id).type == 'image'"
+                                    :src="getImageUrlByPATH(getStoryByID(slide.story_id).path)"
+                                  ></v-img>
+
+
+
+
+
                                   </v-carousel-item>
                                 </v-carousel>
                                 <!--End of list of photos-->
@@ -1719,6 +1732,7 @@ export default {
       .then((res) => {
         this.user = res.data;
         this.user_id = res.data._id;
+        console.log("user id: " + this.user._id)
         if (this.user.posts != null) {
           this.posts = [];
           this.user.posts.forEach((post) => {
@@ -1766,6 +1780,14 @@ export default {
       });
   },
   methods: {
+    getStoryByID(storyID){
+      for(let tempStory of this.stories){
+        if(tempStory._id == storyID){
+          return tempStory;
+        }
+      }
+      return null;
+    },
     addStoryToHighlight(story, highlightID) {
       this.axios
         .post(
