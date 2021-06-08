@@ -700,9 +700,8 @@
                           <!--Card for comments-->
                           <v-card>
                             <v-card-title>
-                              <v-img
-                                lazy-src="https://picsum.photos/id/11/10/6"
-                                src="https://picsum.photos/id/11/500/300"
+                              <v-img v-if="entirePost.my_post"
+                                :src="getImageUrlByPATH(entirePost.my_post.content[0].path)"
                               ></v-img>
                             </v-card-title>
                             <v-card-text>
