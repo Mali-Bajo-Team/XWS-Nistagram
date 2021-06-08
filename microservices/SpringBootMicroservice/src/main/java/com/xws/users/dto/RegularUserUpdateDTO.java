@@ -15,7 +15,7 @@ public class RegularUserUpdateDTO {
     private String website;
     private String bio;
     private String newusername;
-
+    private String photoUrl;
     public RegularUserUpdateDTO() {
     }
 
@@ -29,6 +29,7 @@ public class RegularUserUpdateDTO {
         this.gender = regularUser.getGender();
         this.website = regularUser.getLinkToWebSite();
         this.bio = regularUser.getBio();
+        this.photoUrl = regularUser.getProfileImagePath();
     }
 
     public String getNewusername() {
@@ -101,6 +102,14 @@ public class RegularUserUpdateDTO {
 
     public String getWebsite() {
         return website;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 
     public void setWebsite(String website) {

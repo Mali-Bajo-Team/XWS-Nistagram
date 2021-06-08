@@ -10,7 +10,7 @@
           <v-img
             class="rounded-circle"
             aspect-ratio="1.1"
-            src="@/assets/profilePhoto.jpg"
+            :src="getImageUrlByPATH(form.photoUrl)"
           >
           </v-img>
 
@@ -157,7 +157,10 @@
               </v-card-title>
               <v-card-text>
                 <v-file-input
-                  small-chips
+                 small-chips
+                 multiple
+                show-size
+                  counter
                   accept="image/png, image/jpeg, image/bmp"
                   label="Choose a profile"
                   prepend-icon="mdi-camera"
@@ -1705,6 +1708,13 @@ export default {
         post.path
       );
     },
+    getImageUrlByPATH(path) {
+      return (
+        process.env.VUE_APP_BACKEND_URL +
+        process.env.VUE_APP_FILE_ENDPOINT +
+        path
+      );
+    },
     createPost() {
       this.my_post.post_creator_ref = this.user._id;
       axios
@@ -1773,7 +1783,6 @@ export default {
           fd.append("video", selectedFile, selectedFile.name);
         }
       });
-
       axios
         .post(
           process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_FILE_ENDPOINT,
@@ -1782,6 +1791,23 @@ export default {
         .then((res) => {
           console.log(res);
           this.profileContent = res.data;
+                axios
+                  .post(
+                    process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_USER_UPDATE_PROFILEIMAGE ,
+                    {
+                      username: getParsedToken().sub,
+                      profileimagepath: this.profileContent[0].path,
+                    },
+                    {
+                      headers: {
+                        Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+                      },
+                    }
+                  )
+                  .then((res) => {
+                    console.log(res);
+                  });
+          
         });
     },
     onFileSelected(event) {
