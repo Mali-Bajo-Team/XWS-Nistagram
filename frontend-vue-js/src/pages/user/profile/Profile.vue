@@ -1159,7 +1159,7 @@
           <!--Tab for highlights-->
           <v-tab-item>
             <v-card class="mx-auto" max-width="500">
-              <v-container fluid>
+              <v-container v-if="user" fluid>
                 <v-row dense>
                   <v-col v-for="storyHighlight in user.story_highlights"
                     :key="storyHighlight._id"
