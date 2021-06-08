@@ -1161,13 +1161,17 @@
             <v-card class="mx-auto" max-width="500">
               <v-container v-if="user" fluid>
                 <v-row dense>
-                  <v-col v-for="storyHighlight in user.story_highlights"
+                  <v-col
+                    v-for="storyHighlight in user.story_highlights"
                     :key="storyHighlight._id"
-                    :cols="6">
+                    :cols="6"
+                  >
                     <!-- Image previw -->
                     <v-card>
                       <v-img
-                        :src="getImageUrlByPATH(storyHighlight.cover_image.path)"
+                        :src="
+                          getImageUrlByPATH(storyHighlight.cover_image.path)
+                        "
                         class="white--text align-end"
                         gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                         height="200px"
@@ -1176,7 +1180,7 @@
                       <v-card-text>
                         <v-row>
                           <v-col>
-                            <h3>Perfect holiday</h3>
+                            <h3>{{ storyHighlight.name }}</h3>
                           </v-col>
                           <v-col class="text-right mr-5 mb-5">
                             <!-- Dialog to preview highlight -->
@@ -1200,7 +1204,12 @@
                                   <v-row>
                                     <v-col> My perfect holiday </v-col>
                                     <v-col class="text-right">
-                                      <v-dialog width="600px">
+                                      <v-dialog
+                                        width="600px"
+                                        v-model="
+                                          openedAddStoryToHighlightDialog
+                                        "
+                                      >
                                         <template
                                           v-slot:activator="{ on, attrs }"
                                         >
@@ -1223,9 +1232,17 @@
                                           </v-card-title>
                                           <v-col>
                                             <!--Stories-->
-                                            <v-card class="mb-5">
+                                            <v-card
+                                              v-for="tempStory in stories"
+                                              :key="tempStory._id"
+                                              class="mb-5"
+                                            >
                                               <v-img
-                                                src="https://picsum.photos/350/165?random"
+                                                :src="
+                                                  getImageUrlByPATH(
+                                                    tempStory.path
+                                                  )
+                                                "
                                                 class="white--text align-end"
                                                 gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                                                 height="300px"
@@ -1233,22 +1250,15 @@
                                               </v-img>
 
                                               <v-card-actions>
-                                                <v-btn color="primary">
-                                                  CHOOSE
-                                                </v-btn>
-                                              </v-card-actions>
-                                            </v-card>
-                                            <v-card>
-                                              <v-img
-                                                src="https://picsum.photos/350/165?random"
-                                                class="white--text align-end"
-                                                gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                                                height="300px"
-                                              >
-                                              </v-img>
-
-                                              <v-card-actions>
-                                                <v-btn color="primary">
+                                                <v-btn
+                                                  @click="
+                                                    addStoryToHighlight(
+                                                      tempStory,
+                                                      storyHighlight._id
+                                                    )
+                                                  "
+                                                  color="primary"
+                                                >
                                                   CHOOSE
                                                 </v-btn>
                                               </v-card-actions>
@@ -1590,6 +1600,7 @@ export default {
       },
       openedContenDialog: null,
       openedNewCommentDialog: null,
+      openedAddStoryToHighlightDialog: null,
       selectedFiles: [],
       user: null,
       posts: [],
@@ -1755,6 +1766,31 @@ export default {
       });
   },
   methods: {
+    addStoryToHighlight(story, highlightID) {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_HIGHLIGHT +
+            "/" +
+            highlightID +
+            "/" +
+            this.user._id,
+          story,
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      this.openedAddStoryToHighlightDialog = false;
+    },
     createHighlight() {
       console.log(this.new_file_content);
       this.axios
