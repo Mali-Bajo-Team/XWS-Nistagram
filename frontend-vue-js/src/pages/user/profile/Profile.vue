@@ -10,7 +10,7 @@
           <v-img
             class="rounded-circle"
             aspect-ratio="1.1"
-            src="@/assets/profilePhoto.jpg"
+            :src="form.photoUrl"
           >
           </v-img>
 

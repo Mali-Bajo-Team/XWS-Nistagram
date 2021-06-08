@@ -1,19 +1,14 @@
 package com.xws.users.controller;
 
 
+import com.xws.users.dto.RegularUserImageUpdateDTO;
 import com.xws.users.util.security.exceptions.USConflictException;
 import javax.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.xws.users.dto.RegularUserUpdateDTO;
 import com.xws.users.dto.UserProfileDTO;
@@ -68,10 +63,26 @@ public class ProfileController {
 		return new ResponseEntity<>(new RegularUserUpdateDTO(regularUserForUpdated), HttpStatus.OK);
 	}
 
+	@PreAuthorize("hasRole('REGULAR')")
+	@PostMapping("imageurlupdate")
+	public ResponseEntity<RegularUserImageUpdateDTO> setProfileImageURL(@RequestBody RegularUserImageUpdateDTO regularUserImageUpdateDTO) {
+
+		RegularUser regularUserForUpdate = regularUserService.findByUsername(regularUserImageUpdateDTO.getUsername());
+
+		if (regularUserForUpdate == null ) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+
+		regularUserForUpdate.setProfileImagePath(regularUserImageUpdateDTO.getProfileimagepath());
+
+		regularUserService.save(regularUserForUpdate);
+		RegularUserImageUpdateDTO regularUserImageUpdate = new RegularUserImageUpdateDTO(regularUserForUpdate.getProfileImagePath(), regularUserForUpdate.getUsername());
+		return new ResponseEntity<>(regularUserImageUpdate, HttpStatus.OK);
+	}
+
 	private boolean isUsernameChanged(RegularUserUpdateDTO regularUserUpdateDTO) {
 		return regularUserUpdateDTO.getUsername().equals(regularUserUpdateDTO.getNewusername());
 	}
-
 
 	@GetMapping("{username}")
 	@PermitAll
