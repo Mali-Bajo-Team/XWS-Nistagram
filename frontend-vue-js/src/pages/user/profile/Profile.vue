@@ -877,7 +877,7 @@
                         </v-dialog>
                         <!--End of dialog for post details-->
 
-                        <v-btn icon>
+                        <v-btn @click="addToSaved(post)" icon>
                           <v-icon>mdi-bookmark</v-icon>
                         </v-btn>
                       </v-card-actions>
@@ -1936,6 +1936,35 @@ export default {
       });
   },
   methods: {
+    addToSaved(post){
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_USER_SAVED +
+            this.user._id,
+          {
+            _id: post._id,
+            my_post:{
+              content: [{
+                path: post.path,
+                type: post.type,
+              }]
+            }
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+    },
     getStoryByID(storyID) {
       for (let tempStory of this.stories) {
         if (tempStory._id == storyID) {
