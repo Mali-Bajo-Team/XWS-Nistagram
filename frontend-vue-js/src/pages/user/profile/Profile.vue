@@ -1922,6 +1922,28 @@ export default {
           .catch((error) => {
             console.log(error);
           });
+
+        // Get a user saved collection
+        this.axios
+          .get(
+            process.env.VUE_APP_BACKEND_URL +
+              process.env.VUE_APP_CONTENT_USER_SAVED +
+              this.user._id,
+            {
+              headers: {
+                Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+              },
+            }
+          )
+          .then((res) => {
+            console.log("------ saved start ------ ");
+            console.log(res);
+            this.user.saved.regular_posts = res.data;
+            console.log("------ saved end ------ ");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       });
   },
   methods: {
