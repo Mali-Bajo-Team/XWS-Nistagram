@@ -15,9 +15,9 @@
           </v-img>
 
           <!--Username and description-->
-          <h3 class="text-justify">{{form.username}}</h3>
+          <h3 class="text-justify">{{ form.username }}</h3>
           <div class="font-weight-medium text-justify">
-            {{form.bio}}
+            {{ form.bio }}
           </div>
         </v-col>
         <!--End of the first column-->
@@ -45,7 +45,7 @@
       </v-row>
       <!-- End of profile image, number of posts, followers, following -->
 
-      <!-- Edit profile, add content -->
+      <!-- Edit profile, add regular posts, stories, highlights, collections -->
       <v-row>
         <!--Column for edit profile button-->
         <v-col class="pa-3">
@@ -178,7 +178,7 @@
             </v-card>
           </v-dialog>
         </v-col>
-        <!--Column for add content button-->
+        <!--Column for add regular posts, stories, highlights, collections-->
         <v-col class="text-right mr-5 mb-5">
           <!--Button for adding new content-->
           <v-dialog width="700px" v-model="openedContenDialog">
@@ -187,7 +187,7 @@
               <v-tab>Regular posts<v-icon>mdi-camera</v-icon></v-tab>
               <v-tab>Stories<v-icon>mdi-camera-iris</v-icon></v-tab>
               <v-tab>Highlights<v-icon>mdi-star-circle-outline</v-icon></v-tab>
-              <v-tab>Saved<v-icon>mdi-check-circle</v-icon></v-tab>
+              <v-tab>Collections<v-icon>mdi-check-circle</v-icon></v-tab>
             </v-tabs>
 
             <template v-slot:activator="{ on, attrs }">
@@ -547,7 +547,7 @@
               </v-tab-item>
               <!--End of tab for highlights-->
 
-              <!--Tab for saved content-->
+              <!--Tab for collections-->
               <v-tab-item>
                 <v-card>
                   <v-card-title class="headline">
@@ -603,12 +603,16 @@
                         <v-stepper-content step="2">
                           <!--Name of album-->
                           <v-text-field
+                            v-model="new_album_name"
                             prepend-icon="mdi-image-album"
                             label="Name of album"
                           ></v-text-field>
                           <!--End of the name of album-->
 
-                          <v-btn color="primary" @click="e4 = 3">
+                          <v-btn
+                            color="primary"
+                            @click="createCollection(), (e4 = 3)"
+                          >
                             Continue
                           </v-btn>
 
@@ -638,15 +642,15 @@
                   </v-card-text>
                 </v-card>
               </v-tab-item>
-              <!--End of tab for saved content-->
+              <!--End of tab for collections-->
             </v-tabs-items>
           </v-dialog>
         </v-col>
-        <!--End of the column for add content button-->
+        <!--End of the column for add regular posts, stories, highlights, collections-->
       </v-row>
-      <!-- End of edit profile, add content -->
+      <!-- End of the edit profile, add regular posts, stories, highlights, collections -->
 
-      <!-- Posts, stories, highlights, saved, tagged -->
+      <!-- Posts, stories, highlights, saved, followers, following -->
       <v-row>
         <v-tabs v-model="tabs2" icons-and-text background-color="transparent">
           <v-tabs-slider></v-tabs-slider>
@@ -654,7 +658,6 @@
           <v-tab>Stories<v-icon>mdi-camera-iris</v-icon></v-tab>
           <v-tab>Highlights<v-icon>mdi-star-circle-outline</v-icon></v-tab>
           <v-tab>Saved<v-icon>mdi-check-circle</v-icon></v-tab>
-          <v-tab>Tagged<v-icon>mdi-tag</v-icon></v-tab>
           <v-tab>Followers<v-icon>mdi-tag</v-icon></v-tab>
           <v-tab>Following<v-icon>mdi-tag</v-icon></v-tab>
         </v-tabs>
@@ -863,7 +866,7 @@
                         </v-dialog>
                         <!--End of dialog for post details-->
 
-                        <v-btn icon>
+                        <v-btn @click="addToSaved(post)" icon>
                           <v-icon>mdi-bookmark</v-icon>
                         </v-btn>
                       </v-card-actions>
@@ -1042,7 +1045,7 @@
                         </v-dialog>
                         <!--End of dialog for video details -->
 
-                        <v-btn icon>
+                        <v-btn @click="addToSaved(post)" icon>
                           <v-icon>mdi-bookmark</v-icon>
                         </v-btn>
                       </v-card-actions>
@@ -1267,6 +1270,7 @@
                                                 </v-btn>
                                               </v-card-actions>
                                             </v-card>
+                                            <!-- End of the stories -->
                                           </v-col>
                                         </v-card>
                                       </v-dialog>
@@ -1333,22 +1337,22 @@
           <!--Tab for saved/favorites-->
           <v-tab-item>
             <v-card class="mx-auto" max-width="500">
-              <v-container fluid>
+              <v-container v-if="user" fluid>
                 <v-row dense>
-                  <v-col>
-                    <!-- Image preview -->
+                  <!-- Saved collection -->
+                  <v-col :cols="6">
                     <v-card>
                       <v-img
                         src="https://picsum.photos/350/165?random"
                         class="white--text align-end"
                         gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                        height="300px"
+                        height="200px"
                       >
                       </v-img>
                       <v-card-text>
                         <v-row>
                           <v-col>
-                            <h3>Perfect holiday</h3>
+                            <h3>Saved</h3>
                           </v-col>
                           <v-col class="text-right mr-5 mb-5">
                             <v-dialog width="600px">
@@ -1369,7 +1373,103 @@
                               <v-card>
                                 <v-card-title>
                                   <v-row>
-                                    <v-col> My perfect holiday </v-col>
+                                    <v-col> Saved favorites posts </v-col>
+                                  </v-row>
+                                </v-card-title>
+                                <!--List of photos-->
+                                <v-carousel
+                                  v-if="user"
+                                  cycle
+                                  height="400"
+                                  hide-delimiter-background
+                                  show-arrows-on-hover
+                                >
+                                  <v-carousel-item
+                                    v-for="(tempRegularPost, i) in user.saved
+                                      .regular_posts"
+                                    :key="i"
+                                  >
+                                    <video
+                                      v-if="
+                                        tempRegularPost.my_post.content[0]
+                                          .type == 'video'
+                                      "
+                                      controls
+                                      :src="
+                                        getImageUrlByPATH(
+                                          tempRegularPost.my_post.content[0]
+                                            .path
+                                        )
+                                      "
+                                      class="white--text align-end"
+                                      gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                                      height="200px"
+                                      width="100%"
+                                    ></video>
+
+                                    <v-img
+                                      v-if="
+                                        tempRegularPost.my_post.content[0]
+                                          .type == 'image'
+                                      "
+                                      :src="
+                                        getImageUrlByPATH(
+                                          tempRegularPost.my_post.content[0]
+                                            .path
+                                        )
+                                      "
+                                    ></v-img>
+                                  </v-carousel-item>
+                                </v-carousel>
+                                <!--End of list of photos-->
+                              </v-card>
+                              <!--End for card for favorites-->
+                            </v-dialog>
+                          </v-col>
+                        </v-row>
+                      </v-card-text>
+                    </v-card>
+                  </v-col>
+                  <!-- End of the saved collection -->
+                  <!-- Custom made collections -->
+                  <v-col
+                    v-for="tempCollection in user.collections"
+                    :key="tempCollection._id"
+                    :cols="6"
+                  >
+                    <v-card>
+                      <v-img
+                        :src="getImageUrlByPATH(tempCollection.cover_image.path)"
+                        class="white--text align-end"
+                        gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                        height="200px"
+                      >
+                      </v-img>
+                      <v-card-text>
+                        <v-row>
+                          <v-col>
+                            <h3>{{tempCollection.name}}</h3>
+                          </v-col>
+                          <v-col class="text-right mr-5 mb-5">
+                            <v-dialog width="600px">
+                              <!--Button for showing collection of favorites-->
+                              <template v-slot:activator="{ on, attrs }">
+                                <v-btn
+                                  dark
+                                  x-small
+                                  fab
+                                  color="primary"
+                                  v-bind="attrs"
+                                  v-on="on"
+                                >
+                                  <v-icon dark> mdi-chevron-down </v-icon>
+                                </v-btn>
+                              </template>
+                              <!--Card for favorites-->
+                              <v-card>
+                                <v-card-title>
+                                  <v-row>
+                                    <v-col> {{tempCollection.name}} </v-col>
                                     <v-col class="text-right">
                                       <v-dialog width="600px">
                                         <template
@@ -1394,10 +1494,18 @@
                                             add to collection
                                           </v-card-title>
                                           <v-col>
-                                            <!--Saved images-->
-                                            <v-card class="mb-5">
+                                            <!--Stories-->
+                                            <v-card
+                                              v-for="tempPost in posts"
+                                              :key="tempPost._id"
+                                              class="mb-5"
+                                            >
                                               <v-img
-                                                src="https://picsum.photos/350/165?random"
+                                                :src="
+                                                  getImageUrlByPATH(
+                                                    tempPost.path
+                                                  )
+                                                "
                                                 class="white--text align-end"
                                                 gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                                                 height="300px"
@@ -1405,26 +1513,20 @@
                                               </v-img>
 
                                               <v-card-actions>
-                                                <v-btn color="primary">
+                                                <v-btn
+                                                  @click="
+                                                    addPostToCollection(
+                                                      tempPost,
+                                                      tempCollection._id
+                                                    )
+                                                  "
+                                                  color="primary"
+                                                >
                                                   CHOOSE
                                                 </v-btn>
                                               </v-card-actions>
                                             </v-card>
-                                            <v-card>
-                                              <v-img
-                                                src="https://picsum.photos/350/165?random"
-                                                class="white--text align-end"
-                                                gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                                                height="300px"
-                                              >
-                                              </v-img>
-
-                                              <v-card-actions>
-                                                <v-btn color="primary">
-                                                  CHOOSE
-                                                </v-btn>
-                                              </v-card-actions>
-                                            </v-card>
+                                            <!-- End of the stories -->
                                           </v-col>
                                         </v-card>
                                       </v-dialog>
@@ -1439,20 +1541,38 @@
                                   show-arrows-on-hover
                                 >
                                   <v-carousel-item
-                                    v-for="(slide, i) in slides"
+                                    v-for="(regularPostTemp, i) in tempCollection.regular_posts"
                                     :key="i"
                                   >
-                                    <v-sheet :color="colors[i]" height="100%">
-                                      <v-row
-                                        class="fill-height"
-                                        align="center"
-                                        justify="center"
-                                      >
-                                        <div class="text-h2">
-                                          {{ slide }} Slide
-                                        </div>
-                                      </v-row>
-                                    </v-sheet>
+                                  <video
+                                      v-if="
+                                        getPostByID(regularPostTemp._id).type ==
+                                        'video'
+                                      "
+                                      controls
+                                      :src="
+                                        getImageUrlByPATH(
+                                          getPostByID(regularPostTemp._id).path
+                                        )
+                                      "
+                                      class="white--text align-end"
+                                      gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                                      height="200px"
+                                      width="100%"
+                                    ></video>
+
+                                    <v-img
+                                      v-if="
+                                       getPostByID(regularPostTemp._id).type ==
+                                        'image'
+                                      "
+                                      :src="
+                                        getImageUrlByPATH(
+                                          getPostByID(regularPostTemp._id).path
+                                        )
+                                      "
+                                    ></v-img>
+                                    
                                   </v-carousel-item>
                                 </v-carousel>
                                 <!--End of list of photos-->
@@ -1464,15 +1584,12 @@
                       </v-card-text>
                     </v-card>
                   </v-col>
+                  <!-- End of the custom made collections -->
                 </v-row>
               </v-container>
             </v-card>
           </v-tab-item>
           <!--End of tab for saved/favorites-->
-
-          <!--Tab for tagged-->
-          <v-tab-item> TAGGED </v-tab-item>
-          <!--End of tab for tagged-->
 
           <!--Tab for followers-->
           <v-tab-item>
@@ -1546,7 +1663,7 @@
           <!--End of tab for following-->
         </v-tabs-items>
       </v-row>
-      <!-- End of posts, highlights, stories, saved, tagged -->
+      <!-- End of posts, highlights, stories, saved, followers, following -->
     </v-col>
 
     <v-spacer></v-spacer>
@@ -1782,7 +1899,32 @@ export default {
             }
           )
           .then((res) => {
+            console.log("------ highlight start ------ ");
             console.log(res);
+            this.user.story_highlights = res.data;
+            console.log("------ highlight end ------ ");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+
+        // Get a user saved collection
+        this.axios
+          .get(
+            process.env.VUE_APP_BACKEND_URL +
+              process.env.VUE_APP_CONTENT_USER_SAVED +
+              this.user._id,
+            {
+              headers: {
+                Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+              },
+            }
+          )
+          .then((res) => {
+            console.log("------ saved start ------ ");
+            console.log(res);
+            this.user.saved.regular_posts = res.data;
+            console.log("------ saved end ------ ");
           })
           .catch((error) => {
             console.log(error);
@@ -1790,6 +1932,36 @@ export default {
       });
   },
   methods: {
+    addToSaved(post) {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_USER_SAVED +
+            this.user._id,
+          {
+            _id: post._id,
+            my_post: {
+              content: [
+                {
+                  path: post.path,
+                  type: post.type,
+                },
+              ],
+            },
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
     getStoryByID(storyID) {
       for (let tempStory of this.stories) {
         if (tempStory._id == storyID) {
@@ -1797,6 +1969,39 @@ export default {
         }
       }
       return null;
+    },
+    getPostByID(postID) {
+      for (let tempPost of this.posts) {
+        if (tempPost._id == postID) {
+          return tempPost;
+        }
+      }
+      return null;
+    },
+    addPostToCollection(post, collectionID){
+      console.log("post: "+ post + " collectionID: " + collectionID);
+       this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_USER_COLLECTION +
+            collectionID +
+            "/" +
+            this.user._id,
+          post,
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log("------- start of the added new post to collection -----------");
+          console.log(res);
+          console.log("------- end of the added new post to collection -----------");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     addStoryToHighlight(story, highlightID) {
       this.axios
@@ -1822,6 +2027,31 @@ export default {
         });
 
       this.openedAddStoryToHighlightDialog = false;
+    },
+    createCollection() {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_USER_COLLECTIONS +
+            this.user._id,
+          {
+            name: this.new_album_name,
+            cover_image: this.new_file_content[0],
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log("------- start of the created collection -----------");
+          console.log(res);
+          console.log("------- end of the created collection -----------");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     createHighlight() {
       console.log(this.new_file_content);
@@ -2120,31 +2350,37 @@ export default {
       else
         return "https://icon-library.com/images/default-user-icon/default-user-icon-4.jpg";
     },
-    createPostWithGeocode: function() {
-        if (!this.my_post.location_name){
-          this.createPost();}
-        else {
-          this.axios
+    createPostWithGeocode: function () {
+      if (!this.my_post.location_name) {
+        this.createPost();
+      } else {
+        this.axios
           .get("https://nominatim.openstreetmap.org/search", {
             params: {
               format: "json",
-              q: this.my_post.location_name
-            }
+              q: this.my_post.location_name,
+            },
           })
-          .then(response => {
+          .then((response) => {
             if (response.data.length == 0) {
-              console.log("Geocoding failed, creating post without location.")
+              console.log("Geocoding failed, creating post without location.");
               this.createPost();
             } else {
-              this.my_post.post_location = {type: "Point", coordinates: [parseFloat(response.data[0].lon), parseFloat(response.data[0].lat)]}
+              this.my_post.post_location = {
+                type: "Point",
+                coordinates: [
+                  parseFloat(response.data[0].lon),
+                  parseFloat(response.data[0].lat),
+                ],
+              };
               this.createPost();
             }
           })
           .catch(() => {
-            console.log("Geocoding failed, creating post without location.")
+            console.log("Geocoding failed, creating post without location.");
             this.createPost();
           });
-        }
+      }
     },
     createPost() {
       if (this.hashtagText) {
@@ -2167,30 +2403,37 @@ export default {
           console.log(res);
         });
     },
-    createStoryWithGeocode: function() {
-      if (!this.my_post.location_name){
-          this.createStory()
+    createStoryWithGeocode: function () {
+      if (!this.my_post.location_name) {
+        this.createStory();
       } else {
         this.axios
-        .get("https://nominatim.openstreetmap.org/search", {
-          params: {
-            format: "json",
-            q: this.my_post.location_name
-          }
-        })
-        .then(response => {
-          if (response.data.length == 0) {
-            console.log("Geocoding failed, creating post without location.")
+
+          .get("https://nominatim.openstreetmap.org/search", {
+            params: {
+              format: "json",
+              q: this.my_post.location_name,
+            },
+          })
+          .then((response) => {
+            if (response.data.length == 0) {
+              console.log("Geocoding failed, creating post without location.");
+              this.createStory();
+            } else {
+              this.my_post.post_location = {
+                type: "Point",
+                coordinates: [
+                  parseFloat(response.data[0].lon),
+                  parseFloat(response.data[0].lat),
+                ],
+              };
+              this.createStory();
+            }
+          })
+          .catch(() => {
+            console.log("Geocoding failed, creating post without location.");
             this.createStory();
-          } else {
-            this.my_post.post_location = {type: "Point", coordinates: [parseFloat(response.data[0].lon), parseFloat(response.data[0].lat)]}
-            this.createStory();
-          }
-        })
-        .catch(() => {
-          console.log("Geocoding failed, creating post without location.")
-          this.createStory();
-        });
+          });
       }
     },
     createStory() {
