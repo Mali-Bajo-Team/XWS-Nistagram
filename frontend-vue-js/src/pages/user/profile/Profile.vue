@@ -1462,6 +1462,8 @@ export default {
         .then((res) => {
           this.entirePost = res.data;
           this.comments =  this.entirePost.comments;
+          this.entirePost.liked = false;
+          this.entirePost.disliked = false;
         });
     },
     likePost() {
