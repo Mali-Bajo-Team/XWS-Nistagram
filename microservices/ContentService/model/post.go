@@ -10,8 +10,7 @@ type Post struct {
 	Content         []Content     `json:"content,omitempty" bson:"content,omitempty"`
 	Tagged          []User        `json:"tagged,omitempty" bson:"tagged,omitempty"`
 	TaggedRef       []interface{} `json:"tagged_ref,omitempty" bson:"tagged_ref,omitempty"`
-	Tags            []Hashtag     `json:"tags,omitempty" bson:"tags,omitempty"`
-	TagsRef         []interface{} `json:"tags_ref,omitempty" bson:"tags_ref,omitempty"`
+	Hashtags        []string      `json:"hashtags,omitempty" bson:"hashtags,omitempty"`
 	PostLocation    Location      `json:"post_location,omitempty" bson:"post_location,omitempty"`
 	LocationName    string		  `json:"location_name,omitempty" bson:"location_name,omitempty"`
 	PostCreator     User          `json:"post_creator,omitempty" bson:"post_creator,omitempty"`

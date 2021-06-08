@@ -442,7 +442,7 @@ func (postStoreRef *PostStore) GetPostsByLocation(longitude float64, latitude fl
 	cursor, err := collectionPosts.Find(
 		context.Background(),
 		bson.M{
-		"post_location": bson.M{
+		"my_post.post_location": bson.M{
 			"$nearSphere": bson.M{
 				"$geometry": bson.M{
 					"type":        "Point",
@@ -452,6 +452,25 @@ func (postStoreRef *PostStore) GetPostsByLocation(longitude float64, latitude fl
 			},
 		},
 	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err = cursor.All(context.Background(), &result); err != nil {
+		log.Fatal(err)
+	}
+
+	return result
+}
+
+func (postStoreRef *PostStore) GetPostsByHashtag(hashtag string) []model.Post {
+	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
+	var result []model.Post
+
+	cursor, err := collectionPosts.Find(
+		context.Background(),
+		bson.M{"my_post.hashtags": hashtag},
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
