@@ -17,6 +17,7 @@ func InitializeRouter(router *mux.Router, server *ContentServer) {
 
 	router.HandleFunc("/post/", server.CreatePostEndpoint).Methods("POST")
 	router.HandleFunc("/post/{postid}", server.GetEntirePostEndpoint).Methods("GET")
+	router.HandleFunc("/story/{storyid}", server.GetEntireStoryEndpoint).Methods("GET")
 	// TODO: Find some better naming
 	router.HandleFunc("/user/highlights/{userid}", server.CreateUserHighlightEndpoint).Methods("POST")
 	router.HandleFunc("/user/highlights/{userid}", server.GetUserHighlightsEndpoint).Methods("GET")
@@ -114,6 +115,12 @@ func (contentServerRef *ContentServer) GetEntirePostEndpoint(response http.Respo
 	response.Header().Set("content-type", "application/json")
 	params := mux.Vars(request)
 	renderJSON(response, contentServerRef.postStore.GetEntirePost(params["postid"]))
+}
+
+func (contentServerRef *ContentServer) GetEntireStoryEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	params := mux.Vars(request)
+	renderJSON(response, contentServerRef.postStore.GetEntireStory(params["storyid"]))
 }
 
 func (contentServerRef *ContentServer) CreatePostCommentEndpoint(response http.ResponseWriter, request *http.Request) {
