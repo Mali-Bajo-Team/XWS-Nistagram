@@ -654,7 +654,6 @@
           <v-tab>Stories<v-icon>mdi-camera-iris</v-icon></v-tab>
           <v-tab>Highlights<v-icon>mdi-star-circle-outline</v-icon></v-tab>
           <v-tab>Saved<v-icon>mdi-check-circle</v-icon></v-tab>
-          <v-tab>Tagged<v-icon>mdi-tag</v-icon></v-tab>
           <v-tab>Followers<v-icon>mdi-tag</v-icon></v-tab>
           <v-tab>Following<v-icon>mdi-tag</v-icon></v-tab>
         </v-tabs>
@@ -1042,7 +1041,7 @@
                         </v-dialog>
                         <!--End of dialog for video details -->
 
-                        <v-btn icon>
+                        <v-btn @click="addToSaved(post)" icon>
                           <v-icon>mdi-bookmark</v-icon>
                         </v-btn>
                       </v-card-actions>
@@ -1369,90 +1368,52 @@
                               <v-card>
                                 <v-card-title>
                                   <v-row>
-                                    <v-col> My perfect holiday </v-col>
-                                    <v-col class="text-right">
-                                      <v-dialog width="600px">
-                                        <template
-                                          v-slot:activator="{ on, attrs }"
-                                        >
-                                          <!--Button for adding saved content to album-->
-                                          <v-btn
-                                            dark
-                                            x-small
-                                            fab
-                                            color="primary"
-                                            v-bind="attrs"
-                                            v-on="on"
-                                          >
-                                            <v-icon> mdi-plus </v-icon>
-                                          </v-btn>
-                                          <!--End of button for adding saved content to album-->
-                                        </template>
-                                        <v-card>
-                                          <v-card-title>
-                                            Choose a saved content you want to
-                                            add to collection
-                                          </v-card-title>
-                                          <v-col>
-                                            <!--Saved images-->
-                                            <v-card class="mb-5">
-                                              <v-img
-                                                src="https://picsum.photos/350/165?random"
-                                                class="white--text align-end"
-                                                gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                                                height="300px"
-                                              >
-                                              </v-img>
-
-                                              <v-card-actions>
-                                                <v-btn color="primary">
-                                                  CHOOSE
-                                                </v-btn>
-                                              </v-card-actions>
-                                            </v-card>
-                                            <v-card>
-                                              <v-img
-                                                src="https://picsum.photos/350/165?random"
-                                                class="white--text align-end"
-                                                gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                                                height="300px"
-                                              >
-                                              </v-img>
-
-                                              <v-card-actions>
-                                                <v-btn color="primary">
-                                                  CHOOSE
-                                                </v-btn>
-                                              </v-card-actions>
-                                            </v-card>
-                                          </v-col>
-                                        </v-card>
-                                      </v-dialog>
-                                    </v-col>
+                                    <v-col> Saved favorites posts </v-col>
                                   </v-row>
                                 </v-card-title>
                                 <!--List of photos-->
                                 <v-carousel
+                                  v-if="user"
                                   cycle
                                   height="400"
                                   hide-delimiter-background
                                   show-arrows-on-hover
                                 >
                                   <v-carousel-item
-                                    v-for="(slide, i) in slides"
+                                    v-for="(tempRegularPost, i) in user.saved
+                                      .regular_posts"
                                     :key="i"
                                   >
-                                    <v-sheet :color="colors[i]" height="100%">
-                                      <v-row
-                                        class="fill-height"
-                                        align="center"
-                                        justify="center"
-                                      >
-                                        <div class="text-h2">
-                                          {{ slide }} Slide
-                                        </div>
-                                      </v-row>
-                                    </v-sheet>
+                                    <video
+                                      v-if="
+                                        tempRegularPost.my_post.content[0]
+                                          .type == 'video'
+                                      "
+                                      controls
+                                      :src="
+                                        getImageUrlByPATH(
+                                          tempRegularPost.my_post.content[0]
+                                            .path
+                                        )
+                                      "
+                                      class="white--text align-end"
+                                      gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                                      height="200px"
+                                      width="100%"
+                                    ></video>
+
+                                    <v-img
+                                      v-if="
+                                        tempRegularPost.my_post.content[0]
+                                          .type == 'image'
+                                      "
+                                      :src="
+                                        getImageUrlByPATH(
+                                          tempRegularPost.my_post.content[0]
+                                            .path
+                                        )
+                                      "
+                                    ></v-img>
                                   </v-carousel-item>
                                 </v-carousel>
                                 <!--End of list of photos-->
@@ -1600,10 +1561,6 @@
             </v-card>
           </v-tab-item>
           <!--End of tab for saved/favorites-->
-
-          <!--Tab for tagged-->
-          <v-tab-item> TAGGED </v-tab-item>
-          <!--End of tab for tagged-->
 
           <!--Tab for followers-->
           <v-tab-item>
