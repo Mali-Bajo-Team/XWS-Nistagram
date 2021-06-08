@@ -477,6 +477,9 @@
                           <!--File input for cover image-->
                           <v-file-input
                             small-chips
+                            multiple
+                            show-size
+                            counter
                             accept="image/png, image/jpeg, image/bmp"
                             label="Choose a photo or video"
                             prepend-icon="mdi-camera"
@@ -567,6 +570,9 @@
                           <!--File input for cover image-->
                           <v-file-input
                             small-chips
+                            multiple
+                            show-size
+                            counter
                             accept="image/png, image/jpeg, image/bmp"
                             label="Choose a photo or video"
                             prepend-icon="mdi-camera"
@@ -625,7 +631,6 @@
                 </v-card>
               </v-tab-item>
               <!--End of tab for saved content-->
-
             </v-tabs-items>
           </v-dialog>
         </v-col>
@@ -641,9 +646,9 @@
           <v-tab>Stories<v-icon>mdi-camera-iris</v-icon></v-tab>
           <v-tab>Highlights<v-icon>mdi-star-circle-outline</v-icon></v-tab>
           <v-tab>Saved<v-icon>mdi-check-circle</v-icon></v-tab>
-          <v-tab>Tagged<v-icon>mdi-tag</v-icon></v-tab>  
-          <v-tab>Followers<v-icon>mdi-tag</v-icon></v-tab>       
-          <v-tab>Following<v-icon>mdi-tag</v-icon></v-tab> 
+          <v-tab>Tagged<v-icon>mdi-tag</v-icon></v-tab>
+          <v-tab>Followers<v-icon>mdi-tag</v-icon></v-tab>
+          <v-tab>Following<v-icon>mdi-tag</v-icon></v-tab>
         </v-tabs>
         <v-tabs-items v-model="tabs2">
           <!--Tab for photos and videos-->
@@ -695,7 +700,7 @@
                                     .content"
                                   :key="i"
                                 >
-                                <video
+                                  <video
                                     v-if="slide.type == 'video'"
                                     controls
                                     :src="getImageUrlByPATH(slide.path)"
@@ -1064,15 +1069,8 @@
                       <v-card-actions>
                         <v-spacer></v-spacer>
 
-
-
-
-
-
-
-
-                    <!--Dialog for story details-->
-                        <v-dialog width="600px" >
+                        <!--Dialog for story details-->
+                        <v-dialog width="600px">
                           <template v-slot:activator="{ on, attrs }">
                             <v-btn
                               v-bind="attrs"
@@ -1083,7 +1081,7 @@
                               <v-icon right> mdi-plus-circle </v-icon>
                             </v-btn>
                           </template>
-                          
+
                           <v-card v-if="entireStory">
                             <v-card-title>
                               <!--List of photos-->
@@ -1099,7 +1097,7 @@
                                     .content"
                                   :key="i"
                                 >
-                                <video
+                                  <video
                                     v-if="slide.type == 'video'"
                                     controls
                                     :src="getImageUrlByPATH(slide.path)"
@@ -1117,11 +1115,9 @@
                               </v-carousel>
                               <!--End of list of photos-->
                             </v-card-title>
-                          
                           </v-card>
                         </v-dialog>
                         <!--End of dialog for story details-->
-
 
                         <v-btn icon>
                           <v-icon>mdi-share-variant</v-icon>
@@ -1439,37 +1435,31 @@
           <v-tab-item> TAGGED </v-tab-item>
           <!--End of tab for tagged-->
 
-
           <!--Tab for followers-->
-          <v-tab-item> 
-            <v-card v-if="followers.length > 0"
-              flat
-            >
+          <v-tab-item>
+            <v-card v-if="followers.length > 0" flat>
               <v-list>
-                <v-list-item-group
-                  color="primary"
-                >
-                  <v-list-item
-                    v-for="(user, i) in followers"
-                    :key="i"                    
-                  >
+                <v-list-item-group color="primary">
+                  <v-list-item v-for="(user, i) in followers" :key="i">
                     <v-list-item-avatar>
                       <v-img :src="user.profileImagePath"></v-img>
-                    </v-list-item-avatar>   
+                    </v-list-item-avatar>
                     <v-list-item-content>
-                      <v-list-item-title v-text="user.username"></v-list-item-title>
+                      <v-list-item-title
+                        v-text="user.username"
+                      ></v-list-item-title>
                     </v-list-item-content>
 
                     <v-list-item-action>
-                        <v-btn
+                      <v-btn
                         outlined
                         rounded
                         medium
                         color="primary"
-                        v-if="!user.isClose"  
-                        @click="addToClose(user)"              
+                        v-if="!user.isClose"
+                        @click="addToClose(user)"
                       >
-                    <v-icon left> mdi-plus </v-icon>
+                        <v-icon left> mdi-plus </v-icon>
                         Add to close friends
                       </v-btn>
                       <v-btn
@@ -1477,10 +1467,10 @@
                         rounded
                         medium
                         color="danger"
-                        v-if="user.isClose"  
-                        @click="removeFromClose(user)"                          
+                        v-if="user.isClose"
+                        @click="removeFromClose(user)"
                       >
-                    <v-icon left> mdi-plus </v-icon>
+                        <v-icon left> mdi-plus </v-icon>
                         Remove from close friends
                       </v-btn>
                     </v-list-item-action>
@@ -1492,14 +1482,10 @@
           <!--End of tab for followers-->
 
           <!--Tab for following-->
-          <v-tab-item> 
-            <v-card v-if="following.length > 0"
-              flat
-            >
+          <v-tab-item>
+            <v-card v-if="following.length > 0" flat>
               <v-list>
-                <v-list-item-group
-                  color="primary"
-                >
+                <v-list-item-group color="primary">
                   <v-list-item
                     v-for="(user, i) in following"
                     :key="i"
@@ -1509,7 +1495,9 @@
                       <v-img :src="user.profileImagePath"></v-img>
                     </v-list-item-avatar>
                     <v-list-item-content>
-                      <v-list-item-title v-text="user.username"></v-list-item-title>
+                      <v-list-item-title
+                        v-text="user.username"
+                      ></v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
                 </v-list-item-group>
@@ -1517,7 +1505,6 @@
             </v-card>
           </v-tab-item>
           <!--End of tab for following-->
-
         </v-tabs-items>
       </v-row>
       <!-- End of posts, highlights, stories, saved, tagged -->
@@ -1608,53 +1595,62 @@ export default {
   },
   computed: {},
   mounted() {
-    this.axios.get(
+    this.axios
+      .get(
         process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_FOLLOWER_ENDPOINT,
         {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
           },
         }
-      ).then((response) => {
-          let users = response.data;
-          for (let user of users){
-              if (user.profileImagePath) {
-                  user.profileImagePath = process.env.VUE_APP_BACKEND_URL +
-                                        process.env.VUE_APP_FILE_ENDPOINT +
-                                        user.profileImagePath;
-              } else {
-                  user.profileImagePath = "https://icon-library.com/images/default-user-icon/default-user-icon-4.jpg";
-              }
+      )
+      .then((response) => {
+        let users = response.data;
+        for (let user of users) {
+          if (user.profileImagePath) {
+            user.profileImagePath =
+              process.env.VUE_APP_BACKEND_URL +
+              process.env.VUE_APP_FILE_ENDPOINT +
+              user.profileImagePath;
+          } else {
+            user.profileImagePath =
+              "https://icon-library.com/images/default-user-icon/default-user-icon-4.jpg";
           }
-          this.followers = users;
-        }).
-        catch((error) => {
-          console.log(error)
-        });
+        }
+        this.followers = users;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
 
-    this.axios.get(
-        process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_FOLLOWING_ENDPOINT,
+    this.axios
+      .get(
+        process.env.VUE_APP_BACKEND_URL +
+          process.env.VUE_APP_FOLLOWING_ENDPOINT,
         {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
           },
         }
-      ).then((response) => {
-          let users = response.data;
-          for (let user of users){
-              if (user.profileImagePath) {
-                  user.profileImagePath = process.env.VUE_APP_BACKEND_URL +
-                                        process.env.VUE_APP_FILE_ENDPOINT +
-                                        user.profileImagePath;
-              } else {
-                  user.profileImagePath = "https://icon-library.com/images/default-user-icon/default-user-icon-4.jpg";
-              }
+      )
+      .then((response) => {
+        let users = response.data;
+        for (let user of users) {
+          if (user.profileImagePath) {
+            user.profileImagePath =
+              process.env.VUE_APP_BACKEND_URL +
+              process.env.VUE_APP_FILE_ENDPOINT +
+              user.profileImagePath;
+          } else {
+            user.profileImagePath =
+              "https://icon-library.com/images/default-user-icon/default-user-icon-4.jpg";
           }
-          this.following = users;
-        }).
-        catch((error) => {
-          console.log(error)
-        });
+        }
+        this.following = users;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
 
     this.axios
       .get(
@@ -1730,41 +1726,47 @@ export default {
   },
   methods: {
     addToClose(user) {
-        this.axios
+      this.axios
         .post(
-          process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_ADD_CLOSE_FRIEND + user.username,
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_ADD_CLOSE_FRIEND +
+            user.username,
           {},
           {
             headers: {
               Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
-            }
+            },
           }
-        ).then(() => {
+        )
+        .then(() => {
           user.isClose = true;
-        }).
-        catch((error) => {
-        console.log(error)
+        })
+        .catch((error) => {
+          console.log(error);
         });
     },
     removeFromClose(user) {
-        this.axios
+      this.axios
         .post(
-          process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_REMOVE_CLOSE_FRIEND + user.username,
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_REMOVE_CLOSE_FRIEND +
+            user.username,
           {},
           {
             headers: {
               Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
-            }
+            },
           }
-        ).then(() => {
+        )
+        .then(() => {
           user.isClose = false;
-        }).
-        catch((error) => {
-        console.log(error)
+        })
+        .catch((error) => {
+          console.log(error);
         });
     },
     userClicked(user) {
-        this.$router.push('/user/' + user.username)
+      this.$router.push("/user/" + user.username);
     },
     getEntirePost(postID) {
       // get entire post
@@ -2032,13 +2034,14 @@ export default {
     createContent() {
       const fd = new FormData();
 
-      this.selectedFiles.forEach((selectedFile) => {
+      const parent = this.selectedFiles;
+      for (let selectedFile of parent) {
         if (selectedFile.type.includes("image")) {
           fd.append("image", selectedFile, selectedFile.name);
         } else {
           fd.append("video", selectedFile, selectedFile.name);
         }
-      });
+      }
 
       axios
         .post(
