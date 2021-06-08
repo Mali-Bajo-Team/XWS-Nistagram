@@ -40,6 +40,14 @@ export default {
           {
             title: "Users",
             to: "/usersearch"
+          },
+          {
+            title: "Hashtags",
+            to: "/hashtagsearch"
+          },
+          {
+            title: "Locations",
+            to: "/locationsearch"
           }
         ],
       }
