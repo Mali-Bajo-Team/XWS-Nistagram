@@ -502,13 +502,16 @@
                         <v-stepper-content step="2">
                           <!--Name of album-->
                           <v-text-field
-                          v-model="new_album_name"
+                            v-model="new_album_name"
                             prepend-icon="mdi-image-album"
                             label="Name of album"
                           ></v-text-field>
                           <!--End of the name of album-->
 
-                          <v-btn color="primary" @click="createHighlight(), e3 = 3">
+                          <v-btn
+                            color="primary"
+                            @click="createHighlight(), (e3 = 3)"
+                          >
                             Continue
                           </v-btn>
 
@@ -519,7 +522,8 @@
                         <!--Step 3-->
                         <v-stepper-content step="3">
                           <h3>
-                            Congratulations, you have successfully created new one story highlight. Go and add some stories on it !
+                            Congratulations, you have successfully created new
+                            one story highlight. Go and add some stories on it !
                           </h3>
 
                           <v-spacer></v-spacer>
@@ -1724,19 +1728,40 @@ export default {
             });
           });
         }
+
+        // Get a user highlights
+        this.axios
+          .get(
+            process.env.VUE_APP_BACKEND_URL +
+              process.env.VUE_APP_CONTENT_HIGHLIGHTS +
+              "/" +
+              this.user._id,
+            {
+              headers: {
+                Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+              },
+            }
+          )
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       });
   },
   methods: {
-    createHighlight(){
+    createHighlight() {
       console.log(this.new_file_content);
-        this.axios
+      this.axios
         .post(
           process.env.VUE_APP_BACKEND_URL +
             process.env.VUE_APP_CONTENT_HIGHLIGHTS +
-            "/" + this.user._id,
+            "/" +
+            this.user._id,
           {
             name: this.new_album_name,
-            cover_image: this.new_file_content[0]
+            cover_image: this.new_file_content[0],
           },
           {
             headers: {
