@@ -1161,14 +1161,16 @@
             <v-card class="mx-auto" max-width="500">
               <v-container fluid>
                 <v-row dense>
-                  <v-col>
+                  <v-col v-for="storyHighlight in user.story_highlights"
+                    :key="storyHighlight._id"
+                    :cols="6">
                     <!-- Image previw -->
                     <v-card>
                       <v-img
-                        src="https://picsum.photos/350/165?random"
+                        :src="getImageUrlByPATH(storyHighlight.cover_image.path)"
                         class="white--text align-end"
                         gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                        height="300px"
+                        height="200px"
                       >
                       </v-img>
                       <v-card-text>
@@ -1177,6 +1179,7 @@
                             <h3>Perfect holiday</h3>
                           </v-col>
                           <v-col class="text-right mr-5 mb-5">
+                            <!-- Dialog to preview highlight -->
                             <v-dialog width="600px">
                               <!--Button for showing highlights-->
                               <template v-slot:activator="{ on, attrs }">
@@ -1284,6 +1287,7 @@
                               </v-card>
                               <!--End for card for highlights-->
                             </v-dialog>
+                            <!-- End of the highlight preview -->
                           </v-col>
                         </v-row>
                       </v-card-text>
