@@ -157,7 +157,10 @@
               </v-card-title>
               <v-card-text>
                 <v-file-input
-                  small-chips
+                 small-chips
+                 multiple
+                show-size
+                  counter
                   accept="image/png, image/jpeg, image/bmp"
                   label="Choose a profile"
                   prepend-icon="mdi-camera"
@@ -1621,7 +1624,6 @@ export default {
           fd.append("video", selectedFile, selectedFile.name);
         }
       });
-
       axios
         .post(
           process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_FILE_ENDPOINT,
@@ -1630,6 +1632,23 @@ export default {
         .then((res) => {
           console.log(res);
           this.profileContent = res.data;
+                axios
+                  .post(
+                    process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_USER_UPDATE_PROFILEIMAGE ,
+                    {
+                      username: getParsedToken().sub,
+                      profileimagepath: this.profileContent[0].path,
+                    },
+                    {
+                      headers: {
+                        Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+                      },
+                    }
+                  )
+                  .then((res) => {
+                    console.log(res);
+                  });
+          
         });
     },
     onFileSelected(event) {
