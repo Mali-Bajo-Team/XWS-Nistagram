@@ -15,9 +15,9 @@
           </v-img>
 
           <!--Username and description-->
-          <h3 class="text-justify">ivana_mil_98</h3>
+          <h3 class="text-justify">{{form.username}}</h3>
           <div class="font-weight-medium text-justify">
-            Love is in the air. The sun is shining,I am smiling :).
+            {{form.bio}}
           </div>
         </v-col>
         <!--End of the first column-->
@@ -2007,11 +2007,14 @@ export default {
       );
     },
     getImageUrlByPATH(path) {
-      return (
-        process.env.VUE_APP_BACKEND_URL +
-        process.env.VUE_APP_FILE_ENDPOINT +
-        path
-      );
+      if (path)
+        return (
+          process.env.VUE_APP_BACKEND_URL +
+          process.env.VUE_APP_FILE_ENDPOINT +
+          path
+        );
+      else
+        return "https://icon-library.com/images/default-user-icon/default-user-icon-4.jpg";
     },
     createPostWithGeocode: function() {
         if (!this.my_post.location_name)

@@ -9,6 +9,8 @@ import Login from './../pages/user/login/Login';
 import Registration from './../pages/user/registration/Registration';
 import Profile from './../pages/user/profile/Profile';
 import UserSearch from './../pages/user/user-search/UserSearch';
+import HashtagSearch from './../pages/user/post-search/HashtagSearch';
+import LocationSearch from './../pages/user/post-search/LocationSearch';
 import OtherProfile from './../pages/user/profile/OtherProfile';
 
 
@@ -44,6 +46,16 @@ const routes = [
                 component:UserSearch,
                 name:'usersearch',
                 path:'usersearch'
+            },
+            {
+                component:HashtagSearch,
+                name:'hashtagsearch',
+                path:'hashtagsearch'
+            },
+            {
+                component:LocationSearch,
+                name:'locationsearch',
+                path:'locationsearch'
             },
             {
                 component: OtherProfile,
