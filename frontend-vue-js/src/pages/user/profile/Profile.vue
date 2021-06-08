@@ -15,9 +15,9 @@
           </v-img>
 
           <!--Username and description-->
-          <h3 class="text-justify">{{form.username}}</h3>
+          <h3 class="text-justify">{{ form.username }}</h3>
           <div class="font-weight-medium text-justify">
-            {{form.bio}}
+            {{ form.bio }}
           </div>
         </v-col>
         <!--End of the first column-->
@@ -1349,20 +1349,20 @@
             <v-card class="mx-auto" max-width="500">
               <v-container fluid>
                 <v-row dense>
-                  <v-col>
-                    <!-- Image preview -->
+                  <!-- Saved collection -->
+                  <v-col :cols="6">
                     <v-card>
                       <v-img
                         src="https://picsum.photos/350/165?random"
                         class="white--text align-end"
                         gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                        height="300px"
+                        height="200px"
                       >
                       </v-img>
                       <v-card-text>
                         <v-row>
                           <v-col>
-                            <h3>Perfect holiday</h3>
+                            <h3>Saved</h3>
                           </v-col>
                           <v-col class="text-right mr-5 mb-5">
                             <v-dialog width="600px">
@@ -1478,6 +1478,137 @@
                       </v-card-text>
                     </v-card>
                   </v-col>
+                  <!-- End of the saved collection -->
+                  <!-- Custom made collections -->
+                  <v-col :cols="6">
+                    <v-card>
+                      <v-img
+                        src="https://picsum.photos/350/165?random"
+                        class="white--text align-end"
+                        gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                        height="200px"
+                      >
+                      </v-img>
+                      <v-card-text>
+                        <v-row>
+                          <v-col>
+                            <h3>Saved</h3>
+                          </v-col>
+                          <v-col class="text-right mr-5 mb-5">
+                            <v-dialog width="600px">
+                              <!--Button for showing collection of favorites-->
+                              <template v-slot:activator="{ on, attrs }">
+                                <v-btn
+                                  dark
+                                  x-small
+                                  fab
+                                  color="primary"
+                                  v-bind="attrs"
+                                  v-on="on"
+                                >
+                                  <v-icon dark> mdi-chevron-down </v-icon>
+                                </v-btn>
+                              </template>
+                              <!--Card for favorites-->
+                              <v-card>
+                                <v-card-title>
+                                  <v-row>
+                                    <v-col> My perfect holiday </v-col>
+                                    <v-col class="text-right">
+                                      <v-dialog width="600px">
+                                        <template
+                                          v-slot:activator="{ on, attrs }"
+                                        >
+                                          <!--Button for adding saved content to album-->
+                                          <v-btn
+                                            dark
+                                            x-small
+                                            fab
+                                            color="primary"
+                                            v-bind="attrs"
+                                            v-on="on"
+                                          >
+                                            <v-icon> mdi-plus </v-icon>
+                                          </v-btn>
+                                          <!--End of button for adding saved content to album-->
+                                        </template>
+                                        <v-card>
+                                          <v-card-title>
+                                            Choose a saved content you want to
+                                            add to collection
+                                          </v-card-title>
+                                          <v-col>
+                                            <!--Saved images-->
+                                            <v-card class="mb-5">
+                                              <v-img
+                                                src="https://picsum.photos/350/165?random"
+                                                class="white--text align-end"
+                                                gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                                                height="300px"
+                                              >
+                                              </v-img>
+
+                                              <v-card-actions>
+                                                <v-btn color="primary">
+                                                  CHOOSE
+                                                </v-btn>
+                                              </v-card-actions>
+                                            </v-card>
+                                            <v-card>
+                                              <v-img
+                                                src="https://picsum.photos/350/165?random"
+                                                class="white--text align-end"
+                                                gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                                                height="300px"
+                                              >
+                                              </v-img>
+
+                                              <v-card-actions>
+                                                <v-btn color="primary">
+                                                  CHOOSE
+                                                </v-btn>
+                                              </v-card-actions>
+                                            </v-card>
+                                          </v-col>
+                                        </v-card>
+                                      </v-dialog>
+                                    </v-col>
+                                  </v-row>
+                                </v-card-title>
+                                <!--List of photos-->
+                                <v-carousel
+                                  cycle
+                                  height="400"
+                                  hide-delimiter-background
+                                  show-arrows-on-hover
+                                >
+                                  <v-carousel-item
+                                    v-for="(slide, i) in slides"
+                                    :key="i"
+                                  >
+                                    <v-sheet :color="colors[i]" height="100%">
+                                      <v-row
+                                        class="fill-height"
+                                        align="center"
+                                        justify="center"
+                                      >
+                                        <div class="text-h2">
+                                          {{ slide }} Slide
+                                        </div>
+                                      </v-row>
+                                    </v-sheet>
+                                  </v-carousel-item>
+                                </v-carousel>
+                                <!--End of list of photos-->
+                              </v-card>
+                              <!--End for card for favorites-->
+                            </v-dialog>
+                          </v-col>
+                        </v-row>
+                      </v-card-text>
+                    </v-card>
+                  </v-col>
+                  <!-- End of the custom made collections -->
                 </v-row>
               </v-container>
             </v-card>
@@ -2135,27 +2266,32 @@ export default {
       else
         return "https://icon-library.com/images/default-user-icon/default-user-icon-4.jpg";
     },
-    createPostWithGeocode: function() {
-        if (!this.my_post.location_name)
-          this.createPost();
-        this.axios
+    createPostWithGeocode: function () {
+      if (!this.my_post.location_name) this.createPost();
+      this.axios
         .get("https://nominatim.openstreetmap.org/search", {
           params: {
             format: "json",
-            q: this.my_post.location_name
-          }
+            q: this.my_post.location_name,
+          },
         })
-        .then(response => {
+        .then((response) => {
           if (response.data.length == 0) {
-            console.log("Geocoding failed, creating post without location.")
+            console.log("Geocoding failed, creating post without location.");
             this.createPost();
           } else {
-            this.my_post.post_location = {type: "Point", coordinates: [parseFloat(response.data[0].lon), parseFloat(response.data[0].lat)]}
+            this.my_post.post_location = {
+              type: "Point",
+              coordinates: [
+                parseFloat(response.data[0].lon),
+                parseFloat(response.data[0].lat),
+              ],
+            };
             this.createPost();
           }
         })
         .catch(() => {
-          console.log("Geocoding failed, creating post without location.")
+          console.log("Geocoding failed, creating post without location.");
           this.createPost();
         });
     },
@@ -2180,27 +2316,32 @@ export default {
           console.log(res);
         });
     },
-    createStoryWithGeocode: function() {
-      if (!this.my_post.location_name)
-          this.createStory();
-        this.axios
+    createStoryWithGeocode: function () {
+      if (!this.my_post.location_name) this.createStory();
+      this.axios
         .get("https://nominatim.openstreetmap.org/search", {
           params: {
             format: "json",
-            q: this.my_post.location_name
-          }
+            q: this.my_post.location_name,
+          },
         })
-        .then(response => {
+        .then((response) => {
           if (response.data.length == 0) {
-            console.log("Geocoding failed, creating post without location.")
+            console.log("Geocoding failed, creating post without location.");
             this.createStory();
           } else {
-            this.my_post.post_location = {type: "Point", coordinates: [parseFloat(response.data[0].lon), parseFloat(response.data[0].lat)]}
+            this.my_post.post_location = {
+              type: "Point",
+              coordinates: [
+                parseFloat(response.data[0].lon),
+                parseFloat(response.data[0].lat),
+              ],
+            };
             this.createStory();
           }
         })
         .catch(() => {
-          console.log("Geocoding failed, creating post without location.")
+          console.log("Geocoding failed, creating post without location.");
           this.createStory();
         });
     },
