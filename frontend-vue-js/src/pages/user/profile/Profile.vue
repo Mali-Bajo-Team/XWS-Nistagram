@@ -157,9 +157,9 @@
               </v-card-title>
               <v-card-text>
                 <v-file-input
-                 small-chips
-                 multiple
-                show-size
+                  small-chips
+                  multiple
+                  show-size
                   counter
                   accept="image/png, image/jpeg, image/bmp"
                   label="Choose a profile"
@@ -683,10 +683,26 @@
                           <!--Card for comments-->
                           <v-card>
                             <v-card-title>
-                              <v-img
-                                lazy-src="https://picsum.photos/id/11/10/6"
-                                src="https://picsum.photos/id/11/500/300"
-                              ></v-img>
+                              <!--List of photos-->
+                              <v-carousel
+                                v-if="entirePost.my_post"
+                                cycle
+                                height="400"
+                                hide-delimiter-background
+                                show-arrows-on-hover
+                              >
+                                <v-carousel-item
+                                  v-for="(slide, i) in entirePost.my_post
+                                    .content"
+                                  :key="i"
+                                >
+                                  <v-img
+                                    v-if="entirePost.my_post"
+                                    :src="getImageUrlByPATH(slide.path)"
+                                  ></v-img>
+                                </v-carousel-item>
+                              </v-carousel>
+                              <!--End of list of photos-->
                             </v-card-title>
                             <v-card-text>
                               <v-row>
@@ -697,8 +713,6 @@
                                 </v-col>
 
                                 <v-col class="text-right mr-5 mb-5">
-                                  
-
                                   <!-- Like button-->
                                   <v-btn
                                     color="primary"
@@ -732,7 +746,7 @@
                                     color="primary"
                                     ><v-icon>mdi-thumb-down</v-icon>
                                   </v-btn>
-                                 <!-- End of the Dislike button-->
+                                  <!-- End of the Dislike button-->
 
                                   <!-- UnDislike button-->
                                   <v-btn
@@ -862,10 +876,36 @@
                           <!--Card for comments-->
                           <v-card>
                             <v-card-title>
-                              <v-img
-                                lazy-src="https://picsum.photos/id/11/10/6"
-                                src="https://picsum.photos/id/11/500/300"
-                              ></v-img>
+                              <!--List of photos-->
+                              <v-carousel
+                                v-if="entirePost.my_post"
+                                cycle
+                                height="400"
+                                hide-delimiter-background
+                                show-arrows-on-hover
+                              >
+                                <v-carousel-item
+                                  v-for="(slide, i) in entirePost.my_post
+                                    .content"
+                                  :key="i"
+                                >
+                                  <video
+                                    v-if="slide.type == 'video'"
+                                    controls
+                                    :src="getImageUrlByPATH(slide.path)"
+                                    class="white--text align-end"
+                                    gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                                    height="200px"
+                                    width="100%"
+                                  ></video>
+
+                                  <v-img
+                                    v-if="slide.type == 'image'"
+                                    :src="getImageUrlByPATH(slide.path)"
+                                  ></v-img>
+                                </v-carousel-item>
+                              </v-carousel>
+                              <!--End of list of photos-->
                             </v-card-title>
                             <v-card-text>
                               <!-- Likes, dislikes, add comment -->
@@ -1677,14 +1717,14 @@ export default {
     likePost(postID) {
       // alert('like' + postID);
       // like post
-       axios
+      axios
         .post(
           process.env.VUE_APP_BACKEND_URL +
             process.env.VUE_APP_CONTENT_REACTION +
             postID,
           {
             reaction_creator_ref: this.user._id,
-            reaction_type: "like"
+            reaction_type: "like",
           },
           {
             headers: {
@@ -1705,7 +1745,7 @@ export default {
             postID,
           {
             reaction_creator_ref: this.user._id,
-            reaction_type: "dislike"
+            reaction_type: "dislike",
           },
           {
             headers: {
@@ -1719,14 +1759,14 @@ export default {
     },
     unlikePost(postID) {
       // unlike post
-       axios
+      axios
         .post(
           process.env.VUE_APP_BACKEND_URL +
             process.env.VUE_APP_CONTENT_UNREACTION +
             postID,
           {
             reaction_creator_ref: this.user._id,
-            reaction_type: "like"
+            reaction_type: "like",
           },
           {
             headers: {
@@ -1747,7 +1787,7 @@ export default {
             postID,
           {
             reaction_creator_ref: this.user._id,
-            reaction_type: "dislike"
+            reaction_type: "dislike",
           },
           {
             headers: {
@@ -1941,23 +1981,23 @@ export default {
         .then((res) => {
           console.log(res);
           this.profileContent = res.data;
-                axios
-                  .post(
-                    process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_USER_UPDATE_PROFILEIMAGE ,
-                    {
-                      username: getParsedToken().sub,
-                      profileimagepath: this.profileContent[0].path,
-                    },
-                    {
-                      headers: {
-                        Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
-                      },
-                    }
-                  )
-                  .then((res) => {
-                    console.log(res);
-                  });
-          
+          axios
+            .post(
+              process.env.VUE_APP_BACKEND_URL +
+                process.env.VUE_APP_USER_UPDATE_PROFILEIMAGE,
+              {
+                username: getParsedToken().sub,
+                profileimagepath: this.profileContent[0].path,
+              },
+              {
+                headers: {
+                  Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+                },
+              }
+            )
+            .then((res) => {
+              console.log(res);
+            });
         });
     },
     onFileSelected(event) {
