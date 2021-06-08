@@ -2285,31 +2285,37 @@ export default {
       else
         return "https://icon-library.com/images/default-user-icon/default-user-icon-4.jpg";
     },
-    createPostWithGeocode: function() {
-        if (!this.my_post.location_name){
-          this.createPost();}
-        else {
-          this.axios
+    createPostWithGeocode: function () {
+      if (!this.my_post.location_name) {
+        this.createPost();
+      } else {
+        this.axios
           .get("https://nominatim.openstreetmap.org/search", {
             params: {
               format: "json",
-              q: this.my_post.location_name
-            }
+              q: this.my_post.location_name,
+            },
           })
-          .then(response => {
+          .then((response) => {
             if (response.data.length == 0) {
-              console.log("Geocoding failed, creating post without location.")
+              console.log("Geocoding failed, creating post without location.");
               this.createPost();
             } else {
-              this.my_post.post_location = {type: "Point", coordinates: [parseFloat(response.data[0].lon), parseFloat(response.data[0].lat)]}
+              this.my_post.post_location = {
+                type: "Point",
+                coordinates: [
+                  parseFloat(response.data[0].lon),
+                  parseFloat(response.data[0].lat),
+                ],
+              };
               this.createPost();
             }
           })
           .catch(() => {
-            console.log("Geocoding failed, creating post without location.")
+            console.log("Geocoding failed, creating post without location.");
             this.createPost();
           });
-        }
+      }
     },
     createPost() {
       if (this.hashtagText) {
@@ -2332,37 +2338,37 @@ export default {
           console.log(res);
         });
     },
-    createStoryWithGeocode: function() {
-      if (!this.my_post.location_name){
-          this.createStory()
+    createStoryWithGeocode: function () {
+      if (!this.my_post.location_name) {
+        this.createStory();
       } else {
         this.axios
 
-        .get("https://nominatim.openstreetmap.org/search", {
-          params: {
-            format: "json",
-            q: this.my_post.location_name,
-          },
-        })
-        .then((response) => {
-          if (response.data.length == 0) {
+          .get("https://nominatim.openstreetmap.org/search", {
+            params: {
+              format: "json",
+              q: this.my_post.location_name,
+            },
+          })
+          .then((response) => {
+            if (response.data.length == 0) {
+              console.log("Geocoding failed, creating post without location.");
+              this.createStory();
+            } else {
+              this.my_post.post_location = {
+                type: "Point",
+                coordinates: [
+                  parseFloat(response.data[0].lon),
+                  parseFloat(response.data[0].lat),
+                ],
+              };
+              this.createStory();
+            }
+          })
+          .catch(() => {
             console.log("Geocoding failed, creating post without location.");
             this.createStory();
-          } else {
-            this.my_post.post_location = {
-              type: "Point",
-              coordinates: [
-                parseFloat(response.data[0].lon),
-                parseFloat(response.data[0].lat),
-              ],
-            };
-            this.createStory();
-          }
-        })
-        .catch(() => {
-          console.log("Geocoding failed, creating post without location.");
-          this.createStory();
-        });
+          });
       }
     },
     createStory() {
