@@ -66,6 +66,25 @@ func (postStoreRef *PostStore) GetEntirePost(postID string) model.RegularPost {
 	return post
 }
 
+func (postStoreRef *PostStore) GetEntireStory(storyID string) model.Story {
+	collectionStories := postStoreRef.ourClient.Database("content-service-db").Collection("stories")
+	// convert id string to ObjectId
+	objectId, err := primitive.ObjectIDFromHex(storyID)
+	if err != nil {
+		log.Println("Invalid id")
+	}
+
+	result := collectionStories.FindOne(
+		context.Background(),
+		bson.M{"_id": objectId},
+	)
+
+	var story model.Story
+	result.Decode(&story)
+
+	return story
+}
+
 func (postStoreRef *PostStore) CreateStory(story model.Story) *mongo.InsertOneResult {
 	collectionStories := postStoreRef.ourClient.Database("content-service-db").Collection("stories")
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)

@@ -680,7 +680,6 @@
                               <v-icon right> mdi-plus-circle </v-icon>
                             </v-btn>
                           </template>
-                          <!--Card for comments-->
                           <v-card>
                             <v-card-title>
                               <!--List of photos-->
@@ -696,6 +695,16 @@
                                     .content"
                                   :key="i"
                                 >
+                                <video
+                                    v-if="slide.type == 'video'"
+                                    controls
+                                    :src="getImageUrlByPATH(slide.path)"
+                                    class="white--text align-end"
+                                    gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                                    height="200px"
+                                    width="100%"
+                                  ></video>
+
                                   <v-img
                                     v-if="entirePost.my_post"
                                     :src="getImageUrlByPATH(slide.path)"
@@ -1054,6 +1063,65 @@
                       </v-img>
                       <v-card-actions>
                         <v-spacer></v-spacer>
+
+
+
+
+
+
+
+
+                    <!--Dialog for story details-->
+                        <v-dialog width="600px" >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                              v-bind="attrs"
+                              v-on="on"
+                              @click="getEntireStory(story._id)"
+                              icon
+                            >
+                              <v-icon right> mdi-plus-circle </v-icon>
+                            </v-btn>
+                          </template>
+                          
+                          <v-card v-if="entireStory">
+                            <v-card-title>
+                              <!--List of photos-->
+                              <v-carousel
+                                v-if="entireStory.my_post"
+                                cycle
+                                height="400"
+                                hide-delimiter-background
+                                show-arrows-on-hover
+                              >
+                                <v-carousel-item
+                                  v-for="(slide, i) in entireStory.my_post
+                                    .content"
+                                  :key="i"
+                                >
+                                <video
+                                    v-if="slide.type == 'video'"
+                                    controls
+                                    :src="getImageUrlByPATH(slide.path)"
+                                    class="white--text align-end"
+                                    gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                                    height="200px"
+                                    width="100%"
+                                  ></video>
+
+                                  <v-img
+                                    v-if="slide"
+                                    :src="getImageUrlByPATH(slide.path)"
+                                  ></v-img>
+                                </v-carousel-item>
+                              </v-carousel>
+                              <!--End of list of photos-->
+                            </v-card-title>
+                          
+                          </v-card>
+                        </v-dialog>
+                        <!--End of dialog for story details-->
+
 
                         <v-btn icon>
                           <v-icon>mdi-share-variant</v-icon>
@@ -1533,6 +1601,7 @@ export default {
       stories: [],
       newCommentContent: "",
       entirePost: "",
+      entireStory: null,
       liked: "",
       disliked: "",
     };
@@ -1648,8 +1717,9 @@ export default {
         if (this.user.stories != null) {
           this.stories = [];
           this.user.stories.forEach((story) => {
+            console.log(story);
             this.stories.push({
-              _id: story.post_id,
+              _id: story.story_id,
               path: story.first_content.path,
               type: story.first_content.type,
               flex: 6,
@@ -1712,6 +1782,23 @@ export default {
         .then((res) => {
           this.entirePost = res.data;
           this.comments = this.entirePost.comments;
+        });
+    },
+    getEntireStory(storyID) {
+      // get entire post
+      axios
+        .get(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_STORY +
+            storyID,
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          this.entireStory = res.data;
         });
     },
     likePost(postID) {
