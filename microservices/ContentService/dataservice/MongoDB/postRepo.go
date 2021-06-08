@@ -446,13 +446,13 @@ func (postStoreRef *PostStore) CloseConnection() error {
 	return postStoreRef.ourClient.Disconnect(context.Background())
 }
 
-func (postStoreRef *PostStore) GetPostsByLocation(longitude float64, latitude float64) []model.Post {
+func (postStoreRef *PostStore) GetPostsByLocation(longitude float64, latitude float64) []model.RegularPost {
 	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
-	var result []model.Post
+	var result []model.RegularPost
 	
 	mod := mongo.IndexModel{
 		Keys: bson.M{
-			"post_location": "2dsphere",
+			"my_post.post_location": "2dsphere",
 		}, Options: nil,
 	}
 
@@ -482,9 +482,9 @@ func (postStoreRef *PostStore) GetPostsByLocation(longitude float64, latitude fl
 	return result
 }
 
-func (postStoreRef *PostStore) GetPostsByHashtag(hashtag string) []model.Post {
+func (postStoreRef *PostStore) GetPostsByHashtag(hashtag string) []model.RegularPost {
 	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
-	var result []model.Post
+	var result []model.RegularPost
 
 	cursor, err := collectionPosts.Find(
 		context.Background(),

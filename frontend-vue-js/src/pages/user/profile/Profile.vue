@@ -291,7 +291,7 @@
 
                           <v-btn
                             color="primary"
-                            @click="createPost(), (e1 = 3)"
+                            @click="createPostWithGeocode(), (e1 = 3)"
                           >
                             Continue
                           </v-btn>
@@ -431,7 +431,7 @@
 
                           <v-btn
                             color="primary"
-                            @click="createStory(), (e2 = 3)"
+                            @click="createStoryWithGeocode(), (e2 = 3)"
                           >
                             Continue
                           </v-btn>
@@ -1926,6 +1926,30 @@ export default {
         path
       );
     },
+    createPostWithGeocode: function() {
+        if (!this.my_post.location_name)
+          this.createPost();
+        this.axios
+        .get("https://nominatim.openstreetmap.org/search", {
+          params: {
+            format: "json",
+            q: this.my_post.location_name
+          }
+        })
+        .then(response => {
+          if (response.data.length == 0) {
+            console.log("Geocoding failed, creating post without location.")
+            this.createPost();
+          } else {
+            this.my_post.post_location = {type: "Point", coordinates: [parseFloat(response.data[0].lon), parseFloat(response.data[0].lat)]}
+            this.createPost();
+          }
+        })
+        .catch(() => {
+          console.log("Geocoding failed, creating post without location.")
+          this.createPost();
+        });
+    },
     createPost() {
       if (this.hashtagText) {
         this.my_post.hashtags = this.hashtagText.split(",");
@@ -1945,6 +1969,30 @@ export default {
         )
         .then((res) => {
           console.log(res);
+        });
+    },
+    createStoryWithGeocode: function() {
+      if (!this.my_post.location_name)
+          this.createStory();
+        this.axios
+        .get("https://nominatim.openstreetmap.org/search", {
+          params: {
+            format: "json",
+            q: this.my_post.location_name
+          }
+        })
+        .then(response => {
+          if (response.data.length == 0) {
+            console.log("Geocoding failed, creating post without location.")
+            this.createStory();
+          } else {
+            this.my_post.post_location = {type: "Point", coordinates: [parseFloat(response.data[0].lon), parseFloat(response.data[0].lat)]}
+            this.createStory();
+          }
+        })
+        .catch(() => {
+          console.log("Geocoding failed, creating post without location.")
+          this.createStory();
         });
     },
     createStory() {
