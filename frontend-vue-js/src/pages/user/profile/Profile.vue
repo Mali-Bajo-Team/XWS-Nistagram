@@ -10,7 +10,7 @@
           <v-img
             class="rounded-circle"
             aspect-ratio="1.1"
-            :src="form.photoUrl"
+            :src="getImageUrlByPATH(form.photoUrl)"
           >
           </v-img>
 
@@ -1554,6 +1554,13 @@ export default {
         process.env.VUE_APP_BACKEND_URL +
         process.env.VUE_APP_FILE_ENDPOINT +
         post.path
+      );
+    },
+    getImageUrlByPATH(path) {
+      return (
+        process.env.VUE_APP_BACKEND_URL +
+        process.env.VUE_APP_FILE_ENDPOINT +
+        path
       );
     },
     createPost() {
