@@ -691,7 +691,7 @@
                             <v-btn
                               v-bind="attrs"
                               v-on="on"
-                              @click="getCommentsForPost(post._id)"
+                              @click="getEntirePost(post._id)"
                               icon
                             >
                               <v-icon right> mdi-plus-circle </v-icon>
@@ -714,28 +714,59 @@
                                 </v-col>
 
                                 <v-col class="text-right mr-5 mb-5">
-                                  <!--Button for likes-->
+                                  
+
+                                  <!-- Like button-->
                                   <v-btn
+                                    color="primary"
+                                    @click="likePost(post._id)"
                                     class="mx-2"
                                     fab
                                     x-small
-                                    color="primary"
-                                    ><v-icon>mdi-thumb-up</v-icon>
+                                  >
+                                    <v-icon>mdi-thumb-up</v-icon>
                                   </v-btn>
-                                  <!--End of button for likes-->
+                                  <!--End of like button-->
 
-                                  <!--Button for dislikes-->
+                                  <!-- UnLike button-->
                                   <v-btn
+                                    color="red lighten-3"
+                                    @click="unlikePost(post._id)"
+                                    class="mx-2"
+                                    fab
+                                    x-small
+                                  >
+                                    <v-icon>mdi-thumb-up</v-icon>
+                                  </v-btn>
+                                  <!-- End of the  UnLike button-->
+
+                                  <!-- Dislike button-->
+                                  <v-btn
+                                    @click="dislikePost(post._id)"
                                     class="mx-2"
                                     fab
                                     x-small
                                     color="primary"
                                     ><v-icon>mdi-thumb-down</v-icon>
                                   </v-btn>
-                                  <!--End of button for dislikes-->
+                                 <!-- End of the Dislike button-->
+
+                                  <!-- UnDislike button-->
+                                  <v-btn
+                                    @click="undislikePost(post._id)"
+                                    class="mx-2"
+                                    fab
+                                    x-small
+                                    color="red lighten-3"
+                                    ><v-icon>mdi-thumb-down</v-icon>
+                                  </v-btn>
+                                  <!-- End of the UnDislike button-->
 
                                   <!--Dialog for adding comment-->
-                                  <v-dialog width="600px">
+                                  <v-dialog
+                                    width="600px"
+                                    v-model="openedNewCommentDialog"
+                                  >
                                     <template v-slot:activator="{ on, attrs }">
                                       <v-btn
                                         class="mx-2"
@@ -774,7 +805,10 @@
                                         <v-btn
                                           color="primary"
                                           text
-                                          @click="createComment(post._id)"
+                                          @click="
+                                            createComment(post._id),
+                                              (openedNewCommentDialog = false)
+                                          "
                                         >
                                           Confirm
                                         </v-btn>
@@ -830,10 +864,15 @@
                       <v-card-actions>
                         <v-spacer></v-spacer>
 
-                        <!--Dialog for choosing photo-->
+                        <!--Dialog for video details-->
                         <v-dialog width="600px">
                           <template v-slot:activator="{ on, attrs }">
-                            <v-btn v-bind="attrs" v-on="on" icon>
+                            <v-btn
+                              v-bind="attrs"
+                              v-on="on"
+                              @click="getEntirePost(post._id)"
+                              icon
+                            >
                               <v-icon right> mdi-plus-circle </v-icon>
                             </v-btn>
                           </template>
@@ -876,7 +915,10 @@
                                   <!--End of button for dislikes-->
 
                                   <!--Dialog for adding comment-->
-                                  <v-dialog width="600px">
+                                  <v-dialog
+                                    width="600px"
+                                    v-model="openedNewCommentDialog"
+                                  >
                                     <template v-slot:activator="{ on, attrs }">
                                       <v-btn
                                         class="mx-2"
@@ -915,7 +957,10 @@
                                         <v-btn
                                           color="primary"
                                           text
-                                          @click="createComment(post._id)"
+                                          @click="
+                                            createComment(post._id),
+                                              (openedNewCommentDialog = false)
+                                          "
                                         >
                                           Confirm
                                         </v-btn>
@@ -950,7 +995,7 @@
                             </v-card-text>
                           </v-card>
                         </v-dialog>
-                        <!--End of dialog for choosing photo-->
+                        <!--End of dialog for video details -->
 
                         <v-btn icon>
                           <v-icon>mdi-bookmark</v-icon>
@@ -1376,11 +1421,15 @@ export default {
         photoUrl: "",
       },
       openedContenDialog: null,
+      openedNewCommentDialog: null,
       selectedFiles: [],
       user: null,
       posts: [],
       stories: [],
       newCommentContent: "",
+      entirePost: "",
+      liked: "",
+      disliked: "",
     };
   },
   computed: {},
@@ -1457,6 +1506,109 @@ export default {
       });
   },
   methods: {
+    getEntirePost(postID) {
+      // get entire post
+      axios
+        .get(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_POST +
+            postID,
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          this.entirePost = res.data;
+          this.comments = this.entirePost.comments;
+        });
+    },
+    likePost(postID) {
+      // alert('like' + postID);
+      // like post
+       axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_REACTION +
+            postID,
+          {
+            reaction_creator_ref: this.user._id,
+            reaction_type: "like"
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        });
+    },
+    dislikePost(postID) {
+      // dislike post
+      axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_REACTION +
+            postID,
+          {
+            reaction_creator_ref: this.user._id,
+            reaction_type: "dislike"
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        });
+    },
+    unlikePost(postID) {
+      // unlike post
+       axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_UNREACTION +
+            postID,
+          {
+            reaction_creator_ref: this.user._id,
+            reaction_type: "like"
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        });
+    },
+    undislikePost(postID) {
+      // undislike post
+      axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_UNREACTION +
+            postID,
+          {
+            reaction_creator_ref: this.user._id,
+            reaction_type: "dislike"
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        });
+    },
     createComment(postID) {
       axios
         .post(
