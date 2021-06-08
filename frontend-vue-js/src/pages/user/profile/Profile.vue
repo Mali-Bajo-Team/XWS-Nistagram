@@ -341,23 +341,7 @@
                         <v-divider></v-divider>
 
                         <v-stepper-step :complete="e2 > 2" step="2">
-                          <!--Choose a location-->
-                          <v-text-field
-                            label="Choose a location"
-                            prepend-icon="mdi-map-marker-star"
-                            v-model="my_post.location_name"
-                          >
-                          </v-text-field>
-                          <!--End of location-->
-
-                          <!--Tagging-->
-                          <br />
-                          <v-text-field
-                            label="Hashtags"
-                            prepend-icon="mdi-tag"
-                            v-model="hashtagText"
-                          ></v-text-field>
-                          <!--End of tagging-->
+                          Other information
                         </v-stepper-step>
 
                         <v-divider></v-divider>
@@ -395,19 +379,21 @@
                         <!--Step 2-->
                         <v-stepper-content step="2">
                           <!--Choose a location-->
-                          <v-combobox
+                          <v-text-field
                             label="Choose a location"
                             prepend-icon="mdi-map-marker-star"
+                            v-model="my_post.location_name"
                           >
-                          </v-combobox>
+                          </v-text-field>
                           <!--End of location-->
 
                           <!--Tagging-->
                           <br />
-                          <v-autocomplete
-                            label="Tagging"
+                          <v-text-field
+                            label="Hashtags"
                             prepend-icon="mdi-tag"
-                          ></v-autocomplete>
+                            v-model="hashtagText"
+                          ></v-text-field>
                           <!--End of tagging-->
 
                           <!--Only available to close friends-->
@@ -2299,34 +2285,31 @@ export default {
       else
         return "https://icon-library.com/images/default-user-icon/default-user-icon-4.jpg";
     },
-    createPostWithGeocode: function () {
-      if (!this.my_post.location_name) this.createPost();
-      this.axios
-        .get("https://nominatim.openstreetmap.org/search", {
-          params: {
-            format: "json",
-            q: this.my_post.location_name,
-          },
-        })
-        .then((response) => {
-          if (response.data.length == 0) {
-            console.log("Geocoding failed, creating post without location.");
+    createPostWithGeocode: function() {
+        if (!this.my_post.location_name){
+          this.createPost();}
+        else {
+          this.axios
+          .get("https://nominatim.openstreetmap.org/search", {
+            params: {
+              format: "json",
+              q: this.my_post.location_name
+            }
+          })
+          .then(response => {
+            if (response.data.length == 0) {
+              console.log("Geocoding failed, creating post without location.")
+              this.createPost();
+            } else {
+              this.my_post.post_location = {type: "Point", coordinates: [parseFloat(response.data[0].lon), parseFloat(response.data[0].lat)]}
+              this.createPost();
+            }
+          })
+          .catch(() => {
+            console.log("Geocoding failed, creating post without location.")
             this.createPost();
-          } else {
-            this.my_post.post_location = {
-              type: "Point",
-              coordinates: [
-                parseFloat(response.data[0].lon),
-                parseFloat(response.data[0].lat),
-              ],
-            };
-            this.createPost();
-          }
-        })
-        .catch(() => {
-          console.log("Geocoding failed, creating post without location.");
-          this.createPost();
-        });
+          });
+        }
     },
     createPost() {
       if (this.hashtagText) {
@@ -2349,9 +2332,12 @@ export default {
           console.log(res);
         });
     },
-    createStoryWithGeocode: function () {
-      if (!this.my_post.location_name) this.createStory();
-      this.axios
+    createStoryWithGeocode: function() {
+      if (!this.my_post.location_name){
+          this.createStory()
+      } else {
+        this.axios
+
         .get("https://nominatim.openstreetmap.org/search", {
           params: {
             format: "json",
@@ -2377,6 +2363,7 @@ export default {
           console.log("Geocoding failed, creating post without location.");
           this.createStory();
         });
+      }
     },
     createStory() {
       this.my_post.post_creator_ref = this.user._id;
