@@ -445,3 +445,58 @@ func (postStoreRef *PostStore) UpdateUserStories(story model.Story) *mongo.Updat
 func (postStoreRef *PostStore) CloseConnection() error {
 	return postStoreRef.ourClient.Disconnect(context.Background())
 }
+
+func (postStoreRef *PostStore) GetPostsByLocation(longitude float64, latitude float64) []model.Post {
+	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
+	var result []model.Post
+	
+	mod := mongo.IndexModel{
+		Keys: bson.M{
+			"post_location": "2dsphere",
+		}, Options: nil,
+	}
+
+	collectionPosts.Indexes().CreateOne(context.Background(), mod)
+
+	cursor, err := collectionPosts.Find(
+		context.Background(),
+		bson.M{
+		"my_post.post_location": bson.M{
+			"$nearSphere": bson.M{
+				"$geometry": bson.M{
+					"type":        "Point",
+					"coordinates": []float64{longitude, latitude},
+				},
+				"$maxDistance": 3000,
+			},
+		},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err = cursor.All(context.Background(), &result); err != nil {
+		log.Fatal(err)
+	}
+
+	return result
+}
+
+func (postStoreRef *PostStore) GetPostsByHashtag(hashtag string) []model.Post {
+	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
+	var result []model.Post
+
+	cursor, err := collectionPosts.Find(
+		context.Background(),
+		bson.M{"my_post.hashtags": hashtag},
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err = cursor.All(context.Background(), &result); err != nil {
+		log.Fatal(err)
+	}
+
+	return result
+}

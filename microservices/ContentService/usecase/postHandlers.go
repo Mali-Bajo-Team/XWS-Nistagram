@@ -43,6 +43,9 @@ func InitializeRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/user/post/{id}", server.GetUserPostsByIDEndpoint).Methods("GET")
 	router.HandleFunc("/user/story/{id}", server.GetUserStoriesByIDEndpoint).Methods("GET")
 	router.HandleFunc("/story/", server.CreateStoryEndpoint).Methods("POST")
+
+	router.HandleFunc("/post/search/location/", server.SearchByLocation).Methods("POST")	
+	router.HandleFunc("/post/search/hashtag/{hashtag}", server.SearchByLocation).Methods("GET")
 }
 
 func (contentServerRef *ContentServer) UploadFileEndpoint(responseWriter http.ResponseWriter, request *http.Request) {
@@ -276,4 +279,15 @@ func (contentServerRef *ContentServer) GetUserStoriesByIDEndpoint(response http.
 	}
 	renderJSON(response, user.Stories)
 }
+
+func (contentServerRef *ContentServer) SearchByLocation(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	params := mux.Vars(request)
+
+	var result = contentServerRef.postStore.GetPostsByHashtag(params["hashtag"])
+
+	renderJSON(response, result)
+}
+
+
 
