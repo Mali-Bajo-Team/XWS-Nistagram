@@ -259,19 +259,21 @@
                           </v-text-field>
                           <!-- End of title-->
                           <!--Choose a location-->
-                          <v-combobox
+                          <v-text-field
                             label="Choose a location"
                             prepend-icon="mdi-map-marker-star"
+                            v-model="my_post.location_name"
                           >
-                          </v-combobox>
+                          </v-text-field>
                           <!--End of location-->
 
                           <!--Tagging-->
                           <br />
-                          <v-autocomplete
-                            label="Tagging"
+                          <v-text-field
+                            label="Hashtags"
                             prepend-icon="mdi-tag"
-                          ></v-autocomplete>
+                            v-model="hashtagText"
+                          ></v-text-field>
                           <!--End of tagging-->
 
                           <!--Add description-->
@@ -339,7 +341,23 @@
                         <v-divider></v-divider>
 
                         <v-stepper-step :complete="e2 > 2" step="2">
-                          Other information
+                          <!--Choose a location-->
+                          <v-text-field
+                            label="Choose a location"
+                            prepend-icon="mdi-map-marker-star"
+                            v-model="my_post.location_name"
+                          >
+                          </v-text-field>
+                          <!--End of location-->
+
+                          <!--Tagging-->
+                          <br />
+                          <v-text-field
+                            label="Hashtags"
+                            prepend-icon="mdi-tag"
+                            v-model="hashtagText"
+                          ></v-text-field>
+                          <!--End of tagging-->
                         </v-stepper-step>
 
                         <v-divider></v-divider>
@@ -1499,12 +1517,15 @@ export default {
       e4: 1,
       my_post: {
         title: "",
-        // location: null,
+        post_location: null,
+        location_name: "",
+        hashtags: "",
         description: "",
         is_add: false,
         add_link: "/",
         content: [],
       },
+      hashtagText: "",
       profileContent: [],
       user_id: "",
       isForCloseFriends: false,
@@ -1906,6 +1927,9 @@ export default {
       );
     },
     createPost() {
+      if (this.hashtagText) {
+        this.my_post.hashtags = this.hashtagText.split(",");
+      }
       this.my_post.post_creator_ref = this.user._id;
       axios
         .post(
@@ -1925,6 +1949,9 @@ export default {
     },
     createStory() {
       this.my_post.post_creator_ref = this.user._id;
+      if (this.hashtagText) {
+        this.my_post.hashtags = this.hashtagText.split(",");
+      }
       axios
         .post(
           process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_STORY + "/",
