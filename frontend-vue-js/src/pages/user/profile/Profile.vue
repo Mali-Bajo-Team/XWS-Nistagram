@@ -495,6 +495,9 @@
                           <!--File input for cover image-->
                           <v-file-input
                             small-chips
+                            multiple
+                            show-size
+                            counter
                             accept="image/png, image/jpeg, image/bmp"
                             label="Choose a photo or video"
                             prepend-icon="mdi-camera"
@@ -517,12 +520,16 @@
                         <v-stepper-content step="2">
                           <!--Name of album-->
                           <v-text-field
+                            v-model="new_album_name"
                             prepend-icon="mdi-image-album"
                             label="Name of album"
                           ></v-text-field>
                           <!--End of the name of album-->
 
-                          <v-btn color="primary" @click="e3 = 3">
+                          <v-btn
+                            color="primary"
+                            @click="createHighlight(), (e3 = 3)"
+                          >
                             Continue
                           </v-btn>
 
@@ -533,8 +540,8 @@
                         <!--Step 3-->
                         <v-stepper-content step="3">
                           <h3>
-                            Congratulations, you have successfully chosen the
-                            desired content!
+                            Congratulations, you have successfully created new
+                            one story highlight. Go and add some stories on it !
                           </h3>
 
                           <v-spacer></v-spacer>
@@ -585,6 +592,9 @@
                           <!--File input for cover image-->
                           <v-file-input
                             small-chips
+                            multiple
+                            show-size
+                            counter
                             accept="image/png, image/jpeg, image/bmp"
                             label="Choose a photo or video"
                             prepend-icon="mdi-camera"
@@ -643,7 +653,6 @@
                 </v-card>
               </v-tab-item>
               <!--End of tab for saved content-->
-
             </v-tabs-items>
           </v-dialog>
         </v-col>
@@ -659,9 +668,9 @@
           <v-tab>Stories<v-icon>mdi-camera-iris</v-icon></v-tab>
           <v-tab>Highlights<v-icon>mdi-star-circle-outline</v-icon></v-tab>
           <v-tab>Saved<v-icon>mdi-check-circle</v-icon></v-tab>
-          <v-tab>Tagged<v-icon>mdi-tag</v-icon></v-tab>  
-          <v-tab>Followers<v-icon>mdi-tag</v-icon></v-tab>       
-          <v-tab>Following<v-icon>mdi-tag</v-icon></v-tab> 
+          <v-tab>Tagged<v-icon>mdi-tag</v-icon></v-tab>
+          <v-tab>Followers<v-icon>mdi-tag</v-icon></v-tab>
+          <v-tab>Following<v-icon>mdi-tag</v-icon></v-tab>
         </v-tabs>
         <v-tabs-items v-model="tabs2">
           <!--Tab for photos and videos-->
@@ -713,7 +722,7 @@
                                     .content"
                                   :key="i"
                                 >
-                                <video
+                                  <video
                                     v-if="slide.type == 'video'"
                                     controls
                                     :src="getImageUrlByPATH(slide.path)"
@@ -1082,15 +1091,8 @@
                       <v-card-actions>
                         <v-spacer></v-spacer>
 
-
-
-
-
-
-
-
-                    <!--Dialog for story details-->
-                        <v-dialog width="600px" >
+                        <!--Dialog for story details-->
+                        <v-dialog width="600px">
                           <template v-slot:activator="{ on, attrs }">
                             <v-btn
                               v-bind="attrs"
@@ -1101,7 +1103,7 @@
                               <v-icon right> mdi-plus-circle </v-icon>
                             </v-btn>
                           </template>
-                          
+
                           <v-card v-if="entireStory">
                             <v-card-title>
                               <!--List of photos-->
@@ -1117,7 +1119,7 @@
                                     .content"
                                   :key="i"
                                 >
-                                <video
+                                  <video
                                     v-if="slide.type == 'video'"
                                     controls
                                     :src="getImageUrlByPATH(slide.path)"
@@ -1135,11 +1137,9 @@
                               </v-carousel>
                               <!--End of list of photos-->
                             </v-card-title>
-                          
                           </v-card>
                         </v-dialog>
                         <!--End of dialog for story details-->
-
 
                         <v-btn icon>
                           <v-icon>mdi-share-variant</v-icon>
@@ -1177,24 +1177,31 @@
           <!--Tab for highlights-->
           <v-tab-item>
             <v-card class="mx-auto" max-width="500">
-              <v-container fluid>
+              <v-container v-if="user" fluid>
                 <v-row dense>
-                  <v-col>
+                  <v-col
+                    v-for="storyHighlight in user.story_highlights"
+                    :key="storyHighlight._id"
+                    :cols="6"
+                  >
                     <!-- Image previw -->
                     <v-card>
                       <v-img
-                        src="https://picsum.photos/350/165?random"
+                        :src="
+                          getImageUrlByPATH(storyHighlight.cover_image.path)
+                        "
                         class="white--text align-end"
                         gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                        height="300px"
+                        height="200px"
                       >
                       </v-img>
                       <v-card-text>
                         <v-row>
                           <v-col>
-                            <h3>Perfect holiday</h3>
+                            <h3>{{ storyHighlight.name }}</h3>
                           </v-col>
                           <v-col class="text-right mr-5 mb-5">
+                            <!-- Dialog to preview highlight -->
                             <v-dialog width="600px">
                               <!--Button for showing highlights-->
                               <template v-slot:activator="{ on, attrs }">
@@ -1213,9 +1220,14 @@
                               <v-card>
                                 <v-card-title>
                                   <v-row>
-                                    <v-col> My perfect holiday </v-col>
+                                    <v-col> {{ storyHighlight.name }} </v-col>
                                     <v-col class="text-right">
-                                      <v-dialog width="600px">
+                                      <v-dialog
+                                        width="600px"
+                                        v-model="
+                                          openedAddStoryToHighlightDialog
+                                        "
+                                      >
                                         <template
                                           v-slot:activator="{ on, attrs }"
                                         >
@@ -1238,9 +1250,17 @@
                                           </v-card-title>
                                           <v-col>
                                             <!--Stories-->
-                                            <v-card class="mb-5">
+                                            <v-card
+                                              v-for="tempStory in stories"
+                                              :key="tempStory._id"
+                                              class="mb-5"
+                                            >
                                               <v-img
-                                                src="https://picsum.photos/350/165?random"
+                                                :src="
+                                                  getImageUrlByPATH(
+                                                    tempStory.path
+                                                  )
+                                                "
                                                 class="white--text align-end"
                                                 gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                                                 height="300px"
@@ -1248,22 +1268,15 @@
                                               </v-img>
 
                                               <v-card-actions>
-                                                <v-btn color="primary">
-                                                  CHOOSE
-                                                </v-btn>
-                                              </v-card-actions>
-                                            </v-card>
-                                            <v-card>
-                                              <v-img
-                                                src="https://picsum.photos/350/165?random"
-                                                class="white--text align-end"
-                                                gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                                                height="300px"
-                                              >
-                                              </v-img>
-
-                                              <v-card-actions>
-                                                <v-btn color="primary">
+                                                <v-btn
+                                                  @click="
+                                                    addStoryToHighlight(
+                                                      tempStory,
+                                                      storyHighlight._id
+                                                    )
+                                                  "
+                                                  color="primary"
+                                                >
                                                   CHOOSE
                                                 </v-btn>
                                               </v-card-actions>
@@ -1282,26 +1295,44 @@
                                   show-arrows-on-hover
                                 >
                                   <v-carousel-item
-                                    v-for="(slide, i) in slides"
+                                    v-for="(slide, i) in storyHighlight.content"
                                     :key="i"
                                   >
-                                    <v-sheet :color="colors[i]" height="100%">
-                                      <v-row
-                                        class="fill-height"
-                                        align="center"
-                                        justify="center"
-                                      >
-                                        <div class="text-h2">
-                                          {{ slide }} Slide
-                                        </div>
-                                      </v-row>
-                                    </v-sheet>
+                                    <video
+                                      v-if="
+                                        getStoryByID(slide.story_id).type ==
+                                        'video'
+                                      "
+                                      controls
+                                      :src="
+                                        getImageUrlByPATH(
+                                          getStoryByID(slide.story_id).path
+                                        )
+                                      "
+                                      class="white--text align-end"
+                                      gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                                      height="200px"
+                                      width="100%"
+                                    ></video>
+
+                                    <v-img
+                                      v-if="
+                                        getStoryByID(slide.story_id).type ==
+                                        'image'
+                                      "
+                                      :src="
+                                        getImageUrlByPATH(
+                                          getStoryByID(slide.story_id).path
+                                        )
+                                      "
+                                    ></v-img>
                                   </v-carousel-item>
                                 </v-carousel>
                                 <!--End of list of photos-->
                               </v-card>
                               <!--End for card for highlights-->
                             </v-dialog>
+                            <!-- End of the highlight preview -->
                           </v-col>
                         </v-row>
                       </v-card-text>
@@ -1457,37 +1488,31 @@
           <v-tab-item> TAGGED </v-tab-item>
           <!--End of tab for tagged-->
 
-
           <!--Tab for followers-->
-          <v-tab-item> 
-            <v-card v-if="followers.length > 0"
-              flat
-            >
+          <v-tab-item>
+            <v-card v-if="followers.length > 0" flat>
               <v-list>
-                <v-list-item-group
-                  color="primary"
-                >
-                  <v-list-item
-                    v-for="(user, i) in followers"
-                    :key="i"                    
-                  >
+                <v-list-item-group color="primary">
+                  <v-list-item v-for="(user, i) in followers" :key="i">
                     <v-list-item-avatar>
                       <v-img :src="user.profileImagePath"></v-img>
-                    </v-list-item-avatar>   
+                    </v-list-item-avatar>
                     <v-list-item-content>
-                      <v-list-item-title v-text="user.username"></v-list-item-title>
+                      <v-list-item-title
+                        v-text="user.username"
+                      ></v-list-item-title>
                     </v-list-item-content>
 
                     <v-list-item-action>
-                        <v-btn
+                      <v-btn
                         outlined
                         rounded
                         medium
                         color="primary"
-                        v-if="!user.isClose"  
-                        @click="addToClose(user)"              
+                        v-if="!user.isClose"
+                        @click="addToClose(user)"
                       >
-                    <v-icon left> mdi-plus </v-icon>
+                        <v-icon left> mdi-plus </v-icon>
                         Add to close friends
                       </v-btn>
                       <v-btn
@@ -1495,10 +1520,10 @@
                         rounded
                         medium
                         color="danger"
-                        v-if="user.isClose"  
-                        @click="removeFromClose(user)"                          
+                        v-if="user.isClose"
+                        @click="removeFromClose(user)"
                       >
-                    <v-icon left> mdi-plus </v-icon>
+                        <v-icon left> mdi-plus </v-icon>
                         Remove from close friends
                       </v-btn>
                     </v-list-item-action>
@@ -1510,14 +1535,10 @@
           <!--End of tab for followers-->
 
           <!--Tab for following-->
-          <v-tab-item> 
-            <v-card v-if="following.length > 0"
-              flat
-            >
+          <v-tab-item>
+            <v-card v-if="following.length > 0" flat>
               <v-list>
-                <v-list-item-group
-                  color="primary"
-                >
+                <v-list-item-group color="primary">
                   <v-list-item
                     v-for="(user, i) in following"
                     :key="i"
@@ -1527,7 +1548,9 @@
                       <v-img :src="user.profileImagePath"></v-img>
                     </v-list-item-avatar>
                     <v-list-item-content>
-                      <v-list-item-title v-text="user.username"></v-list-item-title>
+                      <v-list-item-title
+                        v-text="user.username"
+                      ></v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
                 </v-list-item-group>
@@ -1535,7 +1558,6 @@
             </v-card>
           </v-tab-item>
           <!--End of tab for following-->
-
         </v-tabs-items>
       </v-row>
       <!-- End of posts, highlights, stories, saved, tagged -->
@@ -1616,6 +1638,7 @@ export default {
       },
       openedContenDialog: null,
       openedNewCommentDialog: null,
+      openedAddStoryToHighlightDialog: null,
       selectedFiles: [],
       user: null,
       posts: [],
@@ -1625,57 +1648,68 @@ export default {
       entireStory: null,
       liked: "",
       disliked: "",
+      new_album_name: "",
+      new_file_content: "",
     };
   },
   computed: {},
   mounted() {
-    this.axios.get(
+    this.axios
+      .get(
         process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_FOLLOWER_ENDPOINT,
         {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
           },
         }
-      ).then((response) => {
-          let users = response.data;
-          for (let user of users){
-              if (user.profileImagePath) {
-                  user.profileImagePath = process.env.VUE_APP_BACKEND_URL +
-                                        process.env.VUE_APP_FILE_ENDPOINT +
-                                        user.profileImagePath;
-              } else {
-                  user.profileImagePath = "https://icon-library.com/images/default-user-icon/default-user-icon-4.jpg";
-              }
+      )
+      .then((response) => {
+        let users = response.data;
+        for (let user of users) {
+          if (user.profileImagePath) {
+            user.profileImagePath =
+              process.env.VUE_APP_BACKEND_URL +
+              process.env.VUE_APP_FILE_ENDPOINT +
+              user.profileImagePath;
+          } else {
+            user.profileImagePath =
+              "https://icon-library.com/images/default-user-icon/default-user-icon-4.jpg";
           }
-          this.followers = users;
-        }).
-        catch((error) => {
-          console.log(error)
-        });
+        }
+        this.followers = users;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
 
-    this.axios.get(
-        process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_FOLLOWING_ENDPOINT,
+    this.axios
+      .get(
+        process.env.VUE_APP_BACKEND_URL +
+          process.env.VUE_APP_FOLLOWING_ENDPOINT,
         {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
           },
         }
-      ).then((response) => {
-          let users = response.data;
-          for (let user of users){
-              if (user.profileImagePath) {
-                  user.profileImagePath = process.env.VUE_APP_BACKEND_URL +
-                                        process.env.VUE_APP_FILE_ENDPOINT +
-                                        user.profileImagePath;
-              } else {
-                  user.profileImagePath = "https://icon-library.com/images/default-user-icon/default-user-icon-4.jpg";
-              }
+      )
+      .then((response) => {
+        let users = response.data;
+        for (let user of users) {
+          if (user.profileImagePath) {
+            user.profileImagePath =
+              process.env.VUE_APP_BACKEND_URL +
+              process.env.VUE_APP_FILE_ENDPOINT +
+              user.profileImagePath;
+          } else {
+            user.profileImagePath =
+              "https://icon-library.com/images/default-user-icon/default-user-icon-4.jpg";
           }
-          this.following = users;
-        }).
-        catch((error) => {
-          console.log(error)
-        });
+        }
+        this.following = users;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
 
     this.axios
       .get(
@@ -1723,6 +1757,7 @@ export default {
       .then((res) => {
         this.user = res.data;
         this.user_id = res.data._id;
+        console.log("user id: " + this.user._id);
         if (this.user.posts != null) {
           this.posts = [];
           this.user.posts.forEach((post) => {
@@ -1747,45 +1782,129 @@ export default {
             });
           });
         }
+
+        // Get a user highlights
+        this.axios
+          .get(
+            process.env.VUE_APP_BACKEND_URL +
+              process.env.VUE_APP_CONTENT_HIGHLIGHTS +
+              "/" +
+              this.user._id,
+            {
+              headers: {
+                Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+              },
+            }
+          )
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       });
   },
   methods: {
-    addToClose(user) {
-        this.axios
+    getStoryByID(storyID) {
+      for (let tempStory of this.stories) {
+        if (tempStory._id == storyID) {
+          return tempStory;
+        }
+      }
+      return null;
+    },
+    addStoryToHighlight(story, highlightID) {
+      this.axios
         .post(
-          process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_ADD_CLOSE_FRIEND + user.username,
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_HIGHLIGHT +
+            "/" +
+            highlightID +
+            "/" +
+            this.user._id,
+          story,
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      this.openedAddStoryToHighlightDialog = false;
+    },
+    createHighlight() {
+      console.log(this.new_file_content);
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_HIGHLIGHTS +
+            "/" +
+            this.user._id,
+          {
+            name: this.new_album_name,
+            cover_image: this.new_file_content[0],
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    addToClose(user) {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_ADD_CLOSE_FRIEND +
+            user.username,
           {},
           {
             headers: {
               Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
-            }
+            },
           }
-        ).then(() => {
+        )
+        .then(() => {
           user.isClose = true;
-        }).
-        catch((error) => {
-        console.log(error)
+        })
+        .catch((error) => {
+          console.log(error);
         });
     },
     removeFromClose(user) {
-        this.axios
+      this.axios
         .post(
-          process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_REMOVE_CLOSE_FRIEND + user.username,
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_REMOVE_CLOSE_FRIEND +
+            user.username,
           {},
           {
             headers: {
               Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
-            }
+            },
           }
-        ).then(() => {
+        )
+        .then(() => {
           user.isClose = false;
-        }).
-        catch((error) => {
-        console.log(error)
+        })
+        .catch((error) => {
+          console.log(error);
         });
     },
     userClicked(user) {
-        this.$router.push('/user/' + user.username)
+      this.$router.push("/user/" + user.username);
     },
     getEntirePost(postID) {
       // get entire post
@@ -2110,13 +2229,14 @@ export default {
     createContent() {
       const fd = new FormData();
 
-      this.selectedFiles.forEach((selectedFile) => {
+      const parent = this.selectedFiles;
+      for (let selectedFile of parent) {
         if (selectedFile.type.includes("image")) {
           fd.append("image", selectedFile, selectedFile.name);
         } else {
           fd.append("video", selectedFile, selectedFile.name);
         }
-      });
+      }
 
       axios
         .post(
@@ -2125,6 +2245,7 @@ export default {
         )
         .then((res) => {
           console.log(res);
+          this.new_file_content = res.data;
           this.my_post.content = res.data;
         });
     },
