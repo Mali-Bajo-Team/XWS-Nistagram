@@ -45,7 +45,7 @@
       </v-row>
       <!-- End of profile image, number of posts, followers, following -->
 
-      <!-- Edit profile, add content -->
+      <!-- Edit profile, add regular posts, stories, highlights, collections -->
       <v-row>
         <!--Column for edit profile button-->
         <v-col class="pa-3">
@@ -178,7 +178,7 @@
             </v-card>
           </v-dialog>
         </v-col>
-        <!--Column for add content button-->
+        <!--Column for add regular posts, stories, highlights, collections-->
         <v-col class="text-right mr-5 mb-5">
           <!--Button for adding new content-->
           <v-dialog width="700px" v-model="openedContenDialog">
@@ -187,7 +187,7 @@
               <v-tab>Regular posts<v-icon>mdi-camera</v-icon></v-tab>
               <v-tab>Stories<v-icon>mdi-camera-iris</v-icon></v-tab>
               <v-tab>Highlights<v-icon>mdi-star-circle-outline</v-icon></v-tab>
-              <v-tab>Saved<v-icon>mdi-check-circle</v-icon></v-tab>
+              <v-tab>Collections<v-icon>mdi-check-circle</v-icon></v-tab>
             </v-tabs>
 
             <template v-slot:activator="{ on, attrs }">
@@ -547,7 +547,7 @@
               </v-tab-item>
               <!--End of tab for highlights-->
 
-              <!--Tab for saved content-->
+              <!--Tab for collections-->
               <v-tab-item>
                 <v-card>
                   <v-card-title class="headline">
@@ -603,12 +603,16 @@
                         <v-stepper-content step="2">
                           <!--Name of album-->
                           <v-text-field
+                            v-model="new_album_name"
                             prepend-icon="mdi-image-album"
                             label="Name of album"
                           ></v-text-field>
                           <!--End of the name of album-->
 
-                          <v-btn color="primary" @click="e4 = 3">
+                          <v-btn
+                            color="primary"
+                            @click="createCollection(), (e4 = 3)"
+                          >
                             Continue
                           </v-btn>
 
@@ -638,15 +642,15 @@
                   </v-card-text>
                 </v-card>
               </v-tab-item>
-              <!--End of tab for saved content-->
+              <!--End of tab for collections-->
             </v-tabs-items>
           </v-dialog>
         </v-col>
-        <!--End of the column for add content button-->
+        <!--End of the column for add regular posts, stories, highlights, collections-->
       </v-row>
-      <!-- End of edit profile, add content -->
+      <!-- End of the edit profile, add regular posts, stories, highlights, collections -->
 
-      <!-- Posts, stories, highlights, saved, tagged -->
+      <!-- Posts, stories, highlights, saved, followers, following -->
       <v-row>
         <v-tabs v-model="tabs2" icons-and-text background-color="transparent">
           <v-tabs-slider></v-tabs-slider>
@@ -1332,7 +1336,7 @@
           <!--Tab for saved/favorites-->
           <v-tab-item>
             <v-card class="mx-auto" max-width="500">
-              <v-container fluid>
+              <v-container v-if="user" fluid>
                 <v-row dense>
                   <!-- Saved collection -->
                   <v-col :cols="6">
@@ -1427,10 +1431,14 @@
                   </v-col>
                   <!-- End of the saved collection -->
                   <!-- Custom made collections -->
-                  <v-col :cols="6">
+                  <v-col
+                    v-for="tempCollection in user.collections"
+                    :key="tempCollection._id"
+                    :cols="6"
+                  >
                     <v-card>
                       <v-img
-                        src="https://picsum.photos/350/165?random"
+                        :src="getImageUrlByPATH(tempCollection.cover_image.path)"
                         class="white--text align-end"
                         gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                         height="200px"
@@ -1634,7 +1642,7 @@
           <!--End of tab for following-->
         </v-tabs-items>
       </v-row>
-      <!-- End of posts, highlights, stories, saved, tagged -->
+      <!-- End of posts, highlights, stories, saved, followers, following -->
     </v-col>
 
     <v-spacer></v-spacer>
@@ -1966,6 +1974,31 @@ export default {
         });
 
       this.openedAddStoryToHighlightDialog = false;
+    },
+    createCollection() {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_USER_COLLECTIONS +
+            this.user._id,
+          {
+            name: this.new_album_name,
+            cover_image: this.new_file_content[0],
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log("------- start of the created collection -----------");
+          console.log(res);
+          console.log("------- end of the created collection -----------");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     createHighlight() {
       console.log(this.new_file_content);
