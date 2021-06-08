@@ -9,6 +9,7 @@ import Login from './../pages/user/login/Login';
 import Registration from './../pages/user/registration/Registration';
 import Profile from './../pages/user/profile/Profile';
 import UserSearch from './../pages/user/user-search/UserSearch';
+import OtherProfile from './../pages/user/profile/OtherProfile';
 
 
 const routes = [
@@ -43,6 +44,12 @@ const routes = [
                 component:UserSearch,
                 name:'usersearch',
                 path:'usersearch'
+            },
+            {
+                component: OtherProfile,
+                name: 'userProfile',
+                path: 'user/:username',
+                props: true
             }
         ]
     },
