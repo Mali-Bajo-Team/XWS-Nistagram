@@ -502,12 +502,13 @@
                         <v-stepper-content step="2">
                           <!--Name of album-->
                           <v-text-field
+                          v-model="new_album_name"
                             prepend-icon="mdi-image-album"
                             label="Name of album"
                           ></v-text-field>
                           <!--End of the name of album-->
 
-                          <v-btn color="primary" @click="e3 = 3">
+                          <v-btn color="primary" @click="createHighlight(), e3 = 3">
                             Continue
                           </v-btn>
 
@@ -518,8 +519,7 @@
                         <!--Step 3-->
                         <v-stepper-content step="3">
                           <h3>
-                            Congratulations, you have successfully chosen the
-                            desired content!
+                            Congratulations, you have successfully created new one story highlight. Go and add some stories on it !
                           </h3>
 
                           <v-spacer></v-spacer>
@@ -1591,6 +1591,8 @@ export default {
       entireStory: null,
       liked: "",
       disliked: "",
+      new_album_name: "",
+      new_file_content: "",
     };
   },
   computed: {},
@@ -1725,6 +1727,30 @@ export default {
       });
   },
   methods: {
+    createHighlight(){
+      console.log(this.new_file_content);
+        this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_HIGHLIGHTS +
+            "/" + this.user._id,
+          {
+            name: this.new_album_name,
+            cover_image: this.new_file_content[0]
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
     addToClose(user) {
       this.axios
         .post(
@@ -2050,6 +2076,7 @@ export default {
         )
         .then((res) => {
           console.log(res);
+          this.new_file_content = res.data;
           this.my_post.content = res.data;
         });
     },
