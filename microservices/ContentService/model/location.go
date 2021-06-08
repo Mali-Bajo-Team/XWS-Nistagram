@@ -1,6 +1,6 @@
 package model
 
 type Location struct {
-	Type        string    `json:"-"`
+	Type        string    `json:"type"`
 	Coordinates []float64 `json:"coordinates"`
 }

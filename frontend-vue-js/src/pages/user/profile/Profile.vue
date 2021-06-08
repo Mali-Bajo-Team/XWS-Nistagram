@@ -259,19 +259,21 @@
                           </v-text-field>
                           <!-- End of title-->
                           <!--Choose a location-->
-                          <v-combobox
+                          <v-text-field
                             label="Choose a location"
                             prepend-icon="mdi-map-marker-star"
+                            v-model="my_post.location_name"
                           >
-                          </v-combobox>
+                          </v-text-field>
                           <!--End of location-->
 
                           <!--Tagging-->
                           <br />
-                          <v-autocomplete
-                            label="Tagging"
+                          <v-text-field
+                            label="Hashtags"
                             prepend-icon="mdi-tag"
-                          ></v-autocomplete>
+                            v-model="hashtagText"
+                          ></v-text-field>
                           <!--End of tagging-->
 
                           <!--Add description-->
@@ -289,7 +291,7 @@
 
                           <v-btn
                             color="primary"
-                            @click="createPost(), (e1 = 3)"
+                            @click="createPostWithGeocode(), (e1 = 3)"
                           >
                             Continue
                           </v-btn>
@@ -339,7 +341,23 @@
                         <v-divider></v-divider>
 
                         <v-stepper-step :complete="e2 > 2" step="2">
-                          Other information
+                          <!--Choose a location-->
+                          <v-text-field
+                            label="Choose a location"
+                            prepend-icon="mdi-map-marker-star"
+                            v-model="my_post.location_name"
+                          >
+                          </v-text-field>
+                          <!--End of location-->
+
+                          <!--Tagging-->
+                          <br />
+                          <v-text-field
+                            label="Hashtags"
+                            prepend-icon="mdi-tag"
+                            v-model="hashtagText"
+                          ></v-text-field>
+                          <!--End of tagging-->
                         </v-stepper-step>
 
                         <v-divider></v-divider>
@@ -413,7 +431,7 @@
 
                           <v-btn
                             color="primary"
-                            @click="createStory(), (e2 = 3)"
+                            @click="createStoryWithGeocode(), (e2 = 3)"
                           >
                             Continue
                           </v-btn>
@@ -1567,12 +1585,15 @@ export default {
       e4: 1,
       my_post: {
         title: "",
-        // location: null,
+        post_location: null,
+        location_name: "",
+        hashtags: "",
         description: "",
         is_add: false,
         add_link: "/",
         content: [],
       },
+      hashtagText: "",
       profileContent: [],
       user_id: "",
       isForCloseFriends: false,
@@ -1992,7 +2013,34 @@ export default {
         path
       );
     },
+    createPostWithGeocode: function() {
+        if (!this.my_post.location_name)
+          this.createPost();
+        this.axios
+        .get("https://nominatim.openstreetmap.org/search", {
+          params: {
+            format: "json",
+            q: this.my_post.location_name
+          }
+        })
+        .then(response => {
+          if (response.data.length == 0) {
+            console.log("Geocoding failed, creating post without location.")
+            this.createPost();
+          } else {
+            this.my_post.post_location = {type: "Point", coordinates: [parseFloat(response.data[0].lon), parseFloat(response.data[0].lat)]}
+            this.createPost();
+          }
+        })
+        .catch(() => {
+          console.log("Geocoding failed, creating post without location.")
+          this.createPost();
+        });
+    },
     createPost() {
+      if (this.hashtagText) {
+        this.my_post.hashtags = this.hashtagText.split(",");
+      }
       this.my_post.post_creator_ref = this.user._id;
       axios
         .post(
@@ -2010,8 +2058,35 @@ export default {
           console.log(res);
         });
     },
+    createStoryWithGeocode: function() {
+      if (!this.my_post.location_name)
+          this.createStory();
+        this.axios
+        .get("https://nominatim.openstreetmap.org/search", {
+          params: {
+            format: "json",
+            q: this.my_post.location_name
+          }
+        })
+        .then(response => {
+          if (response.data.length == 0) {
+            console.log("Geocoding failed, creating post without location.")
+            this.createStory();
+          } else {
+            this.my_post.post_location = {type: "Point", coordinates: [parseFloat(response.data[0].lon), parseFloat(response.data[0].lat)]}
+            this.createStory();
+          }
+        })
+        .catch(() => {
+          console.log("Geocoding failed, creating post without location.")
+          this.createStory();
+        });
+    },
     createStory() {
       this.my_post.post_creator_ref = this.user._id;
+      if (this.hashtagText) {
+        this.my_post.hashtags = this.hashtagText.split(",");
+      }
       axios
         .post(
           process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_STORY + "/",
