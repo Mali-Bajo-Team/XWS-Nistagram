@@ -1270,6 +1270,7 @@
                                                 </v-btn>
                                               </v-card-actions>
                                             </v-card>
+                                            <!-- End of the stories -->
                                           </v-col>
                                         </v-card>
                                       </v-dialog>
@@ -1447,7 +1448,7 @@
                       <v-card-text>
                         <v-row>
                           <v-col>
-                            <h3>Saved</h3>
+                            <h3>{{tempCollection.name}}</h3>
                           </v-col>
                           <v-col class="text-right mr-5 mb-5">
                             <v-dialog width="600px">
@@ -1468,7 +1469,7 @@
                               <v-card>
                                 <v-card-title>
                                   <v-row>
-                                    <v-col> My perfect holiday </v-col>
+                                    <v-col> {{tempCollection.name}} </v-col>
                                     <v-col class="text-right">
                                       <v-dialog width="600px">
                                         <template
@@ -1493,10 +1494,18 @@
                                             add to collection
                                           </v-card-title>
                                           <v-col>
-                                            <!--Saved images-->
-                                            <v-card class="mb-5">
+                                            <!--Stories-->
+                                            <v-card
+                                              v-for="tempPost in posts"
+                                              :key="tempPost._id"
+                                              class="mb-5"
+                                            >
                                               <v-img
-                                                src="https://picsum.photos/350/165?random"
+                                                :src="
+                                                  getImageUrlByPATH(
+                                                    tempPost.path
+                                                  )
+                                                "
                                                 class="white--text align-end"
                                                 gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                                                 height="300px"
@@ -1504,26 +1513,20 @@
                                               </v-img>
 
                                               <v-card-actions>
-                                                <v-btn color="primary">
+                                                <v-btn
+                                                  @click="
+                                                    addPostToCollection(
+                                                      tempPost,
+                                                      tempCollection._id
+                                                    )
+                                                  "
+                                                  color="primary"
+                                                >
                                                   CHOOSE
                                                 </v-btn>
                                               </v-card-actions>
                                             </v-card>
-                                            <v-card>
-                                              <v-img
-                                                src="https://picsum.photos/350/165?random"
-                                                class="white--text align-end"
-                                                gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                                                height="300px"
-                                              >
-                                              </v-img>
-
-                                              <v-card-actions>
-                                                <v-btn color="primary">
-                                                  CHOOSE
-                                                </v-btn>
-                                              </v-card-actions>
-                                            </v-card>
+                                            <!-- End of the stories -->
                                           </v-col>
                                         </v-card>
                                       </v-dialog>
@@ -1538,20 +1541,38 @@
                                   show-arrows-on-hover
                                 >
                                   <v-carousel-item
-                                    v-for="(slide, i) in slides"
+                                    v-for="(regularPostTemp, i) in tempCollection.regular_posts"
                                     :key="i"
                                   >
-                                    <v-sheet :color="colors[i]" height="100%">
-                                      <v-row
-                                        class="fill-height"
-                                        align="center"
-                                        justify="center"
-                                      >
-                                        <div class="text-h2">
-                                          {{ slide }} Slide
-                                        </div>
-                                      </v-row>
-                                    </v-sheet>
+                                  <video
+                                      v-if="
+                                        getPostByID(regularPostTemp._id).type ==
+                                        'video'
+                                      "
+                                      controls
+                                      :src="
+                                        getImageUrlByPATH(
+                                          getPostByID(regularPostTemp._id).path
+                                        )
+                                      "
+                                      class="white--text align-end"
+                                      gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                                      height="200px"
+                                      width="100%"
+                                    ></video>
+
+                                    <v-img
+                                      v-if="
+                                       getPostByID(regularPostTemp._id).type ==
+                                        'image'
+                                      "
+                                      :src="
+                                        getImageUrlByPATH(
+                                          getPostByID(regularPostTemp._id).path
+                                        )
+                                      "
+                                    ></v-img>
+                                    
                                   </v-carousel-item>
                                 </v-carousel>
                                 <!--End of list of photos-->
@@ -1949,6 +1970,39 @@ export default {
         }
       }
       return null;
+    },
+    getPostByID(postID) {
+      for (let tempPost of this.posts) {
+        if (tempPost._id == postID) {
+          return tempPost;
+        }
+      }
+      return null;
+    },
+    addPostToCollection(post, collectionID){
+      console.log("post: "+ post + " collectionID: " + collectionID);
+       this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_USER_COLLECTION +
+            collectionID +
+            "/" +
+            this.user._id,
+          post,
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log("------- start of the added new post to collection -----------");
+          console.log(res);
+          console.log("------- end of the added new post to collection -----------");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     addStoryToHighlight(story, highlightID) {
       this.axios
