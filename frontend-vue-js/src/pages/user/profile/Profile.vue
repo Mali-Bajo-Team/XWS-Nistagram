@@ -654,7 +654,10 @@
                             <v-btn
                               v-bind="attrs"
                               v-on="on"
-                              @click="getCommentsForPost(post._id)"
+                              @click="
+                                getCommentsForPost(post._id),
+                                  getEntirePost(post._id)
+                              "
                               icon
                             >
                               <v-icon right> mdi-plus-circle </v-icon>
@@ -679,7 +682,7 @@
                                 <v-col class="text-right mr-5 mb-5">
                                   <!--Button for likes-->
                                   <v-btn
-                                  @click="likePost()"
+                                    @click="likePost()"
                                     class="mx-2"
                                     fab
                                     x-small
@@ -690,7 +693,7 @@
 
                                   <!--Button for dislikes-->
                                   <v-btn
-                                  @click="dislikePost()"
+                                    @click="dislikePost()"
                                     class="mx-2"
                                     fab
                                     x-small
@@ -700,7 +703,10 @@
                                   <!--End of button for dislikes-->
 
                                   <!--Dialog for adding comment-->
-                                  <v-dialog width="600px" v-model="openedNewCommentDialog">
+                                  <v-dialog
+                                    width="600px"
+                                    v-model="openedNewCommentDialog"
+                                  >
                                     <template v-slot:activator="{ on, attrs }">
                                       <v-btn
                                         class="mx-2"
@@ -739,7 +745,10 @@
                                         <v-btn
                                           color="primary"
                                           text
-                                          @click="createComment(post._id), openedNewCommentDialog = false"
+                                          @click="
+                                            createComment(post._id),
+                                              (openedNewCommentDialog = false)
+                                          "
                                         >
                                           Confirm
                                         </v-btn>
@@ -795,10 +804,18 @@
                       <v-card-actions>
                         <v-spacer></v-spacer>
 
-                        <!--Dialog for choosing photo-->
+                        <!--Dialog for video details-->
                         <v-dialog width="600px">
                           <template v-slot:activator="{ on, attrs }">
-                            <v-btn v-bind="attrs" v-on="on" icon>
+                            <v-btn
+                              v-bind="attrs"
+                              v-on="on"
+                              @click="
+                                getCommentsForPost(post._id),
+                                  getEntirePost(post._id)
+                              "
+                              icon
+                            >
                               <v-icon right> mdi-plus-circle </v-icon>
                             </v-btn>
                           </template>
@@ -841,7 +858,10 @@
                                   <!--End of button for dislikes-->
 
                                   <!--Dialog for adding comment-->
-                                  <v-dialog width="600px" v-model="openedNewCommentDialog">
+                                  <v-dialog
+                                    width="600px"
+                                    v-model="openedNewCommentDialog"
+                                  >
                                     <template v-slot:activator="{ on, attrs }">
                                       <v-btn
                                         class="mx-2"
@@ -880,7 +900,10 @@
                                         <v-btn
                                           color="primary"
                                           text
-                                          @click="createComment(post._id),openedNewCommentDialog = false"
+                                          @click="
+                                            createComment(post._id),
+                                              (openedNewCommentDialog = false)
+                                          "
                                         >
                                           Confirm
                                         </v-btn>
@@ -915,7 +938,7 @@
                             </v-card-text>
                           </v-card>
                         </v-dialog>
-                        <!--End of dialog for choosing photo-->
+                        <!--End of dialog for video details -->
 
                         <v-btn icon>
                           <v-icon>mdi-bookmark</v-icon>
@@ -1346,6 +1369,7 @@ export default {
       posts: [],
       stories: [],
       newCommentContent: "",
+      entirePost: "",
     };
   },
   computed: {},
@@ -1422,10 +1446,28 @@ export default {
       });
   },
   methods: {
-    likePost(){
+    getEntirePost(postID){
+      // get entire post
+      axios
+        .get(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_POST +
+            postID,
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          this.entirePost = res.data;
+          this.comments =  this.entirePost.comments;
+        });
+    },
+    likePost() {
       alert("lajk");
     },
-    dislikePost(){
+    dislikePost() {
       alert("dislajk");
     },
     createComment(postID) {
