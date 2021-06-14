@@ -1,5 +1,5 @@
 <template>
-  <v-row class="pa-5">
+  <v-row :key="componentKey" class="pa-5">
     <v-spacer></v-spacer>
     <v-col sm="8" md="12" lg="4" cols="12">
       <!-- Images, number of posts, followers, following -->
@@ -437,7 +437,7 @@
                           <br />
                           <v-btn
                             color="primary"
-                            @click="openedContenDialog = false"
+                            @click="openedContenDialog = false, forceRerender()"
                           >
                             Close
                           </v-btn>
@@ -534,7 +534,7 @@
                           <br />
                           <v-btn
                             color="primary"
-                            @click="openedContenDialog = false"
+                            @click="openedContenDialog = false, forceRerender()"
                           >
                             Close
                           </v-btn>
@@ -631,7 +631,7 @@
                           <br />
                           <v-btn
                             color="primary"
-                            @click="openedContenDialog = false"
+                            @click="openedContenDialog = false, forceRerender()"
                           >
                             Close
                           </v-btn>
@@ -686,7 +686,7 @@
 
                         <!--Dialog for post details-->
                         <v-dialog width="600px">
-                          <template v-slot:activator="{ on, attrs }">
+                          <template  v-slot:activator="{ on, attrs }">
                             <v-btn
                               v-bind="attrs"
                               v-on="on"
@@ -843,7 +843,7 @@
 
                               <br /><br />
                               <!--Expansion panels for showing comments-->
-                              <v-expansion-panels>
+                              <v-expansion-panels >
                                 <v-expansion-panel
                                   v-for="(item, i) in 1"
                                   :key="i"
@@ -1676,6 +1676,10 @@ import { getParsedToken } from "./../../../util/token";
 export default {
   data() {
     return {
+      componentKey: 0,
+      forceUpdateKey:{
+        dialogForPostDetails: 0,
+      },
       followers: [],
       following: [],
       comments: [
@@ -1932,6 +1936,10 @@ export default {
       });
   },
   methods: {
+    forceRerender() {
+      // Posto nisam nasao kako ide re-mount, odradim ovo trenutno
+      location.reload();
+    },
     addToSaved(post) {
       this.axios
         .post(
@@ -1957,6 +1965,7 @@ export default {
         )
         .then((res) => {
           console.log(res);
+          this.forceRerender();
         })
         .catch((error) => {
           console.log(error);
@@ -1998,6 +2007,7 @@ export default {
           console.log("------- start of the added new post to collection -----------");
           console.log(res);
           console.log("------- end of the added new post to collection -----------");
+          this.forceRerender();
         })
         .catch((error) => {
           console.log(error);
@@ -2021,6 +2031,7 @@ export default {
         )
         .then((res) => {
           console.log(res);
+          this.forceRerender();
         })
         .catch((error) => {
           console.log(error);
@@ -2259,6 +2270,7 @@ export default {
         )
         .then((res) => {
           console.log(res);
+          this.forceRerender();
         });
     },
     getCommentsForPost(postID) {
