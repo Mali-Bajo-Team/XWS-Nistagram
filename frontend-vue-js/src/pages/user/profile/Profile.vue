@@ -534,7 +534,7 @@
                           <br />
                           <v-btn
                             color="primary"
-                            @click="openedContenDialog = false"
+                            @click="openedContenDialog = false, forceRerender()"
                           >
                             Close
                           </v-btn>
@@ -631,7 +631,7 @@
                           <br />
                           <v-btn
                             color="primary"
-                            @click="openedContenDialog = false"
+                            @click="openedContenDialog = false, forceRerender()"
                           >
                             Close
                           </v-btn>
@@ -1965,6 +1965,7 @@ export default {
         )
         .then((res) => {
           console.log(res);
+          this.forceRerender();
         })
         .catch((error) => {
           console.log(error);
@@ -2006,6 +2007,7 @@ export default {
           console.log("------- start of the added new post to collection -----------");
           console.log(res);
           console.log("------- end of the added new post to collection -----------");
+          this.forceRerender();
         })
         .catch((error) => {
           console.log(error);
@@ -2029,6 +2031,7 @@ export default {
         )
         .then((res) => {
           console.log(res);
+          this.forceRerender();
         })
         .catch((error) => {
           console.log(error);
