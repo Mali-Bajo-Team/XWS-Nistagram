@@ -903,7 +903,15 @@
                               </v-row>
                               <v-spacer></v-spacer>
                               <br />
-                              <v-btn color="primary"> Confirm </v-btn>
+                              <v-btn
+                                color="primary"
+                                @click="
+                                  reportInappropriatePost(post),
+                                    (openedReportInappropriateContentDialog = false)
+                                "
+                              >
+                                Confirm
+                              </v-btn>
                               <v-btn
                                 text
                                 @click="
@@ -1124,7 +1132,16 @@
                               </v-row>
                               <v-spacer></v-spacer>
                               <br />
-                              <v-btn color="primary"> Confirm </v-btn>
+                              <v-btn
+                                color="primary"
+                                @click="
+                                  reportInappropriatePost(post),
+                                    (openedReportInappropriateContentDialog = false)
+                                "
+                              >
+                                Confirm
+                              </v-btn>
+
                               <v-btn
                                 text
                                 @click="
@@ -1905,6 +1922,13 @@ export default {
     return {
       openedReportInappropriateContentDialog: false,
       reportInappropriateContent: {
+        story_id: "",
+        story_creator_id: "",
+        story_reporter_id: "",
+        post_id: "",
+        post_creator_id: "",
+        post_reporter_id: "",
+        time_stamp: "",
         message: "",
       },
       componentKey: 0,
@@ -2167,6 +2191,34 @@ export default {
       });
   },
   methods: {
+    reportInappropriatePost(post) {
+      console.log("------------------- report post start ----------------");
+      console.log(post);
+      this.reportInappropriateContent.post_id = post._id;
+      this.reportInappropriateContent.post_reporter_id = this.user._id;
+      // TODO: Add post creator id for future faster find of this post (and remove)
+      // this.reportInappropriateContent.post_creator_id = post.creator.id or something similar;
+
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_INAPPROPRIATE_POST,
+          this.reportInappropriateContent,
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      console.log("------------------- report post end ----------------");
+    },
     forceRerender() {
       // Posto nisam nasao kako ide re-mount, odradim ovo trenutno
       location.reload();
