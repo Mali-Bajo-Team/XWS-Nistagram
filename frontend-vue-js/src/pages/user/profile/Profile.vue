@@ -1933,6 +1933,7 @@
 <script>
 import axios from "axios";
 import { getParsedToken } from "./../../../util/token";
+import { getTodayDateString } from "./../../../util/dateHandler";
 export default {
   data() {
     return {
@@ -2212,6 +2213,7 @@ export default {
       console.log(post);
       this.reportInappropriateContent.post_id = post._id;
       this.reportInappropriateContent.post_reporter_id = this.user._id;
+      this.reportInappropriateContent.time_stamp = getTodayDateString();
       // TODO: Add post creator id for future faster find of this post (and remove)
       // this.reportInappropriateContent.post_creator_id = post.creator.id or something similar;
 
@@ -2240,6 +2242,7 @@ export default {
       console.log(post);
       this.reportInappropriateContent.story_id = post._id;
       this.reportInappropriateContent.story_reporter_id = this.user._id;
+      this.reportInappropriateContent.time_stamp = getTodayDateString();
       // TODO: Add story creator id for future faster find of this story (and remove)
       // this.reportInappropriateContent.story_reporter_id = post.creator.id or something similar;
 
