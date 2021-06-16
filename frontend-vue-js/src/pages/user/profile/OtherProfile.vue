@@ -56,7 +56,7 @@
                 rounded
                 medium
                 color="primary"
-                v-if="!followed && loggedIn"  
+                v-if="!followed && loggedIn && !isBlocked"  
                 @click="follow"              
               >
             <v-icon left> mdi-plus </v-icon>
@@ -96,7 +96,7 @@
         
 
       <!-- Posts, stories, saved, tagged -->
-      <v-row v-if="!user.isPrivate">
+      <v-row v-if="!user.isPrivate && !isBlocked">
         <v-tabs v-model="tabs2" icons-and-text background-color="transparent">
           <v-tabs-slider></v-tabs-slider>
           <v-tab>Posts<v-icon>mdi-camera</v-icon></v-tab>
@@ -607,7 +607,7 @@ export default {
       loggedIn: false,
       myusername: "",
       followed: true,
-      isBlocked: true,
+      isBlocked: false,
       user: {},
       posts: [],
       stories: []
@@ -659,11 +659,13 @@ export default {
           process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_RELATIONSHIP_ENDPOINT + this.username,
           {
             headers: {
-              Authorization: "Bearer " + getToken(),
+              Authorization: "Bearer " + getToken(), 
             }
           }
         ).then((response) => {
-            if (response.data === "NONE")
+            if (response.data === "BLOCKED")
+                this.isBlocked = true;
+            else if(response.data === "NONE")
                 this.followed = false;
             else
                 this.followed = true;

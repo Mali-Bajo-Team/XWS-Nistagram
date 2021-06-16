@@ -65,6 +65,7 @@ public class RelationshipController {
 	public ResponseEntity<Void> block(@PathVariable(required = true) String username, Authentication authentication) {
 		UserAccount user = (UserAccount) authentication.getPrincipal();
 
+		//Bidirectional blocking
 		relationshipService.block(user.getUsername(), username);
 
 		return ResponseEntity.noContent().build();
