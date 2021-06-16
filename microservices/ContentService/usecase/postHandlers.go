@@ -9,6 +9,12 @@ import (
 )
 
 func InitializePostRouter(router *mux.Router, server *ContentServer) {
+
+	router.HandleFunc("/post/inappropriate/", server.CreateInappropriatePostEndpoint).Methods("POST")
+	router.HandleFunc("/post/inappropriate/", server.GetInappropriatePostsEndpoint).Methods("GET")
+	router.HandleFunc("/story/inappropriate/", server.CreateInappropriateStoryEndpoint).Methods("POST")
+	router.HandleFunc("/story/inappropriate/", server.GetInappropriateStoryEndpoint).Methods("GET")
+
 	router.HandleFunc("/post/", server.CreatePostEndpoint).Methods("POST")
 	router.HandleFunc("/story/", server.CreateStoryEndpoint).Methods("POST")
 	router.HandleFunc("/post/{postid}", server.GetEntirePostEndpoint).Methods("GET")
@@ -38,6 +44,34 @@ func (contentServerRef *ContentServer) GetEntirePostEndpoint(response http.Respo
 	response.Header().Set("content-type", "application/json")
 	params := mux.Vars(request)
 	renderJSON(response, contentServerRef.postStore.GetEntirePost(params["postid"]))
+}
+
+func (contentServerRef *ContentServer) GetInappropriatePostsEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	renderJSON(response, contentServerRef.postStore.GetAllInappropriatePosts())
+}
+
+func (contentServerRef *ContentServer) GetInappropriateStoryEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	renderJSON(response, contentServerRef.postStore.GetAllInappropriateStories())
+}
+
+func (contentServerRef *ContentServer) CreateInappropriatePostEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	var inappropriatePost model.InappropriatePost
+	_ = json.NewDecoder(request.Body).Decode(&inappropriatePost)
+	var documentId = contentServerRef.postStore.CreateInappropriatePost(inappropriatePost)
+	inappropriatePost.ID = documentId.InsertedID.(primitive.ObjectID)
+	renderJSON(response, inappropriatePost)
+}
+
+func (contentServerRef *ContentServer) CreateInappropriateStoryEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	var inappropriateStory model.InappropriateStory
+	_ = json.NewDecoder(request.Body).Decode(&inappropriateStory)
+	var documentId = contentServerRef.postStore.CreateInappropriateStory(inappropriateStory)
+	inappropriateStory.ID = documentId.InsertedID.(primitive.ObjectID)
+	renderJSON(response, inappropriateStory)
 }
 
 func (contentServerRef *ContentServer) GetEntireStoryEndpoint(response http.ResponseWriter, request *http.Request) {
