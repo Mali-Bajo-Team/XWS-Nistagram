@@ -67,9 +67,18 @@ func (postStoreRef *PostStore) GetEntirePost(postID string) model.RegularPost {
 }
 
 func (postStoreRef *PostStore) CreateInappropriatePost(inappropriatePost model.InappropriatePost) *mongo.InsertOneResult {
+	// Todo: Add time stamp creation
 	collectionInappropriatePosts := postStoreRef.ourClient.Database("content-service-db").Collection("inappropriatePosts")
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	result, _ := collectionInappropriatePosts.InsertOne(ctx, inappropriatePost)
+	return result
+}
+
+func (postStoreRef *PostStore) CreateInappropriateStory(inappropriateStory model.InappropriateStory) *mongo.InsertOneResult {
+	// Todo: Add time stamp creation
+	collectionInappropriateStories := postStoreRef.ourClient.Database("content-service-db").Collection("inappropriateStories")
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	result, _ := collectionInappropriateStories.InsertOne(ctx, inappropriateStory)
 	return result
 }
 
