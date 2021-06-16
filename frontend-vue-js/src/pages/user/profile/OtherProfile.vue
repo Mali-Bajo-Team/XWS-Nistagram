@@ -31,7 +31,8 @@
         <!--End of the number of posts-->
 
         <!--Column for the number of followers-->
-        <v-col class="pa-4 mt-2">
+        <v-col class="pa-4 mt-2"
+        >
           <h3>{{user.followerCount}}</h3>
           Followers
         </v-col>
@@ -61,28 +62,34 @@
             <v-icon left> mdi-plus </v-icon>
                 Follow
               </v-btn>
-              <v-btn class="ml-5"
-                outlined
-                rounded
-                medium
-                color="primary"
-                v-if="loggedIn"  
-                @click="block"              
-              >
-            <v-icon left> mdi-alert </v-icon>
-                block
-              </v-btn>
               <v-btn
                 outlined
                 rounded
                 medium
                 color="danger"
-                v-if="followed && loggedIn"  
+                v-if="followed && loggedIn && !isBlocked"  
                 @click="unfollow"                          
               >
             <v-icon left> mdi-plus </v-icon>
                 Unfollow
               </v-btn>
+              <v-btn class="ml-5"
+                outlined
+                rounded
+                medium
+                color="primary"
+                v-if="loggedIn && !isBlocked"  
+                @click="block"              
+              >
+            <v-icon left> mdi-alert </v-icon>
+                block
+              </v-btn>
+           <v-col class="pa-4 mt-2"
+           v-if="isBlocked"  
+           >
+            USER IS BLOCKED!!
+           </v-col>
+
         </v-col>
         <!--End of the column for edit profile button-->
     </v-row>
@@ -600,6 +607,7 @@ export default {
       loggedIn: false,
       myusername: "",
       followed: true,
+      isBlocked: true,
       user: {},
       posts: [],
       stories: []
@@ -745,7 +753,7 @@ export default {
             }
           }
         ).then(() => {
-            this.followed = true;
+            this.isBlocked = true;
         }).
         catch((error) => {
           if (error.response && error.response.data && error.response.data.message)
