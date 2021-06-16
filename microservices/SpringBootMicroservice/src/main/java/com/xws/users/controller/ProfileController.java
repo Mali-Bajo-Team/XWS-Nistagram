@@ -99,9 +99,9 @@ public class ProfileController {
 		return ResponseEntity.ok(new UserProfileDTO(regularUser));
 	}
 
-	@PostMapping("private/{username}")
+	@PostMapping("setprivate/{username}")
 	@PreAuthorize("hasRole('REGULAR')")
-	public ResponseEntity<Void> block(@PathVariable(required = true) String username, Authentication authentication) {
+	public ResponseEntity<Void> setprivate(@PathVariable(required = true) String username, Authentication authentication) {
 		RegularUser regularUser = regularUserService.findByUsername(username);
 
 		if (regularUser == null ) {
@@ -117,4 +117,21 @@ public class ProfileController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
+	@PostMapping("setpublic/{username}")
+	@PreAuthorize("hasRole('REGULAR')")
+	public ResponseEntity<Void> setpublic(@PathVariable(required = true) String username, Authentication authentication) {
+		RegularUser regularUser = regularUserService.findByUsername(username);
+
+		if (regularUser == null ) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+
+		PrivacySettings privacySettings = regularUser.getPrivacySettings();
+		privacySettings.setPrivate(false);
+		regularUser.setPrivacySettings(privacySettings);
+
+		regularUserService.save(regularUser);
+
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
 }
