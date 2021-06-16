@@ -8,4 +8,5 @@ public interface IRegularUserService {
     RegularUser findByUsername(String username);
     
     Collection<RegularUser> searchByUsername(String username);
+
 }
