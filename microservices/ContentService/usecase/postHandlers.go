@@ -20,6 +20,9 @@ func InitializePostRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/post/comment/{id}", server.CreatePostCommentEndpoint).Methods("POST")
 	router.HandleFunc("/post/comment/{id}", server.GetPostCommentsEndpoint).Methods("GET")
 
+	router.HandleFunc("/post/inappropriate/", server.CreateInappropriatePostEndpoint).Methods("POST")
+
+
 	router.HandleFunc("/post/search/location/", server.SearchByLocation).Methods("POST")
 	router.HandleFunc("/post/search/hashtag/{hashtag}", server.SearchByHashtag).Methods("GET")
 }
@@ -38,6 +41,15 @@ func (contentServerRef *ContentServer) GetEntirePostEndpoint(response http.Respo
 	response.Header().Set("content-type", "application/json")
 	params := mux.Vars(request)
 	renderJSON(response, contentServerRef.postStore.GetEntirePost(params["postid"]))
+}
+
+func (contentServerRef *ContentServer) CreateInappropriatePostEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	var inappropriatePost model.InappropriatePost
+	_ = json.NewDecoder(request.Body).Decode(&inappropriatePost)
+	var documentId = contentServerRef.postStore.CreateInappropriatePost(inappropriatePost)
+	inappropriatePost.ID = documentId.InsertedID.(primitive.ObjectID)
+	renderJSON(response, inappropriatePost)
 }
 
 func (contentServerRef *ContentServer) GetEntireStoryEndpoint(response http.ResponseWriter, request *http.Request) {

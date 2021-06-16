@@ -66,6 +66,13 @@ func (postStoreRef *PostStore) GetEntirePost(postID string) model.RegularPost {
 	return post
 }
 
+func (postStoreRef *PostStore) CreateInappropriatePost(inappropriatePost model.InappropriatePost) *mongo.InsertOneResult {
+	collectionInappropriatePosts := postStoreRef.ourClient.Database("content-service-db").Collection("inappropriatePosts")
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	result, _ := collectionInappropriatePosts.InsertOne(ctx, inappropriatePost)
+	return result
+}
+
 func (postStoreRef *PostStore) GetEntireStory(storyID string) model.Story {
 	collectionStories := postStoreRef.ourClient.Database("content-service-db").Collection("stories")
 	// convert id string to ObjectId
