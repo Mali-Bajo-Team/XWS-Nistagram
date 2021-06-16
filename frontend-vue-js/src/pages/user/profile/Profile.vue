@@ -1096,6 +1096,48 @@
                         <v-btn @click="addToSaved(post)" icon>
                           <v-icon>mdi-bookmark</v-icon>
                         </v-btn>
+
+                        <!--Dialog to report inappropriate content-->
+                        <v-dialog
+                          width="600px"
+                          v-model="openedReportInappropriateContentDialog"
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn v-bind="attrs" v-on="on" icon>
+                              <v-icon right> mdi-alert-octagon </v-icon>
+                            </v-btn>
+                          </template>
+                          <!-- Dialog content -->
+                          <v-card>
+                            <v-card-title> <br /> </v-card-title>
+                            <v-card-text>
+                              <v-row>
+                                <v-textarea
+                                  v-model="reportInappropriateContent.message"
+                                  outlined
+                                  name="input-7-4"
+                                  no-resize
+                                  label="Add reason why you report this content"
+                                  clearable
+                                  clear-icon="mdi-close-circle"
+                                ></v-textarea>
+                              </v-row>
+                              <v-spacer></v-spacer>
+                              <br />
+                              <v-btn color="primary"> Confirm </v-btn>
+                              <v-btn
+                                text
+                                @click="
+                                  openedReportInappropriateContentDialog = false
+                                "
+                              >
+                                Close
+                              </v-btn>
+                            </v-card-text>
+                          </v-card>
+                          <!-- End of the dialog content -->
+                        </v-dialog>
+                        <!--End of dialog for reporting inappropriate content-->
                       </v-card-actions>
                     </v-card>
                     <!-- End of the video previw -->
@@ -1181,6 +1223,48 @@
                         <v-btn icon>
                           <v-icon>mdi-share-variant</v-icon>
                         </v-btn>
+
+                        <!--Dialog to report inappropriate content-->
+                        <v-dialog
+                          width="600px"
+                          v-model="openedReportInappropriateContentDialog"
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn v-bind="attrs" v-on="on" icon>
+                              <v-icon right> mdi-alert-octagon </v-icon>
+                            </v-btn>
+                          </template>
+                          <!-- Dialog content -->
+                          <v-card>
+                            <v-card-title> <br /> </v-card-title>
+                            <v-card-text>
+                              <v-row>
+                                <v-textarea
+                                  v-model="reportInappropriateContent.message"
+                                  outlined
+                                  name="input-7-4"
+                                  no-resize
+                                  label="Add reason why you report this content"
+                                  clearable
+                                  clear-icon="mdi-close-circle"
+                                ></v-textarea>
+                              </v-row>
+                              <v-spacer></v-spacer>
+                              <br />
+                              <v-btn color="primary"> Confirm </v-btn>
+                              <v-btn
+                                text
+                                @click="
+                                  openedReportInappropriateContentDialog = false
+                                "
+                              >
+                                Close
+                              </v-btn>
+                            </v-card-text>
+                          </v-card>
+                          <!-- End of the dialog content -->
+                        </v-dialog>
+                        <!--End of dialog for reporting inappropriate content-->
                       </v-card-actions>
                     </v-card>
                     <!-- End of the image previw -->
@@ -1198,9 +1282,101 @@
                       <v-card-actions>
                         <v-spacer></v-spacer>
 
+                        <!--Dialog for story details-->
+                        <v-dialog width="600px">
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                              v-bind="attrs"
+                              v-on="on"
+                              @click="getEntireStory(story._id)"
+                              icon
+                            >
+                              <v-icon right> mdi-plus-circle </v-icon>
+                            </v-btn>
+                          </template>
+
+                          <v-card v-if="entireStory">
+                            <v-card-title>
+                              <!--List of photos-->
+                              <v-carousel
+                                v-if="entireStory.my_post"
+                                cycle
+                                height="400"
+                                hide-delimiter-background
+                                show-arrows-on-hover
+                              >
+                                <v-carousel-item
+                                  v-for="(slide, i) in entireStory.my_post
+                                    .content"
+                                  :key="i"
+                                >
+                                  <video
+                                    v-if="slide.type == 'video'"
+                                    controls
+                                    :src="getImageUrlByPATH(slide.path)"
+                                    class="white--text align-end"
+                                    gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                                    height="200px"
+                                    width="100%"
+                                  ></video>
+
+                                  <v-img
+                                    v-if="slide"
+                                    :src="getImageUrlByPATH(slide.path)"
+                                  ></v-img>
+                                </v-carousel-item>
+                              </v-carousel>
+                              <!--End of list of photos-->
+                            </v-card-title>
+                          </v-card>
+                        </v-dialog>
+                        <!--End of dialog for story details-->
+
                         <v-btn icon>
                           <v-icon>mdi-share-variant</v-icon>
                         </v-btn>
+
+                        <!--Dialog to report inappropriate content-->
+                        <v-dialog
+                          width="600px"
+                          v-model="openedReportInappropriateContentDialog"
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn v-bind="attrs" v-on="on" icon>
+                              <v-icon right> mdi-alert-octagon </v-icon>
+                            </v-btn>
+                          </template>
+                          <!-- Dialog content -->
+                          <v-card>
+                            <v-card-title> <br /> </v-card-title>
+                            <v-card-text>
+                              <v-row>
+                                <v-textarea
+                                  v-model="reportInappropriateContent.message"
+                                  outlined
+                                  name="input-7-4"
+                                  no-resize
+                                  label="Add reason why you report this content"
+                                  clearable
+                                  clear-icon="mdi-close-circle"
+                                ></v-textarea>
+                              </v-row>
+                              <v-spacer></v-spacer>
+                              <br />
+                              <v-btn color="primary"> Confirm </v-btn>
+                              <v-btn
+                                text
+                                @click="
+                                  openedReportInappropriateContentDialog = false
+                                "
+                              >
+                                Close
+                              </v-btn>
+                            </v-card-text>
+                          </v-card>
+                          <!-- End of the dialog content -->
+                        </v-dialog>
+                        <!--End of dialog for reporting inappropriate content-->
                       </v-card-actions>
                     </v-card>
                     <!-- End of the video previw -->
