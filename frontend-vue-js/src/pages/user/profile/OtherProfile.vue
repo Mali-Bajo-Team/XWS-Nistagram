@@ -61,6 +61,17 @@
             <v-icon left> mdi-plus </v-icon>
                 Follow
               </v-btn>
+              <v-btn class="ml-5"
+                outlined
+                rounded
+                medium
+                color="primary"
+                v-if="loggedIn"  
+                @click="block"              
+              >
+            <v-icon left> mdi-alert </v-icon>
+                block
+              </v-btn>
               <v-btn
                 outlined
                 rounded
@@ -704,6 +715,29 @@ export default {
     this.axios
         .post(
           process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_FOLLOW_ENDPOINT + this.username,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + getToken(),
+            }
+          }
+        ).then(() => {
+            this.followed = true;
+        }).
+        catch((error) => {
+          if (error.response && error.response.data && error.response.data.message)
+            this.snackbarText = error.response.data.message;
+          else if (error.message) 
+            this.snackbarText = error.message;
+          else
+            this.snackbarText = "An unknown error has occured."
+          this.snackbar = true;
+        });
+    },
+    block: function() {
+    this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_BLOCK_ENDPOINT + this.username,
           {},
           {
             headers: {

@@ -30,5 +30,6 @@ public interface IRelationshipService {
 	void addToCloseFriends(String username, String closeFriendUsername);
 	
 	void removeFromCloseFriends(String username, String closeFriendUsername);
-	
+
+    void block(String username, String username1);
 }

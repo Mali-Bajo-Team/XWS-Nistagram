@@ -233,4 +233,41 @@ public class RelationshipService implements IRelationshipService {
 		relationshipRepository.save(relationship);
 	}
 
+	@Override
+	public void block(String fromUsername, String towardsUsername) {
+		RegularUser from = userRepository.findByUsername(fromUsername);
+		if (from == null)
+			throw new USAuthenticationException("User not found.");
+		RegularUser towards = userRepository.findByUsername(towardsUsername);
+		if (towards == null)
+			throw new USConflictException("User with the requested username does not exist.");
+
+		Relationship existingRelationship = relationshipRepository.findByFromAndTowards(from, towards);
+		Relationship oppositeRelationship = relationshipRepository.findByFromAndTowards(towards, from);
+
+		if (existingRelationship != null
+				&& existingRelationship.getRelationshipType().equals(RelationshipType.BLOCKED)) {
+			throw new USConflictException("You cannot block the requested user because you have blocked them.");
+		}
+		if (oppositeRelationship != null
+				&& oppositeRelationship.getRelationshipType().equals(RelationshipType.BLOCKED)) {
+			throw new USConflictException("You cannot block the requested user because they have blocked you.");
+		}
+
+		if (towards.getPrivacySettings().isPrivate()) {
+			createFollowRequest(from, towards);
+			return;
+		}
+
+		if (existingRelationship == null) {
+			existingRelationship = new Relationship();
+			existingRelationship.setFrom(from);
+			existingRelationship.setTowards(towards);
+		}
+
+		existingRelationship.setRelationshipType(RelationshipType.BLOCKED);
+
+		relationshipRepository.save(existingRelationship);
+	}
+
 }
