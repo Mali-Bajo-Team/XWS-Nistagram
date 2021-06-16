@@ -59,6 +59,17 @@ public class RelationshipController {
 
 		return ResponseEntity.noContent().build();
 	}
+
+	@PostMapping("block/{username}")
+	@PreAuthorize("hasRole('REGULAR')")
+	public ResponseEntity<Void> block(@PathVariable(required = true) String username, Authentication authentication) {
+		UserAccount user = (UserAccount) authentication.getPrincipal();
+
+		//Bidirectional blocking
+		relationshipService.block(user.getUsername(), username);
+
+		return ResponseEntity.noContent().build();
+	}
 	
 	@PostMapping("unfollow/{username}")
 	@PreAuthorize("hasRole('REGULAR')")

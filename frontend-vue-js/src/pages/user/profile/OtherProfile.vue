@@ -31,7 +31,8 @@
         <!--End of the number of posts-->
 
         <!--Column for the number of followers-->
-        <v-col class="pa-4 mt-2">
+        <v-col class="pa-4 mt-2"
+        >
           <h3>{{user.followerCount}}</h3>
           Followers
         </v-col>
@@ -55,7 +56,7 @@
                 rounded
                 medium
                 color="primary"
-                v-if="!followed && loggedIn"  
+                v-if="!followed && loggedIn && !isBlocked"  
                 @click="follow"              
               >
             <v-icon left> mdi-plus </v-icon>
@@ -66,19 +67,36 @@
                 rounded
                 medium
                 color="danger"
-                v-if="followed && loggedIn"  
+                v-if="followed && loggedIn && !isBlocked"  
                 @click="unfollow"                          
               >
             <v-icon left> mdi-plus </v-icon>
                 Unfollow
               </v-btn>
+              <v-btn class="ml-5"
+                outlined
+                rounded
+                medium
+                color="primary"
+                v-if="loggedIn && !isBlocked"  
+                @click="block"              
+              >
+            <v-icon left> mdi-alert </v-icon>
+                block
+              </v-btn>
+           <v-col class="pa-4 mt-2"
+           v-if="isBlocked"  
+           >
+            USER IS BLOCKED!!
+           </v-col>
+
         </v-col>
         <!--End of the column for edit profile button-->
     </v-row>
         
 
       <!-- Posts, stories, saved, tagged -->
-      <v-row v-if="!user.isPrivate">
+      <v-row v-if="!user.isPrivate && !isBlocked">
         <v-tabs v-model="tabs2" icons-and-text background-color="transparent">
           <v-tabs-slider></v-tabs-slider>
           <v-tab>Posts<v-icon>mdi-camera</v-icon></v-tab>
@@ -589,6 +607,7 @@ export default {
       loggedIn: false,
       myusername: "",
       followed: true,
+      isBlocked: false,
       user: {},
       posts: [],
       stories: []
@@ -640,11 +659,13 @@ export default {
           process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_RELATIONSHIP_ENDPOINT + this.username,
           {
             headers: {
-              Authorization: "Bearer " + getToken(),
+              Authorization: "Bearer " + getToken(), 
             }
           }
         ).then((response) => {
-            if (response.data === "NONE")
+            if (response.data === "BLOCKED")
+                this.isBlocked = true;
+            else if(response.data === "NONE")
                 this.followed = false;
             else
                 this.followed = true;
@@ -712,6 +733,29 @@ export default {
           }
         ).then(() => {
             this.followed = true;
+        }).
+        catch((error) => {
+          if (error.response && error.response.data && error.response.data.message)
+            this.snackbarText = error.response.data.message;
+          else if (error.message) 
+            this.snackbarText = error.message;
+          else
+            this.snackbarText = "An unknown error has occured."
+          this.snackbar = true;
+        });
+    },
+    block: function() {
+    this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_BLOCK_ENDPOINT + this.username,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + getToken(),
+            }
+          }
+        ).then(() => {
+            this.isBlocked = true;
         }).
         catch((error) => {
           if (error.response && error.response.data && error.response.data.message)
