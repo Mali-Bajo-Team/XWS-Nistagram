@@ -1268,7 +1268,15 @@
                               </v-row>
                               <v-spacer></v-spacer>
                               <br />
-                              <v-btn color="primary"> Confirm </v-btn>
+                              <v-btn
+                                color="primary"
+                                @click="
+                                  reportInappropriateStory(story),
+                                    (openedReportInappropriateContentDialog = false)
+                                "
+                              >
+                                Confirm
+                              </v-btn>
                               <v-btn
                                 text
                                 @click="
@@ -1380,7 +1388,15 @@
                               </v-row>
                               <v-spacer></v-spacer>
                               <br />
-                              <v-btn color="primary"> Confirm </v-btn>
+                              <v-btn
+                                color="primary"
+                                @click="
+                                  reportInappropriateStory(story),
+                                    (openedReportInappropriateContentDialog = false)
+                                "
+                              >
+                                Confirm
+                              </v-btn>
                               <v-btn
                                 text
                                 @click="
@@ -2218,6 +2234,34 @@ export default {
         });
 
       console.log("------------------- report post end ----------------");
+    },
+    reportInappropriateStory(post) {
+      console.log("------------------- report story start ----------------");
+      console.log(post);
+      this.reportInappropriateContent.story_id = post._id;
+      this.reportInappropriateContent.story_reporter_id = this.user._id;
+      // TODO: Add story creator id for future faster find of this story (and remove)
+      // this.reportInappropriateContent.story_reporter_id = post.creator.id or something similar;
+
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_INAPPROPRIATE_STORY,
+          this.reportInappropriateContent,
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      console.log("------------------- report story end ----------------");
     },
     forceRerender() {
       // Posto nisam nasao kako ide re-mount, odradim ovo trenutno
