@@ -9,6 +9,12 @@ import (
 )
 
 func InitializePostRouter(router *mux.Router, server *ContentServer) {
+
+	router.HandleFunc("/post/inappropriate/", server.CreateInappropriatePostEndpoint).Methods("POST")
+	router.HandleFunc("/post/inappropriate/", server.GetInappropriatePostsEndpoint).Methods("GET")
+	router.HandleFunc("/story/inappropriate/", server.CreateInappropriateStoryEndpoint).Methods("POST")
+	router.HandleFunc("/story/inappropriate/", server.GetInappropriateStoryEndpoint).Methods("GET")
+
 	router.HandleFunc("/post/", server.CreatePostEndpoint).Methods("POST")
 	router.HandleFunc("/story/", server.CreateStoryEndpoint).Methods("POST")
 	router.HandleFunc("/post/{postid}", server.GetEntirePostEndpoint).Methods("GET")
@@ -19,10 +25,6 @@ func InitializePostRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/post/unreaction/{id}", server.DeletePostReactionEndpoint).Methods("POST")
 	router.HandleFunc("/post/comment/{id}", server.CreatePostCommentEndpoint).Methods("POST")
 	router.HandleFunc("/post/comment/{id}", server.GetPostCommentsEndpoint).Methods("GET")
-
-	router.HandleFunc("/post/inappropriate/", server.CreateInappropriatePostEndpoint).Methods("POST")
-	router.HandleFunc("/story/inappropriate/", server.CreateInappropriateStoryEndpoint).Methods("POST")
-
 
 	router.HandleFunc("/post/search/location/", server.SearchByLocation).Methods("POST")
 	router.HandleFunc("/post/search/hashtag/{hashtag}", server.SearchByHashtag).Methods("GET")
@@ -42,6 +44,16 @@ func (contentServerRef *ContentServer) GetEntirePostEndpoint(response http.Respo
 	response.Header().Set("content-type", "application/json")
 	params := mux.Vars(request)
 	renderJSON(response, contentServerRef.postStore.GetEntirePost(params["postid"]))
+}
+
+func (contentServerRef *ContentServer) GetInappropriatePostsEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	renderJSON(response, contentServerRef.postStore.GetAllInappropriatePosts())
+}
+
+func (contentServerRef *ContentServer) GetInappropriateStoryEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	renderJSON(response, contentServerRef.postStore.GetAllInappropriateStories())
 }
 
 func (contentServerRef *ContentServer) CreateInappropriatePostEndpoint(response http.ResponseWriter, request *http.Request) {

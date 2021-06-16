@@ -66,6 +66,55 @@ func (postStoreRef *PostStore) GetEntirePost(postID string) model.RegularPost {
 	return post
 }
 
+func (postStoreRef *PostStore) GetAllInappropriatePosts() []model.InappropriatePost {
+	collectionInappropriatePosts := postStoreRef.ourClient.Database("content-service-db").Collection("inappropriatePosts")
+
+	cursor,err := collectionInappropriatePosts.Find(
+		context.Background(),
+		bson.M{},
+	)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer cursor.Next(context.Background())
+	var inappropriatePosts []model.InappropriatePost
+	for cursor.Next(context.Background()){
+		var inappropriatePost model.InappropriatePost
+		if err = cursor.Decode(&inappropriatePost); err != nil{
+			log.Fatal(err)
+		}
+		inappropriatePosts = append(inappropriatePosts, inappropriatePost)
+	}
+
+
+	return inappropriatePosts
+}
+func (postStoreRef *PostStore) GetAllInappropriateStories() []model.InappropriateStory {
+	collectionInappropriateStories := postStoreRef.ourClient.Database("content-service-db").Collection("inappropriateStories")
+
+	cursor,err := collectionInappropriateStories.Find(
+		context.Background(),
+		bson.M{},
+	)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer cursor.Next(context.Background())
+	var inappropriateStories []model.InappropriateStory
+	for cursor.Next(context.Background()){
+		var inappropriateStory model.InappropriateStory
+		if err = cursor.Decode(&inappropriateStory); err != nil{
+			log.Fatal(err)
+		}
+		inappropriateStories = append(inappropriateStories, inappropriateStory)
+	}
+
+
+	return inappropriateStories
+}
+
 func (postStoreRef *PostStore) CreateInappropriatePost(inappropriatePost model.InappropriatePost) *mongo.InsertOneResult {
 	// Todo: Add time stamp creation
 	collectionInappropriatePosts := postStoreRef.ourClient.Database("content-service-db").Collection("inappropriatePosts")
