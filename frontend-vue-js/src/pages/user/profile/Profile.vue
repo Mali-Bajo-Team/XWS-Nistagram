@@ -24,21 +24,21 @@
 
         <!--Column for the number of posts-->
         <v-col class="pa-4 mt-2">
-          <h3>{{posts.length}}</h3>
+          <h3>{{ posts.length }}</h3>
           Posts
         </v-col>
         <!--End of the number of posts-->
 
         <!--Column for the number of followers-->
         <v-col class="pa-4 mt-2">
-          <h3>{{followers.length}}</h3>
+          <h3>{{ followers.length }}</h3>
           Followers
         </v-col>
         <!--End of the number of followers-->
 
         <!--Column for the number of following-->
         <v-col class="pa-4 mt-2">
-          <h3>{{following.length}}</h3>
+          <h3>{{ following.length }}</h3>
           Following
         </v-col>
         <!--Column for the number of following-->
@@ -437,7 +437,9 @@
                           <br />
                           <v-btn
                             color="primary"
-                            @click="openedContenDialog = false, forceRerender()"
+                            @click="
+                              (openedContenDialog = false), forceRerender()
+                            "
                           >
                             Close
                           </v-btn>
@@ -534,7 +536,9 @@
                           <br />
                           <v-btn
                             color="primary"
-                            @click="openedContenDialog = false, forceRerender()"
+                            @click="
+                              (openedContenDialog = false), forceRerender()
+                            "
                           >
                             Close
                           </v-btn>
@@ -631,7 +635,9 @@
                           <br />
                           <v-btn
                             color="primary"
-                            @click="openedContenDialog = false, forceRerender()"
+                            @click="
+                              (openedContenDialog = false), forceRerender()
+                            "
                           >
                             Close
                           </v-btn>
@@ -686,7 +692,7 @@
 
                         <!--Dialog for post details-->
                         <v-dialog width="600px">
-                          <template  v-slot:activator="{ on, attrs }">
+                          <template v-slot:activator="{ on, attrs }">
                             <v-btn
                               v-bind="attrs"
                               v-on="on"
@@ -843,7 +849,7 @@
 
                               <br /><br />
                               <!--Expansion panels for showing comments-->
-                              <v-expansion-panels >
+                              <v-expansion-panels>
                                 <v-expansion-panel
                                   v-for="(item, i) in 1"
                                   :key="i"
@@ -869,6 +875,48 @@
                         <v-btn @click="addToSaved(post)" icon>
                           <v-icon>mdi-bookmark</v-icon>
                         </v-btn>
+
+                        <!--Dialog to report inappropriate content-->
+                        <v-dialog
+                          width="600px"
+                          v-model="openedReportInappropriateContentDialog"
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn v-bind="attrs" v-on="on" icon>
+                              <v-icon right> mdi-alert-octagon </v-icon>
+                            </v-btn>
+                          </template>
+                          <!-- Dialog content -->
+                          <v-card>
+                            <v-card-title> <br /> </v-card-title>
+                            <v-card-text>
+                              <v-row>
+                                <v-textarea
+                                  v-model="reportInappropriateContent.message"
+                                  outlined
+                                  name="input-7-4"
+                                  no-resize
+                                  label="Add reason why you report this content"
+                                  clearable
+                                  clear-icon="mdi-close-circle"
+                                ></v-textarea>
+                              </v-row>
+                              <v-spacer></v-spacer>
+                              <br />
+                              <v-btn color="primary"> Confirm </v-btn>
+                              <v-btn
+                                text
+                                @click="
+                                  openedReportInappropriateContentDialog = false
+                                "
+                              >
+                                Close
+                              </v-btn>
+                            </v-card-text>
+                          </v-card>
+                          <!-- End of the dialog content -->
+                        </v-dialog>
+                        <!--End of dialog for reporting inappropriate content-->
                       </v-card-actions>
                     </v-card>
                     <!-- End of the image previw -->
@@ -1439,7 +1487,9 @@
                   >
                     <v-card>
                       <v-img
-                        :src="getImageUrlByPATH(tempCollection.cover_image.path)"
+                        :src="
+                          getImageUrlByPATH(tempCollection.cover_image.path)
+                        "
                         class="white--text align-end"
                         gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                         height="200px"
@@ -1448,7 +1498,7 @@
                       <v-card-text>
                         <v-row>
                           <v-col>
-                            <h3>{{tempCollection.name}}</h3>
+                            <h3>{{ tempCollection.name }}</h3>
                           </v-col>
                           <v-col class="text-right mr-5 mb-5">
                             <v-dialog width="600px">
@@ -1469,7 +1519,7 @@
                               <v-card>
                                 <v-card-title>
                                   <v-row>
-                                    <v-col> {{tempCollection.name}} </v-col>
+                                    <v-col> {{ tempCollection.name }} </v-col>
                                     <v-col class="text-right">
                                       <v-dialog width="600px">
                                         <template
@@ -1541,10 +1591,12 @@
                                   show-arrows-on-hover
                                 >
                                   <v-carousel-item
-                                    v-for="(regularPostTemp, i) in tempCollection.regular_posts"
+                                    v-for="(
+                                      regularPostTemp, i
+                                    ) in tempCollection.regular_posts"
                                     :key="i"
                                   >
-                                  <video
+                                    <video
                                       v-if="
                                         getPostByID(regularPostTemp._id).type ==
                                         'video'
@@ -1563,7 +1615,7 @@
 
                                     <v-img
                                       v-if="
-                                       getPostByID(regularPostTemp._id).type ==
+                                        getPostByID(regularPostTemp._id).type ==
                                         'image'
                                       "
                                       :src="
@@ -1572,7 +1624,6 @@
                                         )
                                       "
                                     ></v-img>
-                                    
                                   </v-carousel-item>
                                 </v-carousel>
                                 <!--End of list of photos-->
@@ -1676,8 +1727,12 @@ import { getParsedToken } from "./../../../util/token";
 export default {
   data() {
     return {
+      openedReportInappropriateContentDialog: false,
+      reportInappropriateContent: {
+        message: "",
+      },
       componentKey: 0,
-      forceUpdateKey:{
+      forceUpdateKey: {
         dialogForPostDetails: 0,
       },
       followers: [],
@@ -1987,9 +2042,9 @@ export default {
       }
       return null;
     },
-    addPostToCollection(post, collectionID){
-      console.log("post: "+ post + " collectionID: " + collectionID);
-       this.axios
+    addPostToCollection(post, collectionID) {
+      console.log("post: " + post + " collectionID: " + collectionID);
+      this.axios
         .post(
           process.env.VUE_APP_BACKEND_URL +
             process.env.VUE_APP_CONTENT_USER_COLLECTION +
@@ -2004,9 +2059,13 @@ export default {
           }
         )
         .then((res) => {
-          console.log("------- start of the added new post to collection -----------");
+          console.log(
+            "------- start of the added new post to collection -----------"
+          );
           console.log(res);
-          console.log("------- end of the added new post to collection -----------");
+          console.log(
+            "------- end of the added new post to collection -----------"
+          );
           this.forceRerender();
         })
         .catch((error) => {
