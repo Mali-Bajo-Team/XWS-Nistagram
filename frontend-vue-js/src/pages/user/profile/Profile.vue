@@ -133,6 +133,42 @@
             </v-card>
           </v-dialog>
         </v-col>
+                <!--End of the column for edit profile button-->
+        <v-col class="pa-3">
+          <!--Dialog and button for editing profile picture-->
+          <v-dialog width="600px">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                outlined
+                rounded
+                medium
+                color="primary"
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon left> mdi-pencil </v-icon>
+                Edit privacy settings
+              </v-btn>
+            </template>
+            <v-card>
+              <!--Edit privacy settings-->
+              <v-card-title class="headline">
+                Edit privacy settings
+              </v-card-title>
+              <v-card-text>
+                
+              </v-card-text>
+              <!--End of edit privacy settings-->
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="error" text> Cancel </v-btn>
+                <v-btn color="primary" text @click="editPrivacySettings()">
+                  Save
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-col>
         <!--End of the column for edit profile button-->
         <v-col class="pa-3">
           <!--Dialog and button for editing profile picture-->
@@ -2528,6 +2564,20 @@ export default {
             .then((res) => {
               console.log(res);
             });
+        });
+    },
+    editPrivacySettings() {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_SETRIVATE_ENDPOINT + getParsedToken().sub,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            }
+          }
+        ).then(() => {
+            this.isBlocked = true;
         });
     },
     onFileSelected(event) {
