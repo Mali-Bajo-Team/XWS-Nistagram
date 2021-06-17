@@ -159,12 +159,14 @@
               <p class="ml-5" v-if="form.isprivate == false"> Your profile is public</p>
               <p class="ml-5" v-if="form.isallowedmessages == true"> You allowed messages from unfollowed profiles</p>
               <p class="ml-5" v-if="form.isallowedmessages == false"> You baned messages from unfollowed profiles</p>
+              <p class="ml-5" v-if="form.isallowedtags == true"> You allowed tags from unfollowed profiles</p>
+              <p class="ml-5" v-if="form.isallowedtags == false"> You baned tags from unfollowed profiles</p>
               
               <v-card-text>
                  <v-btn outlined rounded color="primary" text @click="setPublicPrivacySettings()">
                   SET PUBLIC
                 </v-btn>
-                <v-btn  outlined rounded color="primary" text @click="setPrivatePrivacySettings()">
+                <v-btn  class="ml-5" outlined rounded color="primary" text @click="setPrivatePrivacySettings()">
                   SET PRIVATE
                 </v-btn>
               </v-card-text>
@@ -174,6 +176,14 @@
                 </v-btn>
                 <v-btn outlined rounded color="primary" text @click="banMessagesPrivacySettings()">
                   BAN MESSAGES FROM UNFOLLOWED PROFILES
+                </v-btn>
+              </v-card-text>
+                <v-card-text>
+                 <v-btn  outlined rounded color="primary" text @click="allowTagsPrivacySettings()">
+                  ALLOW TAGS
+                </v-btn>
+                <v-btn class="ml-5" outlined rounded color="primary" text @click="banTagsPrivacySettings()">
+                  BAN TAGS
                 </v-btn>
               </v-card-text>
               <!--End of edit privacy settings-->
@@ -2974,6 +2984,34 @@ export default {
           }
         ).then((res) => {
              this.form.isallowedmessages = res.data;
+        });
+    },
+     allowTagsPrivacySettings() {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_ALLOWTAGS_ENDPOINT + getParsedToken().sub,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            }
+          }
+        ).then((res) => {
+             this.form.isallowedtags = res.data;
+        });
+    },
+    banTagsPrivacySettings() {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_BANTAGS_ENDPOINT + getParsedToken().sub,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            }
+          }
+        ).then((res) => {
+             this.form.isallowedtags = res.data;
         });
     },
     onFileSelected(event) {

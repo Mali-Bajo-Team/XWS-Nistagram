@@ -178,4 +178,44 @@ public class ProfileController {
 
 		return new ResponseEntity<>(isAllowed, HttpStatus.OK);
 	}
+
+	@PostMapping("allowtags/{username}")
+	@PreAuthorize("hasRole('REGULAR')")
+	public ResponseEntity<Boolean> allowtags(@PathVariable(required = true) String username, Authentication authentication) {
+		RegularUser regularUser = regularUserService.findByUsername(username);
+		Boolean isBanned;
+
+		if (regularUser == null ) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+
+		PrivacySettings privacySettings = regularUser.getPrivacySettings();
+		privacySettings.setAllowTags(true);
+		isBanned = true;
+		regularUser.setPrivacySettings(privacySettings);
+
+		regularUserService.save(regularUser);
+
+		return new ResponseEntity<>(isBanned, HttpStatus.OK);
+	}
+
+	@PostMapping("bantags/{username}")
+	@PreAuthorize("hasRole('REGULAR')")
+	public ResponseEntity<Boolean> bantags(@PathVariable(required = true) String username, Authentication authentication) {
+		RegularUser regularUser = regularUserService.findByUsername(username);
+		Boolean isBanned;
+
+		if (regularUser == null ) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+
+		PrivacySettings privacySettings = regularUser.getPrivacySettings();
+		privacySettings.setAllowTags(false);
+		isBanned = false;
+		regularUser.setPrivacySettings(privacySettings);
+
+		regularUserService.save(regularUser);
+
+		return new ResponseEntity<>(isBanned, HttpStatus.OK);
+	}
 }
