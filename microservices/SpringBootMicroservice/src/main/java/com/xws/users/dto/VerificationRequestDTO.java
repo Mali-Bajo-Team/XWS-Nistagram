@@ -1,6 +1,5 @@
 package com.xws.users.dto;
 
-import com.xws.users.users.model.UserCategory;
 import com.xws.users.users.model.VerificationRequest;
 
 public class VerificationRequestDTO {
@@ -8,9 +7,9 @@ public class VerificationRequestDTO {
     private Long id;
     private String realName;
     private String realSurname;
-    private UserCategory category;
+    private String category;
     private String imageOfOfficialDocument;
-    private String requesterID;
+    private String requesterUsername;
 
     public  VerificationRequestDTO(){
 
@@ -21,9 +20,9 @@ public class VerificationRequestDTO {
         this.id = verificationRequest.getId();
         this.realName = verificationRequest.getRealName();
         this.realSurname = verificationRequest.getRealSurname();
-        this.category = verificationRequest.getCategory();
+        this.category = verificationRequest.getCategory().getName();
         this.imageOfOfficialDocument = verificationRequest.getImageOfOfficialDocument();
-        this.requesterID = verificationRequest.getRequester().getId().toString();
+        this.requesterUsername = verificationRequest.getRequester().getUsername();
     }
 
     public Long getId() {
@@ -50,11 +49,11 @@ public class VerificationRequestDTO {
         this.realSurname = realSurname;
     }
 
-    public UserCategory getCategory() {
+    public String getCategory() {
         return category;
     }
 
-    public void setCategory(UserCategory category) {
+    public void setCategory(String category) {
         this.category = category;
     }
 
@@ -66,11 +65,11 @@ public class VerificationRequestDTO {
         this.imageOfOfficialDocument = imageOfOfficialDocument;
     }
 
-    public String getRequesterID() {
-        return requesterID;
+    public String getRequesterUsername() {
+        return requesterUsername;
     }
 
-    public void setRequesterID(String requesterID) {
-        this.requesterID = requesterID;
+    public void setRequesterUsername(String requesterUsername) {
+        this.requesterUsername = requesterUsername;
     }
 }
