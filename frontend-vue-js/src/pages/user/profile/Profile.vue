@@ -2346,7 +2346,26 @@ export default {
   },
   methods: {
     createVerificationRequest() {
-      alert("ver");
+      this.verificationRequest.imageOfOfficialDocument =
+        this.new_file_content[0].path;
+
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_VERIFICATION_REQUEST,
+          this.verificationRequest,
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     reportInappropriatePost(post) {
       console.log("------------------- report post start ----------------");
