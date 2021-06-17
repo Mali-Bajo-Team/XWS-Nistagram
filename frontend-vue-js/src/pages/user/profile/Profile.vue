@@ -133,6 +133,45 @@
             </v-card>
           </v-dialog>
         </v-col>
+                <!--End of the column for edit profile button-->
+        <v-col class="pa-3">
+          <!--Dialog and button for editing profile picture-->
+          <v-dialog width="600px">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                outlined
+                rounded
+                medium
+                color="primary"
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon left> mdi-pencil </v-icon>
+                Edit privacy settings
+              </v-btn>
+            </template>
+            <v-card>
+              <!--Edit privacy settings-->
+              <v-card-title class="headline">
+                Edit privacy settings
+              </v-card-title>
+              <p class="ml-5" v-if="isPrivate == true"> Your profile is private</p>
+              <p class="ml-5" v-if="isPrivate == false"> Your profile is public</p>
+              <v-card-text>
+                 <v-btn color="primary" text @click="setPublicPrivacySettings()">
+                  SET PUBLIC
+                </v-btn>
+                <v-btn color="primary" text @click="setPrivatePrivacySettings()">
+                  SET PRIVATE
+                </v-btn>
+              </v-card-text>
+              <!--End of edit privacy settings-->
+              <v-card-actions>
+                <v-spacer></v-spacer>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-col>
         <!--End of the column for edit profile button-->
         <v-col class="pa-3">
           <!--Dialog and button for editing profile picture-->
@@ -2014,6 +2053,7 @@ export default {
         biography: "",
         photoUrl: "",
       },
+      isPrivate: null,
       openedContenDialog: null,
       openedNewCommentDialog: null,
       openedAddStoryToHighlightDialog: null,
@@ -2862,6 +2902,34 @@ export default {
             .then((res) => {
               console.log(res);
             });
+        });
+    },
+    setPrivatePrivacySettings() {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_SETRIVATE_ENDPOINT + getParsedToken().sub,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            }
+          }
+        ).then((res) => {
+             this.isPrivate = res.data;
+        });
+    },
+    setPublicPrivacySettings() {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_SETPUBLIC_ENDPOINT + getParsedToken().sub,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            }
+          }
+        ).then((res) => {
+             this.isPrivate = res.data;
         });
     },
     onFileSelected(event) {

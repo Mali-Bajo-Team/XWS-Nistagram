@@ -2,12 +2,15 @@ package com.xws.users.controller;
 
 
 import com.xws.users.dto.RegularUserImageUpdateDTO;
+import com.xws.users.users.model.PrivacySettings;
+import com.xws.users.users.model.roles.UserAccount;
 import com.xws.users.util.security.exceptions.USConflictException;
 import javax.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.xws.users.dto.RegularUserUpdateDTO;
@@ -96,4 +99,43 @@ public class ProfileController {
 		return ResponseEntity.ok(new UserProfileDTO(regularUser));
 	}
 
+	@PostMapping("setprivate/{username}")
+	@PreAuthorize("hasRole('REGULAR')")
+	public ResponseEntity<Boolean> setprivate(@PathVariable(required = true) String username, Authentication authentication) {
+		RegularUser regularUser = regularUserService.findByUsername(username);
+		Boolean isPrivate;
+
+		if (regularUser == null ) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+
+		PrivacySettings privacySettings = regularUser.getPrivacySettings();
+		privacySettings.setPrivate(true);
+		isPrivate = true;
+		regularUser.setPrivacySettings(privacySettings);
+
+		regularUserService.save(regularUser);
+
+		return new ResponseEntity<>(isPrivate, HttpStatus.OK);
+	}
+
+	@PostMapping("setpublic/{username}")
+	@PreAuthorize("hasRole('REGULAR')")
+	public ResponseEntity<Boolean> setpublic(@PathVariable(required = true) String username, Authentication authentication) {
+		RegularUser regularUser = regularUserService.findByUsername(username);
+		Boolean isPrivate;
+
+		if (regularUser == null ) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+
+		PrivacySettings privacySettings = regularUser.getPrivacySettings();
+		privacySettings.setPrivate(false);
+		isPrivate = false;
+		regularUser.setPrivacySettings(privacySettings);
+
+		regularUserService.save(regularUser);
+
+		return new ResponseEntity<>(isPrivate, HttpStatus.OK);
+	}
 }
