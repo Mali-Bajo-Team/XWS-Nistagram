@@ -155,16 +155,20 @@
               <v-card-title class="headline">
                 Edit privacy settings
               </v-card-title>
+              <p class="ml-5" v-if="isPrivate == true"> Your profile is private</p>
+              <p class="ml-5" v-if="isPrivate == false"> Your profile is public</p>
               <v-card-text>
-                
+                 <v-btn color="primary" text @click="setPublicPrivacySettings()">
+                  SET PUBLIC
+                </v-btn>
+                <v-btn color="primary" text @click="setPrivatePrivacySettings()">
+                  SET PRIVATE
+                </v-btn>
               </v-card-text>
               <!--End of edit privacy settings-->
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="error" text> Cancel </v-btn>
-                <v-btn color="primary" text @click="editPrivacySettings()">
-                  Save
-                </v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -1778,6 +1782,7 @@ export default {
         biography: "",
         photoUrl: "",
       },
+      isPrivate: null,
       openedContenDialog: null,
       openedNewCommentDialog: null,
       openedAddStoryToHighlightDialog: null,
@@ -2566,7 +2571,7 @@ export default {
             });
         });
     },
-    editPrivacySettings() {
+    setPrivatePrivacySettings() {
       this.axios
         .post(
           process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_SETRIVATE_ENDPOINT + getParsedToken().sub,
@@ -2576,8 +2581,22 @@ export default {
               Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
             }
           }
-        ).then(() => {
-            this.isBlocked = true;
+        ).then((res) => {
+             this.isPrivate = res.data;
+        });
+    },
+    setPublicPrivacySettings() {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_SETPUBLIC_ENDPOINT + getParsedToken().sub,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            }
+          }
+        ).then((res) => {
+             this.isPrivate = res.data;
         });
     },
     onFileSelected(event) {
