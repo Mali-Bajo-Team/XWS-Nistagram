@@ -20,6 +20,10 @@
           <div class="font-weight-medium text-justify">
             {{user.bio}}
           </div>
+          <div class="font-weight-medium text-justify">
+             <p class="ml-5" v-if="user.isPrivate == true"> Profile is private</p>
+            <p class="ml-5" v-if="user.isPrivate == false"> Profile is public</p>
+          </div>
         </v-col>
         <!--End of the first column-->
 

@@ -168,7 +168,6 @@
               <!--End of edit privacy settings-->
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="error" text> Cancel </v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
