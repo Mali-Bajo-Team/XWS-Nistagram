@@ -157,12 +157,22 @@
               </v-card-title>
               <p class="ml-5" v-if="isPrivate == true"> Your profile is private</p>
               <p class="ml-5" v-if="isPrivate == false"> Your profile is public</p>
+              <p class="ml-5" v-if="isAllowed == true"> You allowed messages from unfollowed profiles</p>
+              <p class="ml-5" v-if="isAllowed == false"> You baned messages from unfollowed profiles</p>
               <v-card-text>
-                 <v-btn color="primary" text @click="setPublicPrivacySettings()">
+                 <v-btn outlined rounded color="primary" text @click="setPublicPrivacySettings()">
                   SET PUBLIC
                 </v-btn>
-                <v-btn color="primary" text @click="setPrivatePrivacySettings()">
+                <v-btn  outlined rounded color="primary" text @click="setPrivatePrivacySettings()">
                   SET PRIVATE
+                </v-btn>
+              </v-card-text>
+               <v-card-text>
+                 <v-btn class="mb-5" outlined rounded color="primary" text @click="allowMessagesPrivacySettings()">
+                  ALLOW MESSAGES FROM UNFOLLOWED PROFILES
+                </v-btn>
+                <v-btn outlined rounded color="primary" text @click="banMessagesPrivacySettings()">
+                  BAN MESSAGES FROM UNFOLLOWED PROFILES
                 </v-btn>
               </v-card-text>
               <!--End of edit privacy settings-->
@@ -2054,6 +2064,7 @@ export default {
         photoUrl: "",
       },
       isPrivate: null,
+      isAllowed: null,
       openedContenDialog: null,
       openedNewCommentDialog: null,
       openedAddStoryToHighlightDialog: null,
@@ -2930,6 +2941,34 @@ export default {
           }
         ).then((res) => {
              this.isPrivate = res.data;
+        });
+    },
+    allowMessagesPrivacySettings() {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_ALLOWMESSAGES_ENDPOINT + getParsedToken().sub,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            }
+          }
+        ).then((res) => {
+             this.isAllowed = res.data;
+        });
+    },
+    banMessagesPrivacySettings() {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_BANMESSAGES_ENDPOINT + getParsedToken().sub,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            }
+          }
+        ).then((res) => {
+             this.isAllowed = res.data;
         });
     },
     onFileSelected(event) {
