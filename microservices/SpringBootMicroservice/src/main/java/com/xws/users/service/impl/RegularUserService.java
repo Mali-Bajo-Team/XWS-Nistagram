@@ -3,7 +3,10 @@ package com.xws.users.service.impl;
 import java.util.Collection;
 import java.util.List;
 
+import com.xws.users.dto.RegularUserImageUpdateDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.xws.users.repository.IRegularUserRepository;
@@ -31,5 +34,6 @@ public class RegularUserService implements IRegularUserService {
 
 		return CollectionUtil.findAll(allUsers, user -> user.getUsername().toLowerCase().contains(username));
 	}
+
 
 }

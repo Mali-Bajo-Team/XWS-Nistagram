@@ -2,12 +2,15 @@ package com.xws.users.controller;
 
 
 import com.xws.users.dto.RegularUserImageUpdateDTO;
+import com.xws.users.users.model.PrivacySettings;
+import com.xws.users.users.model.roles.UserAccount;
 import com.xws.users.util.security.exceptions.USConflictException;
 import javax.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.xws.users.dto.RegularUserUpdateDTO;
@@ -96,4 +99,123 @@ public class ProfileController {
 		return ResponseEntity.ok(new UserProfileDTO(regularUser));
 	}
 
+	@PostMapping("setprivate/{username}")
+	@PreAuthorize("hasRole('REGULAR')")
+	public ResponseEntity<Boolean> setprivate(@PathVariable(required = true) String username, Authentication authentication) {
+		RegularUser regularUser = regularUserService.findByUsername(username);
+		Boolean isPrivate;
+
+		if (regularUser == null ) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+
+		PrivacySettings privacySettings = regularUser.getPrivacySettings();
+		privacySettings.setPrivate(true);
+		isPrivate = true;
+		regularUser.setPrivacySettings(privacySettings);
+
+		regularUserService.save(regularUser);
+
+		return new ResponseEntity<>(isPrivate, HttpStatus.OK);
+	}
+
+	@PostMapping("setpublic/{username}")
+	@PreAuthorize("hasRole('REGULAR')")
+	public ResponseEntity<Boolean> setpublic(@PathVariable(required = true) String username, Authentication authentication) {
+		RegularUser regularUser = regularUserService.findByUsername(username);
+		Boolean isPrivate;
+
+		if (regularUser == null ) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+
+		PrivacySettings privacySettings = regularUser.getPrivacySettings();
+		privacySettings.setPrivate(false);
+		isPrivate = false;
+		regularUser.setPrivacySettings(privacySettings);
+
+		regularUserService.save(regularUser);
+
+		return new ResponseEntity<>(isPrivate, HttpStatus.OK);
+	}
+
+	@PostMapping("allowmessages/{username}")
+	@PreAuthorize("hasRole('REGULAR')")
+	public ResponseEntity<Boolean> allowMessagesFromNotFollowed(@PathVariable(required = true) String username, Authentication authentication) {
+		RegularUser regularUser = regularUserService.findByUsername(username);
+		Boolean isAllowed;
+
+		if (regularUser == null ) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+
+		PrivacySettings privacySettings = regularUser.getPrivacySettings();
+		privacySettings.setAllowMessagesFromNotFollowed(true);
+		isAllowed = true;
+		regularUser.setPrivacySettings(privacySettings);
+
+		regularUserService.save(regularUser);
+
+		return new ResponseEntity<>(isAllowed, HttpStatus.OK);
+	}
+
+	@PostMapping("notallowmessages/{username}")
+	@PreAuthorize("hasRole('REGULAR')")
+	public ResponseEntity<Boolean> notAllowMessagesFromNotFollowed(@PathVariable(required = true) String username, Authentication authentication) {
+		RegularUser regularUser = regularUserService.findByUsername(username);
+		Boolean isAllowed;
+
+		if (regularUser == null ) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+
+		PrivacySettings privacySettings = regularUser.getPrivacySettings();
+		privacySettings.setAllowMessagesFromNotFollowed(false);
+		isAllowed = false;
+		regularUser.setPrivacySettings(privacySettings);
+
+		regularUserService.save(regularUser);
+
+		return new ResponseEntity<>(isAllowed, HttpStatus.OK);
+	}
+
+	@PostMapping("allowtags/{username}")
+	@PreAuthorize("hasRole('REGULAR')")
+	public ResponseEntity<Boolean> allowtags(@PathVariable(required = true) String username, Authentication authentication) {
+		RegularUser regularUser = regularUserService.findByUsername(username);
+		Boolean isBanned;
+
+		if (regularUser == null ) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+
+		PrivacySettings privacySettings = regularUser.getPrivacySettings();
+		privacySettings.setAllowTags(true);
+		isBanned = true;
+		regularUser.setPrivacySettings(privacySettings);
+
+		regularUserService.save(regularUser);
+
+		return new ResponseEntity<>(isBanned, HttpStatus.OK);
+	}
+
+	@PostMapping("bantags/{username}")
+	@PreAuthorize("hasRole('REGULAR')")
+	public ResponseEntity<Boolean> bantags(@PathVariable(required = true) String username, Authentication authentication) {
+		RegularUser regularUser = regularUserService.findByUsername(username);
+		Boolean isBanned;
+
+		if (regularUser == null ) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+
+		PrivacySettings privacySettings = regularUser.getPrivacySettings();
+		privacySettings.setAllowTags(false);
+		isBanned = false;
+		regularUser.setPrivacySettings(privacySettings);
+
+		regularUserService.save(regularUser);
+
+		return new ResponseEntity<>(isBanned, HttpStatus.OK);
+	}
 }

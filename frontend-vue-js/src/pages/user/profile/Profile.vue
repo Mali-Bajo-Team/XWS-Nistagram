@@ -133,6 +133,66 @@
             </v-card>
           </v-dialog>
         </v-col>
+                <!--End of the column for edit profile button-->
+        <v-col class="pa-3">
+          <!--Dialog and button for editing profile picture-->
+          <v-dialog width="600px">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                outlined
+                rounded
+                medium
+                color="primary"
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon left> mdi-pencil </v-icon>
+                Edit privacy settings
+              </v-btn>
+            </template>
+            <v-card>
+              <!--Edit privacy settings-->
+              <v-card-title class="headline">
+                Edit privacy settings
+              </v-card-title>
+              <p class="ml-5" v-if="form.isprivate == true"> Your profile is private</p>
+              <p class="ml-5" v-if="form.isprivate == false"> Your profile is public</p>
+              <p class="ml-5" v-if="form.isallowedmessages == true"> You allowed messages from unfollowed profiles</p>
+              <p class="ml-5" v-if="form.isallowedmessages == false"> You baned messages from unfollowed profiles</p>
+              <p class="ml-5" v-if="form.isallowedtags == true"> You allowed tags from unfollowed profiles</p>
+              <p class="ml-5" v-if="form.isallowedtags == false"> You baned tags from unfollowed profiles</p>
+              
+              <v-card-text>
+                 <v-btn outlined rounded color="primary" text @click="setPublicPrivacySettings()">
+                  SET PUBLIC
+                </v-btn>
+                <v-btn  class="ml-5" outlined rounded color="primary" text @click="setPrivatePrivacySettings()">
+                  SET PRIVATE
+                </v-btn>
+              </v-card-text>
+               <v-card-text>
+                 <v-btn class="mb-5" outlined rounded color="primary" text @click="allowMessagesPrivacySettings()">
+                  ALLOW MESSAGES FROM UNFOLLOWED PROFILES
+                </v-btn>
+                <v-btn outlined rounded color="primary" text @click="banMessagesPrivacySettings()">
+                  BAN MESSAGES FROM UNFOLLOWED PROFILES
+                </v-btn>
+              </v-card-text>
+                <v-card-text>
+                 <v-btn  outlined rounded color="primary" text @click="allowTagsPrivacySettings()">
+                  ALLOW TAGS
+                </v-btn>
+                <v-btn class="ml-5" outlined rounded color="primary" text @click="banTagsPrivacySettings()">
+                  BAN TAGS
+                </v-btn>
+              </v-card-text>
+              <!--End of edit privacy settings-->
+              <v-card-actions>
+                <v-spacer></v-spacer>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-col>
         <!--End of the column for edit profile button-->
         <v-col class="pa-3">
           <!--Dialog and button for editing profile picture-->
@@ -2150,6 +2210,9 @@ export default {
         webSite: "",
         biography: "",
         photoUrl: "",
+        isprivate: null,
+        isallowedmessages: null,
+        isallowedtags: null
       },
       openedContenDialog: null,
       openedNewCommentDialog: null,
@@ -2250,6 +2313,9 @@ export default {
         this.form.photoUrl = this.regularUser.photoUrl;
         this.form.webSite = this.regularUser.website;
         this.form.bio = this.regularUser.bio;
+        this.form.isprivate = this.regularUser.isprivate;
+        this.form.isallowedmessages = this.regularUser.isallowedmessages;
+        this.form.isallowedtags = this.regularUser.isallowedtags;
       })
       .catch((error) => {
         alert("Error: " + error);
@@ -3021,6 +3087,90 @@ export default {
             .then((res) => {
               console.log(res);
             });
+        });
+    },
+    setPrivatePrivacySettings() {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_SETRIVATE_ENDPOINT + getParsedToken().sub,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            }
+          }
+        ).then((res) => {
+            this.form.isprivate = res.data;
+        });
+    },
+    setPublicPrivacySettings() {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_SETPUBLIC_ENDPOINT + getParsedToken().sub,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            }
+          }
+        ).then((res) => {
+             this.form.isprivate = res.data;
+        });
+    },
+    allowMessagesPrivacySettings() {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_ALLOWMESSAGES_ENDPOINT + getParsedToken().sub,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            }
+          }
+        ).then((res) => {
+             this.form.isallowedmessages = res.data;
+        });
+    },
+    banMessagesPrivacySettings() {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_BANMESSAGES_ENDPOINT + getParsedToken().sub,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            }
+          }
+        ).then((res) => {
+             this.form.isallowedmessages = res.data;
+        });
+    },
+     allowTagsPrivacySettings() {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_ALLOWTAGS_ENDPOINT + getParsedToken().sub,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            }
+          }
+        ).then((res) => {
+             this.form.isallowedtags = res.data;
+        });
+    },
+    banTagsPrivacySettings() {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_BANTAGS_ENDPOINT + getParsedToken().sub,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            }
+          }
+        ).then((res) => {
+             this.form.isallowedtags = res.data;
         });
     },
     onFileSelected(event) {

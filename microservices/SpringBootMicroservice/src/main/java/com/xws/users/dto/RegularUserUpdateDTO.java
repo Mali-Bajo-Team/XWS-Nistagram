@@ -16,6 +16,10 @@ public class RegularUserUpdateDTO {
     private String bio;
     private String newusername;
     private String photoUrl;
+    private boolean isprivate;
+    private boolean isallowedmessages;
+    private boolean isallowedtags;
+
     public RegularUserUpdateDTO() {
     }
 
@@ -30,6 +34,9 @@ public class RegularUserUpdateDTO {
         this.website = regularUser.getLinkToWebSite();
         this.bio = regularUser.getBio();
         this.photoUrl = regularUser.getProfileImagePath();
+        this.isprivate = regularUser.getPrivacySettings().isPrivate();
+        this.isallowedmessages = regularUser.getPrivacySettings().isAllowMessagesFromNotFollowed();
+        this.isallowedtags = regularUser.getPrivacySettings().isAllowTags();
     }
 
     public String getNewusername() {
@@ -114,5 +121,29 @@ public class RegularUserUpdateDTO {
 
     public void setWebsite(String website) {
         this.website = website;
+    }
+
+    public boolean isIsprivate() {
+        return isprivate;
+    }
+
+    public void setIsprivate(boolean isprivate) {
+        this.isprivate = isprivate;
+    }
+
+    public boolean isIsallowedmessages() {
+        return isallowedmessages;
+    }
+
+    public void setIsallowedmessages(boolean isallowedmessages) {
+        this.isallowedmessages = isallowedmessages;
+    }
+
+    public boolean isIsallowedtags() {
+        return isallowedtags;
+    }
+
+    public void setIsallowedtags(boolean isallowedtags) {
+        this.isallowedtags = isallowedtags;
     }
 }
