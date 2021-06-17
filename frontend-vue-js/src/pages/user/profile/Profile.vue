@@ -155,10 +155,11 @@
               <v-card-title class="headline">
                 Edit privacy settings
               </v-card-title>
-              <p class="ml-5" v-if="isPrivate == true"> Your profile is private</p>
-              <p class="ml-5" v-if="isPrivate == false"> Your profile is public</p>
-              <p class="ml-5" v-if="isAllowed == true"> You allowed messages from unfollowed profiles</p>
-              <p class="ml-5" v-if="isAllowed == false"> You baned messages from unfollowed profiles</p>
+              <p class="ml-5" v-if="form.isprivate == true"> Your profile is private</p>
+              <p class="ml-5" v-if="form.isprivate == false"> Your profile is public</p>
+              <p class="ml-5" v-if="form.isallowedmessages == true"> You allowed messages from unfollowed profiles</p>
+              <p class="ml-5" v-if="form.isallowedmessages == false"> You baned messages from unfollowed profiles</p>
+              
               <v-card-text>
                  <v-btn outlined rounded color="primary" text @click="setPublicPrivacySettings()">
                   SET PUBLIC
@@ -2062,9 +2063,10 @@ export default {
         webSite: "",
         biography: "",
         photoUrl: "",
+        isprivate: null,
+        isallowedmessages: null,
+        isallowedtags: null
       },
-      isPrivate: null,
-      isAllowed: null,
       openedContenDialog: null,
       openedNewCommentDialog: null,
       openedAddStoryToHighlightDialog: null,
@@ -2164,6 +2166,9 @@ export default {
         this.form.photoUrl = this.regularUser.photoUrl;
         this.form.webSite = this.regularUser.website;
         this.form.bio = this.regularUser.bio;
+        this.form.isprivate = this.regularUser.isprivate;
+        this.form.isallowedmessages = this.regularUser.isallowedmessages;
+        this.form.isallowedtags = this.regularUser.isallowedtags;
       })
       .catch((error) => {
         alert("Error: " + error);
@@ -2926,7 +2931,7 @@ export default {
             }
           }
         ).then((res) => {
-             this.isPrivate = res.data;
+            this.form.isprivate = res.data;
         });
     },
     setPublicPrivacySettings() {
@@ -2940,7 +2945,7 @@ export default {
             }
           }
         ).then((res) => {
-             this.isPrivate = res.data;
+             this.form.isprivate = res.data;
         });
     },
     allowMessagesPrivacySettings() {
@@ -2954,7 +2959,7 @@ export default {
             }
           }
         ).then((res) => {
-             this.isAllowed = res.data;
+             this.form.isallowedmessages = res.data;
         });
     },
     banMessagesPrivacySettings() {
@@ -2968,7 +2973,7 @@ export default {
             }
           }
         ).then((res) => {
-             this.isAllowed = res.data;
+             this.form.isallowedmessages = res.data;
         });
     },
     onFileSelected(event) {
