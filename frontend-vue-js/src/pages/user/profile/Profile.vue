@@ -180,7 +180,7 @@
         </v-col>
         <!--Column for add regular posts, stories, highlights, collections-->
         <v-col class="text-right mr-5 mb-5">
-          <!--Button for adding new content-->
+          <!--Dialog for adding regular posts, stories, highlights, collections -->
           <v-dialog width="700px" v-model="openedContenDialog">
             <v-tabs v-model="tabs" icons-and-text>
               <v-tabs-slider></v-tabs-slider>
@@ -651,6 +651,128 @@
               <!--End of tab for collections-->
             </v-tabs-items>
           </v-dialog>
+          <!-- End of the dialog for adding regular posts, stories, highlights, collections -->
+
+          <!-- Dialog for verification request -->
+          <v-dialog width="600px" v-model="openedVerificationDialog">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn dark small fab color="blue" v-bind="attrs" v-on="on">
+                <v-icon dark> mdi-star-plus </v-icon>
+              </v-btn>
+            </template>
+            <!-- Dialog content -->
+
+            <v-card>
+              <v-card-title class="headline">
+                Create verification request
+              </v-card-title>
+              <v-card-text>
+                <!--Stepper-->
+                <v-stepper v-model="e1">
+                  <v-stepper-header>
+                    <v-stepper-step :complete="e1 > 1" step="1">
+                      Official document
+                    </v-stepper-step>
+
+                    <v-divider></v-divider>
+
+                    <v-stepper-step :complete="e1 > 2" step="2">
+                      Other information
+                    </v-stepper-step>
+
+                    <v-divider></v-divider>
+
+                    <v-stepper-step step="3"> Confirmation </v-stepper-step>
+                  </v-stepper-header>
+
+                  <v-stepper-items>
+                    <!--Step 1-->
+                    <v-stepper-content step="1">
+                      <!--File input for images and videos-->
+                      <v-file-input
+                        small-chips
+                        multiple
+                        show-size
+                        counter
+                        accept="image/png, image/jpeg, image/bmp"
+                        label="Choose a photo or video"
+                        prepend-icon="mdi-camera"
+                        @change="onFileSelected"
+                      ></v-file-input>
+                      <!--End of file input-->
+
+                      <v-btn color="primary" @click="createContent(), (e1 = 2)">
+                        Continue
+                      </v-btn>
+
+                      <v-btn text> Cancel </v-btn>
+                    </v-stepper-content>
+                    <!--End of step 1-->
+
+                    <!--Step 2-->
+                    <v-stepper-content step="2">
+                      <!-- Chose a realName -->
+                      <v-text-field
+                        v-model="verificationRequest.realName"
+                        label="Choose a real name"
+                      >
+                      </v-text-field>
+                      <!-- End of realName-->
+                      <!-- Chose a realSurname -->
+                      <v-text-field
+                        v-model="verificationRequest.realSurname"
+                        label="Choose a real surname"
+                      >
+                      </v-text-field>
+                      <!-- End of realName-->
+
+                      <!-- User categories -->
+                      <v-select
+                        v-model="verificationRequest.category"
+                        :items="userCategories"
+                        label="User category"
+                        outlined
+                      ></v-select>
+                      <!-- End of the user categories -->
+
+                      <v-btn
+                        color="primary"
+                        @click="createVerificationRequest(), (e1 = 3)"
+                      >
+                        Continue
+                      </v-btn>
+
+                      <v-btn text @click="openedVerificationDialog = false">
+                        Close
+                      </v-btn>
+                    </v-stepper-content>
+                    <!--End of step 2-->
+
+                    <!--Step 3-->
+                    <v-stepper-content step="3">
+                      <h3>
+                        Congratulations, you have successfully created
+                        verification request !
+                      </h3>
+
+                      <v-spacer></v-spacer>
+                      <br />
+                      <v-btn
+                        color="primary"
+                        @click="openedVerificationDialog = false"
+                      >
+                        Close
+                      </v-btn>
+                    </v-stepper-content>
+                    <!--End of step 3-->
+                  </v-stepper-items>
+                </v-stepper>
+              </v-card-text>
+            </v-card>
+
+            <!-- End of the dialog content -->
+          </v-dialog>
+          <!-- End of the dialog for verification request -->
         </v-col>
         <!--End of the column for add regular posts, stories, highlights, collections-->
       </v-row>
@@ -1937,6 +2059,21 @@ import { getTodayDateString } from "./../../../util/dateHandler";
 export default {
   data() {
     return {
+      userCategories: [
+        "influencer",
+        "sports",
+        "new/media",
+        "business",
+        "brand",
+        "organization",
+      ], // TODO: Make API to get real one categories
+      verificationRequest: {
+        realName: "",
+        realSurname: "",
+        category: "",
+        imageOfOfficialDocument: "",
+      },
+      openedVerificationDialog: false,
       openedReportInappropriateContentDialog: false,
       reportInappropriateContent: {
         story_id: "",
@@ -2208,6 +2345,9 @@ export default {
       });
   },
   methods: {
+    createVerificationRequest() {
+      alert("ver");
+    },
     reportInappropriatePost(post) {
       console.log("------------------- report post start ----------------");
       console.log(post);
