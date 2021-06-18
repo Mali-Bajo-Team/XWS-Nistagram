@@ -7,6 +7,7 @@ import com.xws.users.repository.IVerificationRequestRepository;
 import com.xws.users.service.IVerificationRequestService;
 import com.xws.users.users.model.VerificationRequest;
 import com.xws.users.users.model.enums.RequestStatus;
+import com.xws.users.users.model.roles.RegularUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +44,12 @@ public class VerificationRequestService implements IVerificationRequestService {
         if(verificationRequestOld == null) return null; // Todo: Throw some exception
         verificationRequestOld.setRequestStatus(RequestStatus.ACCEPTED);
         VerificationRequest verificationRequestNew = verificationRequestRepository.save(verificationRequestOld);
+
+        RegularUser regularUser = regularUserRepository.findById(verificationRequestNew.getRequester().getId()).orElse(null);
+        if (regularUser == null) return null; // TODO: Throw some exception
+        regularUser.setUserCategory(verificationRequestNew.getCategory());
+        regularUserRepository.save(regularUser);
+
         return verificationRequestNew;
     }
 
@@ -53,6 +60,12 @@ public class VerificationRequestService implements IVerificationRequestService {
         verificationRequestOld.setRequestStatus(RequestStatus.REJECTED);
         VerificationRequest verificationRequestNew = verificationRequestRepository.save(verificationRequestOld);
         return verificationRequestNew;
+    }
+
+    @Override
+    public boolean isVerifiedUser(String username) {
+        RegularUser regularUser = regularUserRepository.findByUsername(username);
+        return regularUser.getUserCategory() != null;
     }
 
     @Override

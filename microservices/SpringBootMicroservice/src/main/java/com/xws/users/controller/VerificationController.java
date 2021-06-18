@@ -1,6 +1,7 @@
 package com.xws.users.controller;
 
 import com.xws.users.dto.FollowerDTO;
+import com.xws.users.dto.IsVerifiedUserDTO;
 import com.xws.users.dto.RegularUserImageUpdateDTO;
 import com.xws.users.dto.VerificationRequestDTO;
 import com.xws.users.service.IVerificationRequestService;
@@ -60,6 +61,12 @@ public class VerificationController {
 //    @PreAuthorize("hasRole('ADMINISTRATOR')")
     public ResponseEntity<VerificationRequestDTO> rejectVerificationRequest(@PathVariable(required = true) Long id) {
         return ResponseEntity.ok(new VerificationRequestDTO(verificationRequestService.rejectVerificationRequest(id)));
+    }
+
+    @GetMapping("/user/{username}")
+    @PreAuthorize("hasRole('REGULAR')")
+    public ResponseEntity<IsVerifiedUserDTO> isVerifiedUser(@PathVariable(required = true) String username) {
+        return ResponseEntity.ok(new IsVerifiedUserDTO(verificationRequestService.isVerifiedUser(username)));
     }
 
 }

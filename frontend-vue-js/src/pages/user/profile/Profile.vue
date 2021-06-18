@@ -15,7 +15,10 @@
           </v-img>
 
           <!--Username and description-->
-          <h3 class="text-justify">{{ form.username }}</h3>
+          <h3 class="text-justify">
+            {{ form.username }}
+            <v-icon v-if="isVerifiedUserVar">mdi-check-circle</v-icon>
+          </h3>
           <div class="font-weight-medium text-justify">
             {{ form.bio }}
           </div>
@@ -1865,6 +1868,7 @@ export default {
   },
   data() {
     return {
+      isVerifiedUserVar: false,
       verificationRequests: [],
       userCategories: [
         "influencer",
@@ -2051,6 +2055,7 @@ export default {
         console.log(error);
       });
 
+    // Get user profile
     this.axios
       .get(
         process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_PROFILE_ENDPOINT,
@@ -2061,6 +2066,10 @@ export default {
         }
       )
       .then((resp) => {
+        console.log(
+          "----------------------------- profile start ------------------------"
+        );
+        console.log(resp);
         this.regularUser = resp.data;
         this.form.email = this.regularUser.email;
         this.form.name = this.regularUser.name;
@@ -2078,6 +2087,25 @@ export default {
         this.form.isprivate = this.regularUser.isprivate;
         this.form.isallowedmessages = this.regularUser.isallowedmessages;
         this.form.isallowedtags = this.regularUser.isallowedtags;
+        // check is user verified
+        axios
+          .get(
+            process.env.VUE_APP_BACKEND_URL +
+              process.env.VUE_APP_VERIFIED_VERIFICATION_REQUEST +
+              this.regularUser.username,
+            {
+              headers: {
+                Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+              },
+            }
+          )
+          .then((res) => {
+            this.isVerifiedUserVar = res.data.verifiedUser;
+          });
+
+        console.log(
+          "----------------------------- profile end ------------------------"
+        );
       })
       .catch((error) => {
         alert("Error: " + error);

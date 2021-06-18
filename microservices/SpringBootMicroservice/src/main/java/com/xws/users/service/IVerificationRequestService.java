@@ -10,6 +10,7 @@ public interface IVerificationRequestService {
     VerificationRequest createVerificationRequest(VerificationRequestDTO verificationRequestDTO);
     VerificationRequest acceptVerificationRequest(Long verificationID);
     VerificationRequest rejectVerificationRequest(Long verificationID);
+    boolean isVerifiedUser(String username);
     List<VerificationRequest> findAllByRequestStatus(RequestStatus requestStatus);
 
 }
