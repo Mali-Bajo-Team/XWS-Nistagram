@@ -6,6 +6,7 @@ import com.xws.users.repository.IUserCategoryRepository;
 import com.xws.users.repository.IVerificationRequestRepository;
 import com.xws.users.service.IVerificationRequestService;
 import com.xws.users.users.model.VerificationRequest;
+import com.xws.users.users.model.enums.RequestStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,5 +40,10 @@ public class VerificationRequestService implements IVerificationRequestService {
     @Override
     public List<VerificationRequest> findAll() {
         return verificationRequestRepository.findAll();
+    }
+
+    @Override
+    public List<VerificationRequest> findAllByRequestStatus(RequestStatus requestStatus) {
+        return verificationRequestRepository.findByRequestStatus(requestStatus);
     }
 }

@@ -5,6 +5,7 @@ import com.xws.users.dto.RegularUserImageUpdateDTO;
 import com.xws.users.dto.VerificationRequestDTO;
 import com.xws.users.service.IVerificationRequestService;
 import com.xws.users.users.model.VerificationRequest;
+import com.xws.users.users.model.enums.RequestStatus;
 import com.xws.users.users.model.roles.UserAccount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,11 +37,11 @@ public class VerificationController {
     @PreAuthorize("hasRole('REGULAR')")
     // Todo: Change to administrator, this is only for test purpose
 //    @PreAuthorize("hasRole('ADMINISTRATOR')")
-    public ResponseEntity<List<VerificationRequestDTO>> getAllVerificationRequest(Authentication authentication) {
+    public ResponseEntity<List<VerificationRequestDTO>> getAllPendingVerificationRequest(Authentication authentication) {
         UserAccount user = (UserAccount) authentication.getPrincipal();
 
         List<VerificationRequestDTO> retVal = new ArrayList<VerificationRequestDTO>();
-        List<VerificationRequest> verificationRequests = verificationRequestService.findAll();
+        List<VerificationRequest> verificationRequests = verificationRequestService.findAllByRequestStatus(RequestStatus.PENDING);
         for(VerificationRequest verificationRequest : verificationRequests){
             retVal.add(new VerificationRequestDTO(verificationRequest));
         }
