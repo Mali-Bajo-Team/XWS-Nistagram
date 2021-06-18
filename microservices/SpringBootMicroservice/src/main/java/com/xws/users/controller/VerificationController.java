@@ -33,7 +33,9 @@ public class VerificationController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMINISTRATOR')")
+    @PreAuthorize("hasRole('REGULAR')")
+    // Todo: Change to administrator, this is only for test purpose
+//    @PreAuthorize("hasRole('ADMINISTRATOR')")
     public ResponseEntity<List<VerificationRequestDTO>> getAllVerificationRequest(Authentication authentication) {
         UserAccount user = (UserAccount) authentication.getPrincipal();
 
