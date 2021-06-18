@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
+import com.xws.users.users.model.enums.RequestStatus;
 import com.xws.users.users.model.roles.RegularUser;
 
 @Entity
@@ -31,6 +32,17 @@ public class VerificationRequest {
 
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	private RegularUser requester;
+
+	@Column
+	private RequestStatus requestStatus = RequestStatus.PENDING;
+
+	public RequestStatus getRequestStatus() {
+		return requestStatus;
+	}
+
+	public void setRequestStatus(RequestStatus requestStatus) {
+		this.requestStatus = requestStatus;
+	}
 
 	public Long getId() {
 		return id;
