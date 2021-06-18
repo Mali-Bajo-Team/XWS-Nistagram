@@ -29,7 +29,7 @@ public class VerificationRequest {
 	@Column(nullable = false)
 	private String imageOfOfficialDocument;
 
-	@OneToOne(fetch = FetchType.EAGER, optional = false)
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	private RegularUser requester;
 
 	public Long getId() {
