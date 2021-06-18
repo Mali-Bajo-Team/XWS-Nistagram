@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface IVerificationRequestService {
     VerificationRequest createVerificationRequest(VerificationRequestDTO verificationRequestDTO);
-    List<VerificationRequest> findAll();
+    VerificationRequest acceptVerificationRequest(Long verificationID);
     List<VerificationRequest> findAllByRequestStatus(RequestStatus requestStatus);
+
 }

@@ -946,7 +946,10 @@
                               <v-icon right> mdi-plus-circle </v-icon>
                             </v-btn>
                           </template>
-                          <postComponent v-if="entirePost" :post="entirePost"></postComponent>
+                          <postComponent
+                            v-if="entirePost"
+                            :post="entirePost"
+                          ></postComponent>
                         </v-dialog>
                         <!--End of dialog for post details-->
 
@@ -1005,7 +1008,7 @@
                         <!--End of dialog for reporting inappropriate content-->
                       </v-card-actions>
                     </v-card>
-                    <!-- End of the post previw -->                   
+                    <!-- End of the post previw -->
                   </v-col>
                 </v-row>
               </v-container>
@@ -1816,8 +1819,16 @@
                       <v-card-actions>
                         <v-spacer></v-spacer>
 
-                        <v-btn @click="acceptVerificationRequest()" icon>
+                        <v-btn
+                          @click="
+                            acceptVerificationRequest(verificationRequest)
+                          "
+                          icon
+                        >
                           <v-icon>mdi-check-circle</v-icon>
+                        </v-btn>
+                        <v-btn @click="rejectVerificationRequest()" icon>
+                          <v-icon>mdi-delete</v-icon>
                         </v-btn>
                       </v-card-actions>
                     </v-card>
@@ -2157,7 +2168,33 @@ export default {
       });
   },
   methods: {
-    acceptVerificationRequest() {
+    acceptVerificationRequest(verification) {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_ACCEPT_VERIFICATION_REQUEST +
+            verification.id,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+          for (let verificationRequest of this.verificationRequests) {
+            if (verificationRequest.id == verification.id) {
+              this.verificationRequests.pop(verificationRequest);
+              break;
+            }
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    rejectVerificationRequest() {
       alert("VUE_APP_VERIFICATION_REQUEST");
     },
     createVerificationRequest() {

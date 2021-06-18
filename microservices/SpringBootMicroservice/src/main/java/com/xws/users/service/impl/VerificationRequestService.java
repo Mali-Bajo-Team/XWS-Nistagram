@@ -38,8 +38,12 @@ public class VerificationRequestService implements IVerificationRequestService {
     }
 
     @Override
-    public List<VerificationRequest> findAll() {
-        return verificationRequestRepository.findAll();
+    public VerificationRequest acceptVerificationRequest(Long verificationID) {
+        VerificationRequest verificationRequestOld = verificationRequestRepository.findById(verificationID).orElse(null);
+        if(verificationRequestOld == null) return null; // Todo: Throw some exception
+        verificationRequestOld.setRequestStatus(RequestStatus.ACCEPTED);
+        VerificationRequest verificationRequestNew = verificationRequestRepository.save(verificationRequestOld);
+        return verificationRequestNew;
     }
 
     @Override
