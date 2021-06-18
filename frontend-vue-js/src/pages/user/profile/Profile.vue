@@ -15,7 +15,10 @@
           </v-img>
 
           <!--Username and description-->
-          <h3 class="text-justify">{{ form.username }}</h3>
+          <h3 class="text-justify">
+            {{ form.username }}
+            <v-icon v-if="isVerifiedUserVar">mdi-check-circle</v-icon>
+          </h3>
           <div class="font-weight-medium text-justify">
             {{ form.bio }}
           </div>
@@ -946,7 +949,10 @@
                               <v-icon right> mdi-plus-circle </v-icon>
                             </v-btn>
                           </template>
-                          <postComponent v-if="entirePost" :post="entirePost"></postComponent>
+                          <postComponent
+                            v-if="entirePost"
+                            :post="entirePost"
+                          ></postComponent>
                         </v-dialog>
                         <!--End of dialog for post details-->
 
@@ -1005,7 +1011,7 @@
                         <!--End of dialog for reporting inappropriate content-->
                       </v-card-actions>
                     </v-card>
-                    <!-- End of the post previw -->                   
+                    <!-- End of the post previw -->
                   </v-col>
                 </v-row>
               </v-container>
@@ -1816,8 +1822,21 @@
                       <v-card-actions>
                         <v-spacer></v-spacer>
 
-                        <v-btn @click="acceptVerificationRequest()" icon>
+                        <v-btn
+                          @click="
+                            acceptVerificationRequest(verificationRequest)
+                          "
+                          icon
+                        >
                           <v-icon>mdi-check-circle</v-icon>
+                        </v-btn>
+                        <v-btn
+                          @click="
+                            rejectVerificationRequest(verificationRequest)
+                          "
+                          icon
+                        >
+                          <v-icon>mdi-delete</v-icon>
                         </v-btn>
                       </v-card-actions>
                     </v-card>
@@ -1849,6 +1868,7 @@ export default {
   },
   data() {
     return {
+      isVerifiedUserVar: false,
       verificationRequests: [],
       userCategories: [
         "influencer",
@@ -2035,6 +2055,7 @@ export default {
         console.log(error);
       });
 
+    // Get user profile
     this.axios
       .get(
         process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_PROFILE_ENDPOINT,
@@ -2045,6 +2066,10 @@ export default {
         }
       )
       .then((resp) => {
+        console.log(
+          "----------------------------- profile start ------------------------"
+        );
+        console.log(resp);
         this.regularUser = resp.data;
         this.form.email = this.regularUser.email;
         this.form.name = this.regularUser.name;
@@ -2062,6 +2087,25 @@ export default {
         this.form.isprivate = this.regularUser.isprivate;
         this.form.isallowedmessages = this.regularUser.isallowedmessages;
         this.form.isallowedtags = this.regularUser.isallowedtags;
+        // check is user verified
+        axios
+          .get(
+            process.env.VUE_APP_BACKEND_URL +
+              process.env.VUE_APP_VERIFIED_VERIFICATION_REQUEST +
+              this.regularUser.username,
+            {
+              headers: {
+                Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+              },
+            }
+          )
+          .then((res) => {
+            this.isVerifiedUserVar = res.data.verifiedUser;
+          });
+
+        console.log(
+          "----------------------------- profile end ------------------------"
+        );
       })
       .catch((error) => {
         alert("Error: " + error);
@@ -2157,8 +2201,57 @@ export default {
       });
   },
   methods: {
-    acceptVerificationRequest() {
-      alert("VUE_APP_VERIFICATION_REQUEST");
+    acceptVerificationRequest(verification) {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_ACCEPT_VERIFICATION_REQUEST +
+            verification.id,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+          for (let verificationRequest of this.verificationRequests) {
+            if (verificationRequest.id == verification.id) {
+              this.verificationRequests.pop(verificationRequest);
+              break;
+            }
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    rejectVerificationRequest(verification) {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_REJECT_VERIFICATION_REQUEST +
+            verification.id,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+          for (let verificationRequest of this.verificationRequests) {
+            if (verificationRequest.id == verification.id) {
+              this.verificationRequests.pop(verificationRequest);
+              break;
+            }
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     createVerificationRequest() {
       this.verificationRequest.imageOfOfficialDocument =
