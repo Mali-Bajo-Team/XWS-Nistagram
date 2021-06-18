@@ -1827,7 +1827,12 @@
                         >
                           <v-icon>mdi-check-circle</v-icon>
                         </v-btn>
-                        <v-btn @click="rejectVerificationRequest()" icon>
+                        <v-btn
+                          @click="
+                            rejectVerificationRequest(verificationRequest)
+                          "
+                          icon
+                        >
                           <v-icon>mdi-delete</v-icon>
                         </v-btn>
                       </v-card-actions>
@@ -2194,8 +2199,31 @@ export default {
           console.log(error);
         });
     },
-    rejectVerificationRequest() {
-      alert("VUE_APP_VERIFICATION_REQUEST");
+    rejectVerificationRequest(verification) {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_REJECT_VERIFICATION_REQUEST +
+            verification.id,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+          for (let verificationRequest of this.verificationRequests) {
+            if (verificationRequest.id == verification.id) {
+              this.verificationRequests.pop(verificationRequest);
+              break;
+            }
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     createVerificationRequest() {
       this.verificationRequest.imageOfOfficialDocument =

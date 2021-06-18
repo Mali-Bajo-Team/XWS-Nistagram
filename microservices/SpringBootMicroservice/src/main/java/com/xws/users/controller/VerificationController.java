@@ -54,4 +54,12 @@ public class VerificationController {
         return ResponseEntity.ok(new VerificationRequestDTO(verificationRequestService.acceptVerificationRequest(id)));
     }
 
+    @PostMapping("/reject/{id}")
+    @PreAuthorize("hasRole('REGULAR')")
+    // Todo: Change to administrator, this is only for test purpose
+//    @PreAuthorize("hasRole('ADMINISTRATOR')")
+    public ResponseEntity<VerificationRequestDTO> rejectVerificationRequest(@PathVariable(required = true) Long id) {
+        return ResponseEntity.ok(new VerificationRequestDTO(verificationRequestService.rejectVerificationRequest(id)));
+    }
+
 }
