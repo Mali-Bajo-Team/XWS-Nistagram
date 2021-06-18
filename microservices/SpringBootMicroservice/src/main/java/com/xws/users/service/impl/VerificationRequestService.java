@@ -9,6 +9,8 @@ import com.xws.users.users.model.VerificationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class VerificationRequestService implements IVerificationRequestService {
 
@@ -32,5 +34,10 @@ public class VerificationRequestService implements IVerificationRequestService {
 
         VerificationRequest verificationRequestAdded = verificationRequestRepository.save(verificationRequest);
         return verificationRequestAdded;
+    }
+
+    @Override
+    public List<VerificationRequest> findAll() {
+        return verificationRequestRepository.findAll();
     }
 }
