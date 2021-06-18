@@ -147,6 +147,117 @@
                 v-on="on"
               >
                 <v-icon left> mdi-pencil </v-icon>
+                Edit privacy settings
+              </v-btn>
+            </template>
+            <v-card>
+              <!--Edit privacy settings-->
+              <v-card-title class="headline">
+                Edit privacy settings
+              </v-card-title>
+              <p class="ml-5" v-if="form.isprivate == true">
+                Your profile is private
+              </p>
+              <p class="ml-5" v-if="form.isprivate == false">
+                Your profile is public
+              </p>
+              <p class="ml-5" v-if="form.isallowedmessages == true">
+                You allowed messages from unfollowed profiles
+              </p>
+              <p class="ml-5" v-if="form.isallowedmessages == false">
+                You baned messages from unfollowed profiles
+              </p>
+              <p class="ml-5" v-if="form.isallowedtags == true">
+                You allowed tags from unfollowed profiles
+              </p>
+              <p class="ml-5" v-if="form.isallowedtags == false">
+                You baned tags from unfollowed profiles
+              </p>
+
+              <v-card-text>
+                <v-btn
+                  outlined
+                  rounded
+                  color="primary"
+                  text
+                  @click="setPublicPrivacySettings()"
+                >
+                  SET PUBLIC
+                </v-btn>
+                <v-btn
+                  class="ml-5"
+                  outlined
+                  rounded
+                  color="primary"
+                  text
+                  @click="setPrivatePrivacySettings()"
+                >
+                  SET PRIVATE
+                </v-btn>
+              </v-card-text>
+              <v-card-text>
+                <v-btn
+                  class="mb-5"
+                  outlined
+                  rounded
+                  color="primary"
+                  text
+                  @click="allowMessagesPrivacySettings()"
+                >
+                  ALLOW MESSAGES FROM UNFOLLOWED PROFILES
+                </v-btn>
+                <v-btn
+                  outlined
+                  rounded
+                  color="primary"
+                  text
+                  @click="banMessagesPrivacySettings()"
+                >
+                  BAN MESSAGES FROM UNFOLLOWED PROFILES
+                </v-btn>
+              </v-card-text>
+              <v-card-text>
+                <v-btn
+                  outlined
+                  rounded
+                  color="primary"
+                  text
+                  @click="allowTagsPrivacySettings()"
+                >
+                  ALLOW TAGS
+                </v-btn>
+                <v-btn
+                  class="ml-5"
+                  outlined
+                  rounded
+                  color="primary"
+                  text
+                  @click="banTagsPrivacySettings()"
+                >
+                  BAN TAGS
+                </v-btn>
+              </v-card-text>
+              <!--End of edit privacy settings-->
+              <v-card-actions>
+                <v-spacer></v-spacer>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-col>
+        <!--End of the column for edit profile button-->
+        <v-col class="pa-3">
+          <!--Dialog and button for editing profile picture-->
+          <v-dialog width="600px">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                outlined
+                rounded
+                medium
+                color="primary"
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon left> mdi-pencil </v-icon>
                 Edit profile picture
               </v-btn>
             </template>
@@ -180,7 +291,7 @@
         </v-col>
         <!--Column for add regular posts, stories, highlights, collections-->
         <v-col class="text-right mr-5 mb-5">
-          <!--Button for adding new content-->
+          <!--Dialog for adding regular posts, stories, highlights, collections -->
           <v-dialog width="700px" v-model="openedContenDialog">
             <v-tabs v-model="tabs" icons-and-text>
               <v-tabs-slider></v-tabs-slider>
@@ -651,12 +762,134 @@
               <!--End of tab for collections-->
             </v-tabs-items>
           </v-dialog>
+          <!-- End of the dialog for adding regular posts, stories, highlights, collections -->
+
+          <!-- Dialog for verification request -->
+          <v-dialog width="600px" v-model="openedVerificationDialog">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn dark small fab color="blue" v-bind="attrs" v-on="on">
+                <v-icon dark> mdi-star-plus </v-icon>
+              </v-btn>
+            </template>
+            <!-- Dialog content -->
+
+            <v-card>
+              <v-card-title class="headline">
+                Create verification request
+              </v-card-title>
+              <v-card-text>
+                <!--Stepper-->
+                <v-stepper v-model="e1">
+                  <v-stepper-header>
+                    <v-stepper-step :complete="e1 > 1" step="1">
+                      Official document
+                    </v-stepper-step>
+
+                    <v-divider></v-divider>
+
+                    <v-stepper-step :complete="e1 > 2" step="2">
+                      Other information
+                    </v-stepper-step>
+
+                    <v-divider></v-divider>
+
+                    <v-stepper-step step="3"> Confirmation </v-stepper-step>
+                  </v-stepper-header>
+
+                  <v-stepper-items>
+                    <!--Step 1-->
+                    <v-stepper-content step="1">
+                      <!--File input for images and videos-->
+                      <v-file-input
+                        small-chips
+                        multiple
+                        show-size
+                        counter
+                        accept="image/png, image/jpeg, image/bmp"
+                        label="Choose a photo or video"
+                        prepend-icon="mdi-camera"
+                        @change="onFileSelected"
+                      ></v-file-input>
+                      <!--End of file input-->
+
+                      <v-btn color="primary" @click="createContent(), (e1 = 2)">
+                        Continue
+                      </v-btn>
+
+                      <v-btn text> Cancel </v-btn>
+                    </v-stepper-content>
+                    <!--End of step 1-->
+
+                    <!--Step 2-->
+                    <v-stepper-content step="2">
+                      <!-- Chose a realName -->
+                      <v-text-field
+                        v-model="verificationRequest.realName"
+                        label="Choose a real name"
+                      >
+                      </v-text-field>
+                      <!-- End of realName-->
+                      <!-- Chose a realSurname -->
+                      <v-text-field
+                        v-model="verificationRequest.realSurname"
+                        label="Choose a real surname"
+                      >
+                      </v-text-field>
+                      <!-- End of realName-->
+
+                      <!-- User categories -->
+                      <v-select
+                        v-model="verificationRequest.category"
+                        :items="userCategories"
+                        label="User category"
+                        outlined
+                      ></v-select>
+                      <!-- End of the user categories -->
+
+                      <v-btn
+                        color="primary"
+                        @click="createVerificationRequest(), (e1 = 3)"
+                      >
+                        Continue
+                      </v-btn>
+
+                      <v-btn text @click="openedVerificationDialog = false">
+                        Close
+                      </v-btn>
+                    </v-stepper-content>
+                    <!--End of step 2-->
+
+                    <!--Step 3-->
+                    <v-stepper-content step="3">
+                      <h3>
+                        Congratulations, you have successfully created
+                        verification request !
+                      </h3>
+
+                      <v-spacer></v-spacer>
+                      <br />
+                      <v-btn
+                        color="primary"
+                        @click="openedVerificationDialog = false"
+                      >
+                        Close
+                      </v-btn>
+                    </v-stepper-content>
+                    <!--End of step 3-->
+                  </v-stepper-items>
+                </v-stepper>
+              </v-card-text>
+            </v-card>
+
+            <!-- End of the dialog content -->
+          </v-dialog>
+          <!-- End of the dialog for verification request -->
         </v-col>
         <!--End of the column for add regular posts, stories, highlights, collections-->
       </v-row>
       <!-- End of the edit profile, add regular posts, stories, highlights, collections -->
 
-      <!-- Posts, stories, highlights, saved, followers, following -->
+      <!-- Posts, stories, highlights, saved, followers, following, verification requests -->
       <v-row>
         <v-tabs v-model="tabs2" icons-and-text background-color="transparent">
           <v-tabs-slider></v-tabs-slider>
@@ -666,6 +899,7 @@
           <v-tab>Saved<v-icon>mdi-check-circle</v-icon></v-tab>
           <v-tab>Followers<v-icon>mdi-tag</v-icon></v-tab>
           <v-tab>Following<v-icon>mdi-tag</v-icon></v-tab>
+          <v-tab>Verifications<v-icon>mdi-check-circle</v-icon></v-tab>
         </v-tabs>
         <v-tabs-items v-model="tabs2">
           <!--Tab for photos and videos-->
@@ -1535,9 +1769,68 @@
             </v-card>
           </v-tab-item>
           <!--End of tab for following-->
+
+          <!--Tab for verification requests -->
+          <v-tab-item>
+            <v-card class="mx-auto" max-width="500">
+              <v-container fluid>
+                <v-row dense>
+                  <v-col
+                    v-for="verificationRequest in verificationRequests"
+                    :key="verificationRequest.id"
+                    :cols="12"
+                  >
+                    <!-- Image previw -->
+                    <v-card>
+                      <v-text-field
+                        v-model="verificationRequest.realName"
+                        disabled
+                        label="Solo"
+                        solo
+                      ></v-text-field>
+
+                      <v-text-field
+                        v-model="verificationRequest.realSurname"
+                        disabled
+                        label="Solo"
+                        solo
+                      ></v-text-field>
+
+                      <v-text-field
+                        v-model="verificationRequest.category"
+                        disabled
+                        label="Solo"
+                        solo
+                      ></v-text-field>
+                      <v-img
+                        :src="
+                          getImageUrlByPATH(
+                            verificationRequest.imageOfOfficialDocument
+                          )
+                        "
+                        class="white--text align-end"
+                        gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                        height="200px"
+                      >
+                      </v-img>
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+
+                        <v-btn @click="acceptVerificationRequest()" icon>
+                          <v-icon>mdi-check-circle</v-icon>
+                        </v-btn>
+                      </v-card-actions>
+                    </v-card>
+                    <!-- End of the image previw --></v-col
+                  >
+                </v-row>
+              </v-container>
+            </v-card>
+          </v-tab-item>
+          <!--End of tab for verification requests -->
         </v-tabs-items>
       </v-row>
-      <!-- End of posts, highlights, stories, saved, followers, following -->
+      <!-- End of posts, highlights, stories, saved, followers, following, verification requests -->
     </v-col>
 
     <v-spacer></v-spacer>
@@ -1556,6 +1849,22 @@ export default {
   },
   data() {
     return {
+      verificationRequests: [],
+      userCategories: [
+        "influencer",
+        "sports",
+        "new/media",
+        "business",
+        "brand",
+        "organization",
+      ], // TODO: Make API to get real one categories
+      verificationRequest: {
+        realName: "",
+        realSurname: "",
+        category: "",
+        imageOfOfficialDocument: "",
+      },
+      openedVerificationDialog: false,
       openedReportInappropriateContentDialog: false,
       reportInappropriateContent: {
         story_id: "",
@@ -1632,6 +1941,9 @@ export default {
         webSite: "",
         biography: "",
         photoUrl: "",
+        isprivate: null,
+        isallowedmessages: null,
+        isallowedtags: null,
       },
       openedContenDialog: null,
       openedNewCommentDialog: null,
@@ -1651,6 +1963,21 @@ export default {
   },
   computed: {},
   mounted() {
+    // get all verification requests
+    axios
+      .get(
+        process.env.VUE_APP_BACKEND_URL +
+          process.env.VUE_APP_VERIFICATION_REQUEST,
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+          },
+        }
+      )
+      .then((res) => {
+        this.verificationRequests = res.data;
+      });
+
     this.axios
       .get(
         process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_FOLLOWER_ENDPOINT,
@@ -1732,6 +2059,9 @@ export default {
         this.form.photoUrl = this.regularUser.photoUrl;
         this.form.webSite = this.regularUser.website;
         this.form.bio = this.regularUser.bio;
+        this.form.isprivate = this.regularUser.isprivate;
+        this.form.isallowedmessages = this.regularUser.isallowedmessages;
+        this.form.isallowedtags = this.regularUser.isallowedtags;
       })
       .catch((error) => {
         alert("Error: " + error);
@@ -1827,6 +2157,31 @@ export default {
       });
   },
   methods: {
+    acceptVerificationRequest() {
+      alert("VUE_APP_VERIFICATION_REQUEST");
+    },
+    createVerificationRequest() {
+      this.verificationRequest.imageOfOfficialDocument =
+        this.new_file_content[0].path;
+
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_VERIFICATION_REQUEST,
+          this.verificationRequest,
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
     reportInappropriatePost(post) {
       console.log("------------------- report post start ----------------");
       console.log(post);
@@ -2357,6 +2712,108 @@ export default {
             .then((res) => {
               console.log(res);
             });
+        });
+    },
+    setPrivatePrivacySettings() {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_SETRIVATE_ENDPOINT +
+            getParsedToken().sub,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          this.form.isprivate = res.data;
+        });
+    },
+    setPublicPrivacySettings() {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_SETPUBLIC_ENDPOINT +
+            getParsedToken().sub,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          this.form.isprivate = res.data;
+        });
+    },
+    allowMessagesPrivacySettings() {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_ALLOWMESSAGES_ENDPOINT +
+            getParsedToken().sub,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          this.form.isallowedmessages = res.data;
+        });
+    },
+    banMessagesPrivacySettings() {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_BANMESSAGES_ENDPOINT +
+            getParsedToken().sub,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          this.form.isallowedmessages = res.data;
+        });
+    },
+    allowTagsPrivacySettings() {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_ALLOWTAGS_ENDPOINT +
+            getParsedToken().sub,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          this.form.isallowedtags = res.data;
+        });
+    },
+    banTagsPrivacySettings() {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_BANTAGS_ENDPOINT +
+            getParsedToken().sub,
+          {},
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          this.form.isallowedtags = res.data;
         });
     },
     onFileSelected(event) {
