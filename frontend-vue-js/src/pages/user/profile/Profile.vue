@@ -912,15 +912,25 @@
                     :key="post._id"
                     :cols="post.flex"
                   >
-                    <!-- Image previw -->
-                    <v-card v-if="post.type == 'image'">
+                    <!-- Post previw -->
+                    <v-card>
                       <v-img
+                        v-if="post.type == 'image'"
                         :src="getImageUrl(post)"
                         class="white--text align-end"
                         gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                         height="200px"
                       >
                       </v-img>
+                      <video
+                        v-if="post.type == 'video'"
+                        controls
+                        :src="getImageUrl(post)"
+                        class="white--text align-end"
+                        gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                        height="200px"
+                        width="100%"
+                      ></video>
                       <v-card-actions>
                         <v-spacer></v-spacer>
 
@@ -936,173 +946,7 @@
                               <v-icon right> mdi-plus-circle </v-icon>
                             </v-btn>
                           </template>
-                          <v-card>
-                            <v-card-title>
-                              <!--List of photos-->
-                              <v-carousel
-                                v-if="entirePost.my_post"
-                                cycle
-                                height="400"
-                                hide-delimiter-background
-                                show-arrows-on-hover
-                              >
-                                <v-carousel-item
-                                  v-for="(slide, i) in entirePost.my_post
-                                    .content"
-                                  :key="i"
-                                >
-                                  <video
-                                    v-if="slide.type == 'video'"
-                                    controls
-                                    :src="getImageUrlByPATH(slide.path)"
-                                    class="white--text align-end"
-                                    gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                                    height="200px"
-                                    width="100%"
-                                  ></video>
-
-                                  <v-img
-                                    v-if="entirePost.my_post"
-                                    :src="getImageUrlByPATH(slide.path)"
-                                  ></v-img>
-                                </v-carousel-item>
-                              </v-carousel>
-                              <!--End of list of photos-->
-                            </v-card-title>
-                            <v-card-text>
-                              <v-row>
-                                <v-col>
-                                  <!--The number of likes and comments-->
-                                  <v-icon medium>mdi-heart</v-icon>700
-                                  <v-icon medium right>mdi-comment</v-icon>10
-                                </v-col>
-
-                                <v-col class="text-right mr-5 mb-5">
-                                  <!-- Like button-->
-                                  <v-btn
-                                    color="primary"
-                                    @click="likePost(post._id)"
-                                    class="mx-2"
-                                    fab
-                                    x-small
-                                  >
-                                    <v-icon>mdi-thumb-up</v-icon>
-                                  </v-btn>
-                                  <!--End of like button-->
-
-                                  <!-- UnLike button-->
-                                  <v-btn
-                                    color="red lighten-3"
-                                    @click="unlikePost(post._id)"
-                                    class="mx-2"
-                                    fab
-                                    x-small
-                                  >
-                                    <v-icon>mdi-thumb-up</v-icon>
-                                  </v-btn>
-                                  <!-- End of the  UnLike button-->
-
-                                  <!-- Dislike button-->
-                                  <v-btn
-                                    @click="dislikePost(post._id)"
-                                    class="mx-2"
-                                    fab
-                                    x-small
-                                    color="primary"
-                                    ><v-icon>mdi-thumb-down</v-icon>
-                                  </v-btn>
-                                  <!-- End of the Dislike button-->
-
-                                  <!-- UnDislike button-->
-                                  <v-btn
-                                    @click="undislikePost(post._id)"
-                                    class="mx-2"
-                                    fab
-                                    x-small
-                                    color="red lighten-3"
-                                    ><v-icon>mdi-thumb-down</v-icon>
-                                  </v-btn>
-                                  <!-- End of the UnDislike button-->
-
-                                  <!--Dialog for adding comment-->
-                                  <v-dialog
-                                    width="600px"
-                                    v-model="openedNewCommentDialog"
-                                  >
-                                    <template v-slot:activator="{ on, attrs }">
-                                      <v-btn
-                                        class="mx-2"
-                                        fab
-                                        x-small
-                                        v-bind="attrs"
-                                        v-on="on"
-                                        color="primary"
-                                        ><v-icon>mdi-pencil</v-icon>
-                                      </v-btn>
-                                    </template>
-                                    <v-card>
-                                      <v-card-title>
-                                        Add a new comment to the post
-                                      </v-card-title>
-                                      <v-card-text>
-                                        <!--Field for comments-->
-                                        <v-textarea
-                                          v-model="newCommentContent"
-                                          outlined
-                                          name="input-7-4"
-                                          no-resize
-                                          rows="3"
-                                          label="Comment"
-                                          clearable
-                                          clear-icon="mdi-close-circle"
-                                        ></v-textarea>
-                                        <!--End of field for comments-->
-                                      </v-card-text>
-                                      <v-card-actions>
-                                        <!--Buttons to confirm or cancel action-->
-                                        <v-spacer></v-spacer>
-                                        <v-btn color="error" text>
-                                          Cancel
-                                        </v-btn>
-                                        <v-btn
-                                          color="primary"
-                                          text
-                                          @click="
-                                            createComment(post._id),
-                                              (openedNewCommentDialog = false)
-                                          "
-                                        >
-                                          Confirm
-                                        </v-btn>
-                                      </v-card-actions>
-                                    </v-card>
-                                  </v-dialog>
-                                  <!--End of dialog for adding comments-->
-                                </v-col>
-                              </v-row>
-
-                              <br /><br />
-                              <!--Expansion panels for showing comments-->
-                              <v-expansion-panels>
-                                <v-expansion-panel
-                                  v-for="(item, i) in 1"
-                                  :key="i"
-                                >
-                                  <v-expansion-panel-header>
-                                    Show all comments
-                                  </v-expansion-panel-header>
-                                  <v-expansion-panel-content
-                                    v-for="comment in comments"
-                                    :key="comment.id"
-                                  >
-                                    <h3>{{ comment.creator_ref }}</h3>
-                                    {{ comment.content }}
-                                  </v-expansion-panel-content>
-                                </v-expansion-panel>
-                              </v-expansion-panels>
-                              <!--End of expansion panels-->
-                            </v-card-text>
-                          </v-card>
+                          <postComponent v-if="entirePost" :post="entirePost"></postComponent>
                         </v-dialog>
                         <!--End of dialog for post details-->
 
@@ -1161,237 +1005,7 @@
                         <!--End of dialog for reporting inappropriate content-->
                       </v-card-actions>
                     </v-card>
-                    <!-- End of the image previw -->
-
-                    <!-- Video previw -->
-                    <v-card v-if="post.type == 'video'">
-                      <video
-                        controls
-                        :src="getImageUrl(post)"
-                        class="white--text align-end"
-                        gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                        height="200px"
-                        width="100%"
-                      ></video>
-                      <v-card-actions>
-                        <v-spacer></v-spacer>
-
-                        <!--Dialog for video details-->
-                        <v-dialog width="600px">
-                          <template v-slot:activator="{ on, attrs }">
-                            <v-btn
-                              v-bind="attrs"
-                              v-on="on"
-                              @click="getEntirePost(post._id)"
-                              icon
-                            >
-                              <v-icon right> mdi-plus-circle </v-icon>
-                            </v-btn>
-                          </template>
-                          <!--Card for comments-->
-                          <v-card>
-                            <v-card-title>
-                              <!--List of photos-->
-                              <v-carousel
-                                v-if="entirePost.my_post"
-                                cycle
-                                height="400"
-                                hide-delimiter-background
-                                show-arrows-on-hover
-                              >
-                                <v-carousel-item
-                                  v-for="(slide, i) in entirePost.my_post
-                                    .content"
-                                  :key="i"
-                                >
-                                  <video
-                                    v-if="slide.type == 'video'"
-                                    controls
-                                    :src="getImageUrlByPATH(slide.path)"
-                                    class="white--text align-end"
-                                    gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                                    height="200px"
-                                    width="100%"
-                                  ></video>
-
-                                  <v-img
-                                    v-if="slide.type == 'image'"
-                                    :src="getImageUrlByPATH(slide.path)"
-                                  ></v-img>
-                                </v-carousel-item>
-                              </v-carousel>
-                              <!--End of list of photos-->
-                            </v-card-title>
-                            <v-card-text>
-                              <!-- Likes, dislikes, add comment -->
-                              <v-row>
-                                <v-col>
-                                  <!--The number of likes and comments-->
-                                  <v-icon medium>mdi-heart</v-icon>700
-                                  <v-icon medium right>mdi-comment</v-icon>10
-                                </v-col>
-
-                                <v-col class="text-right mr-5 mb-5">
-                                  <!--Button for likes-->
-                                  <v-btn
-                                    class="mx-2"
-                                    fab
-                                    x-small
-                                    color="primary"
-                                    ><v-icon>mdi-thumb-up</v-icon>
-                                  </v-btn>
-                                  <!--End of button for likes-->
-
-                                  <!--Button for dislikes-->
-                                  <v-btn
-                                    class="mx-2"
-                                    fab
-                                    x-small
-                                    color="primary"
-                                    ><v-icon>mdi-thumb-down</v-icon>
-                                  </v-btn>
-                                  <!--End of button for dislikes-->
-
-                                  <!--Dialog for adding comment-->
-                                  <v-dialog
-                                    width="600px"
-                                    v-model="openedNewCommentDialog"
-                                  >
-                                    <template v-slot:activator="{ on, attrs }">
-                                      <v-btn
-                                        class="mx-2"
-                                        fab
-                                        x-small
-                                        v-bind="attrs"
-                                        v-on="on"
-                                        color="primary"
-                                        ><v-icon>mdi-pencil</v-icon>
-                                      </v-btn>
-                                    </template>
-                                    <v-card>
-                                      <v-card-title>
-                                        Add a new comment to the post
-                                      </v-card-title>
-                                      <v-card-text>
-                                        <!--Field for comments-->
-                                        <v-textarea
-                                          v-model="newCommentContent"
-                                          outlined
-                                          name="input-7-4"
-                                          no-resize
-                                          rows="3"
-                                          label="Comment"
-                                          clearable
-                                          clear-icon="mdi-close-circle"
-                                        ></v-textarea>
-                                        <!--End of field for comments-->
-                                      </v-card-text>
-                                      <v-card-actions>
-                                        <!--Buttons to confirm or cancel action-->
-                                        <v-spacer></v-spacer>
-                                        <v-btn color="error" text>
-                                          Cancel
-                                        </v-btn>
-                                        <v-btn
-                                          color="primary"
-                                          text
-                                          @click="
-                                            createComment(post._id),
-                                              (openedNewCommentDialog = false)
-                                          "
-                                        >
-                                          Confirm
-                                        </v-btn>
-                                      </v-card-actions>
-                                    </v-card>
-                                  </v-dialog>
-                                  <!--End of dialog for adding comments-->
-                                </v-col>
-                              </v-row>
-                              <!-- End of the likes, dislikes, add comment -->
-
-                              <br /><br />
-                              <!--Expansion panels for showing comments-->
-                              <v-expansion-panels>
-                                <v-expansion-panel
-                                  v-for="(item, i) in 1"
-                                  :key="i"
-                                >
-                                  <v-expansion-panel-header>
-                                    Show all comments
-                                  </v-expansion-panel-header>
-                                  <v-expansion-panel-content
-                                    v-for="comment in comments"
-                                    :key="comment.id"
-                                  >
-                                    <h3>{{ comment.username }}</h3>
-                                    {{ comment.description }}
-                                  </v-expansion-panel-content>
-                                </v-expansion-panel>
-                              </v-expansion-panels>
-                              <!--End of expansion panels-->
-                            </v-card-text>
-                          </v-card>
-                        </v-dialog>
-                        <!--End of dialog for video details -->
-
-                        <v-btn @click="addToSaved(post)" icon>
-                          <v-icon>mdi-bookmark</v-icon>
-                        </v-btn>
-
-                        <!--Dialog to report inappropriate content-->
-                        <v-dialog
-                          width="600px"
-                          v-model="openedReportInappropriateContentDialog"
-                        >
-                          <template v-slot:activator="{ on, attrs }">
-                            <v-btn v-bind="attrs" v-on="on" icon>
-                              <v-icon right> mdi-alert-octagon </v-icon>
-                            </v-btn>
-                          </template>
-                          <!-- Dialog content -->
-                          <v-card>
-                            <v-card-title> <br /> </v-card-title>
-                            <v-card-text>
-                              <v-row>
-                                <v-textarea
-                                  v-model="reportInappropriateContent.message"
-                                  outlined
-                                  name="input-7-4"
-                                  no-resize
-                                  label="Add reason why you report this content"
-                                  clearable
-                                  clear-icon="mdi-close-circle"
-                                ></v-textarea>
-                              </v-row>
-                              <v-spacer></v-spacer>
-                              <br />
-                              <v-btn
-                                color="primary"
-                                @click="
-                                  reportInappropriatePost(post),
-                                    (openedReportInappropriateContentDialog = false)
-                                "
-                              >
-                                Confirm
-                              </v-btn>
-
-                              <v-btn
-                                text
-                                @click="
-                                  openedReportInappropriateContentDialog = false
-                                "
-                              >
-                                Close
-                              </v-btn>
-                            </v-card-text>
-                          </v-card>
-                          <!-- End of the dialog content -->
-                        </v-dialog>
-                        <!--End of dialog for reporting inappropriate content-->
-                      </v-card-actions>
-                    </v-card>
-                    <!-- End of the video previw -->
+                    <!-- End of the post previw -->                   
                   </v-col>
                 </v-row>
               </v-container>
@@ -2227,7 +1841,12 @@
 import axios from "axios";
 import { getParsedToken } from "./../../../util/token";
 import { getTodayDateString } from "./../../../util/dateHandler";
+import postComponent from "../../../components/Post.vue";
+
 export default {
+  components: {
+    postComponent,
+  },
   data() {
     return {
       verificationRequests: [],
@@ -2334,7 +1953,7 @@ export default {
       posts: [],
       stories: [],
       newCommentContent: "",
-      entirePost: "",
+      entirePost: null,
       entireStory: null,
       liked: "",
       disliked: "",
@@ -2836,7 +2455,6 @@ export default {
         )
         .then((res) => {
           this.entirePost = res.data;
-          this.comments = this.entirePost.comments;
         });
     },
     getEntireStory(storyID) {
@@ -2854,129 +2472,6 @@ export default {
         )
         .then((res) => {
           this.entireStory = res.data;
-        });
-    },
-    likePost(postID) {
-      // alert('like' + postID);
-      // like post
-      axios
-        .post(
-          process.env.VUE_APP_BACKEND_URL +
-            process.env.VUE_APP_CONTENT_REACTION +
-            postID,
-          {
-            reaction_creator_ref: this.user._id,
-            reaction_type: "like",
-          },
-          {
-            headers: {
-              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
-            },
-          }
-        )
-        .then((res) => {
-          console.log(res);
-        });
-    },
-    dislikePost(postID) {
-      // dislike post
-      axios
-        .post(
-          process.env.VUE_APP_BACKEND_URL +
-            process.env.VUE_APP_CONTENT_REACTION +
-            postID,
-          {
-            reaction_creator_ref: this.user._id,
-            reaction_type: "dislike",
-          },
-          {
-            headers: {
-              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
-            },
-          }
-        )
-        .then((res) => {
-          console.log(res);
-        });
-    },
-    unlikePost(postID) {
-      // unlike post
-      axios
-        .post(
-          process.env.VUE_APP_BACKEND_URL +
-            process.env.VUE_APP_CONTENT_UNREACTION +
-            postID,
-          {
-            reaction_creator_ref: this.user._id,
-            reaction_type: "like",
-          },
-          {
-            headers: {
-              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
-            },
-          }
-        )
-        .then((res) => {
-          console.log(res);
-        });
-    },
-    undislikePost(postID) {
-      // undislike post
-      axios
-        .post(
-          process.env.VUE_APP_BACKEND_URL +
-            process.env.VUE_APP_CONTENT_UNREACTION +
-            postID,
-          {
-            reaction_creator_ref: this.user._id,
-            reaction_type: "dislike",
-          },
-          {
-            headers: {
-              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
-            },
-          }
-        )
-        .then((res) => {
-          console.log(res);
-        });
-    },
-    createComment(postID) {
-      axios
-        .post(
-          process.env.VUE_APP_BACKEND_URL +
-            process.env.VUE_APP_CONTENT_COMMENT +
-            postID,
-          {
-            content: this.newCommentContent,
-            creator_ref: this.user._id,
-          },
-          {
-            headers: {
-              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
-            },
-          }
-        )
-        .then((res) => {
-          console.log(res);
-          this.forceRerender();
-        });
-    },
-    getCommentsForPost(postID) {
-      // get comments
-      axios
-        .get(
-          process.env.VUE_APP_BACKEND_URL +
-            process.env.VUE_APP_CONTENT_COMMENT +
-            postID,
-          {
-            headers: {
-              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
-            },
-          }
-        )
-        .then((res) => {
-          this.comments = res.data;
         });
     },
     saveChanges() {
