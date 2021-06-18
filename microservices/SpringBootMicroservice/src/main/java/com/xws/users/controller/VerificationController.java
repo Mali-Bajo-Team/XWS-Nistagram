@@ -32,9 +32,8 @@ public class VerificationController {
         return new ResponseEntity<>(verificationRequestDTONew, HttpStatus.OK);
     }
 
-    //TODO: Change to the admin role
     @GetMapping
-    @PreAuthorize("hasRole('REGULAR')")
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     public ResponseEntity<List<VerificationRequestDTO>> getAllVerificationRequest(Authentication authentication) {
         UserAccount user = (UserAccount) authentication.getPrincipal();
 
