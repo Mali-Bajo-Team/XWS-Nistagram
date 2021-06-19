@@ -70,6 +70,26 @@ public class RelationshipController {
 
 		return ResponseEntity.noContent().build();
 	}
+
+	@PostMapping("mute/{username}")
+	@PreAuthorize("hasRole('REGULAR')")
+	public ResponseEntity<Void> mute(@PathVariable(required = true) String username, Authentication authentication) {
+		UserAccount user = (UserAccount) authentication.getPrincipal();
+
+		relationshipService.mute(user.getUsername(), username);
+
+		return ResponseEntity.noContent().build();
+	}
+
+	@PostMapping("unmute/{username}")
+	@PreAuthorize("hasRole('REGULAR')")
+	public ResponseEntity<Void> unmute(@PathVariable(required = true) String username, Authentication authentication) {
+		UserAccount user = (UserAccount) authentication.getPrincipal();
+
+		relationshipService.unmute(user.getUsername(), username);
+
+		return ResponseEntity.noContent().build();
+	}
 	
 	@PostMapping("unfollow/{username}")
 	@PreAuthorize("hasRole('REGULAR')")
@@ -128,6 +148,19 @@ public class RelationshipController {
 			return ResponseEntity.ok(RelationshipType.NONE);
 		else 
 			return ResponseEntity.ok(relationship.getRelationshipType());
+	}
+
+	@GetMapping("ismuted/{username}")
+	@PreAuthorize("hasRole('REGULAR')")
+	public ResponseEntity<Boolean> isMuted(@PathVariable(required = true) String username,
+															Authentication authentication) {
+		UserAccount user = (UserAccount) authentication.getPrincipal();
+
+		Relationship relationship = relationshipService.findRelationship(user.getUsername(), username);
+		if (relationship == null)
+			return ResponseEntity.ok(null);
+		else
+			return ResponseEntity.ok(relationship.isMuted());
 	}
 	
 	@GetMapping("close-friends")

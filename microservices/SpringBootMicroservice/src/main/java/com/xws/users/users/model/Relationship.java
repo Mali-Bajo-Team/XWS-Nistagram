@@ -20,6 +20,9 @@ public class Relationship {
 	@Column
 	private RelationshipType relationshipType;
 
+	@Column
+	private boolean isMuted;
+
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	private RegularUser from;
 
@@ -52,6 +55,14 @@ public class Relationship {
 
 	public RegularUser getTowards() {
 		return towards;
+	}
+
+	public boolean isMuted() {
+		return isMuted;
+	}
+
+	public void setMuted(boolean muted) {
+		isMuted = muted;
 	}
 
 	public void setTowards(RegularUser towards) {

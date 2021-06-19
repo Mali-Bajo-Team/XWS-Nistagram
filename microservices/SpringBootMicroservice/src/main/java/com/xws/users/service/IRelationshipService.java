@@ -32,4 +32,8 @@ public interface IRelationshipService {
 	void removeFromCloseFriends(String username, String closeFriendUsername);
 
     void block(String username, String username1);
+
+	void mute(String username, String username1);
+
+	void unmute(String username, String username1);
 }
