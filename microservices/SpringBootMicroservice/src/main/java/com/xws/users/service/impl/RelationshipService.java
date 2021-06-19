@@ -126,6 +126,7 @@ public class RelationshipService implements IRelationshipService {
 						|| existingRelationship.getRelationshipType().equals(RelationshipType.CLOSE_FRIEND)))) {
 			throw new USConflictException("You don't follow the requested user.");
 		}
+		existingRelationship.setMuted(false);
 
 		relationshipRepository.delete(existingRelationship);
 	}
@@ -266,6 +267,49 @@ public class RelationshipService implements IRelationshipService {
 
 		relationshipRepository.save(existingRelationship);
 		relationshipRepository.save(oppositeRelationship);
+	}
+
+	@Override
+	public void mute(String fromUsername, String towardsUsername) {
+		RegularUser from = userRepository.findByUsername(fromUsername);
+		if (from == null)
+			throw new USAuthenticationException("User not found.");
+		RegularUser towards = userRepository.findByUsername(towardsUsername);
+		if (towards == null)
+			throw new USConflictException("User with the requested username does not exist.");
+
+		Relationship existingRelationship = relationshipRepository.findByFromAndTowards(from, towards);
+
+		if (existingRelationship != null
+				&& existingRelationship.getRelationshipType().equals(RelationshipType.FOLLOWED)) {
+			existingRelationship.setMuted(true);
+		}else{
+			throw new USConflictException("You cannot mute the requested user because you have not following them.");
+		}
+
+		relationshipRepository.save(existingRelationship);
+
+	}
+
+	@Override
+	public void unmute(String fromUsername, String towardsUsername) {
+		RegularUser from = userRepository.findByUsername(fromUsername);
+		if (from == null)
+			throw new USAuthenticationException("User not found.");
+		RegularUser towards = userRepository.findByUsername(towardsUsername);
+		if (towards == null)
+			throw new USConflictException("User with the requested username does not exist.");
+
+		Relationship existingRelationship = relationshipRepository.findByFromAndTowards(from, towards);
+
+		if (existingRelationship != null
+				&& existingRelationship.getRelationshipType().equals(RelationshipType.FOLLOWED)) {
+			existingRelationship.setMuted(false);
+		}else{
+			throw new USConflictException("You cannot unmute the requested user because you have not following them.");
+		}
+
+		relationshipRepository.save(existingRelationship);
 	}
 
 }
