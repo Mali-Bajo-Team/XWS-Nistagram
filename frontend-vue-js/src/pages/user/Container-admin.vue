@@ -20,28 +20,7 @@ export default {
     links: [
       {
         title: "Home",
-        to: "/"
-      },
-      {
-        title: "My profile",
-        to: "/profile",
-      },
-      {
-        title: "Search",
-        children: [
-          {
-            title: "Users",
-            to: "/usersearch"
-          },
-          {
-            title: "Hashtags",
-            to: "/hashtagsearch"
-          },
-          {
-            title: "Locations",
-            to: "/locationsearch"
-          }
-        ],
+        to: "/admin"
       }
     ],
   }),

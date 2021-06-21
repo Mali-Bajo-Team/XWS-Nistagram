@@ -1,6 +1,6 @@
 <template>
   <v-app style="background: rgba(0,0,0,0);">
-    <navbar v-bind:items="links" v-bind:logout="true"></navbar>
+    <navbar v-bind:items="links" :logout="false"></navbar>
     <v-main>
       <v-container fluid>
         <router-view></router-view>
@@ -19,27 +19,27 @@ export default {
   data: () => ({
     links: [
       {
-        title: "Home",
-        to: "/"
+        title: "Log in",
+        to: "/guest/login",
       },
       {
-        title: "My profile",
-        to: "/profile",
+        title: "Register",
+        to: "/guest/register",
       },
       {
         title: "Search",
         children: [
           {
             title: "Users",
-            to: "/usersearch"
+            to: "/guest/usersearch"
           },
           {
             title: "Hashtags",
-            to: "/hashtagsearch"
+            to: "/guest/hashtagsearch"
           },
           {
             title: "Locations",
-            to: "/locationsearch"
+            to: "/guest/locationsearch"
           }
         ],
       }
