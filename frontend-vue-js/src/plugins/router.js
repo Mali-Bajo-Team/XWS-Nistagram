@@ -79,22 +79,22 @@ const routes = [
             },
             {
                 component:UserSearch,
-                name:'usersearch',
+                name:'gusersearch',
                 path:'usersearch'
             },
             {
                 component:HashtagSearch,
-                name:'hashtagsearch',
+                name:'ghashtagsearch',
                 path:'hashtagsearch'
             },
             {
                 component:LocationSearch,
-                name:'locationsearch',
+                name:'glocationsearch',
                 path:'locationsearch'
             },
             {
                 component: OtherProfile,
-                name: 'userProfile',
+                name: 'guserProfile',
                 path: 'user/:username',
                 props: true
             }
@@ -110,7 +110,7 @@ const routes = [
         children: [
             {
                 component: UserLanding,
-                name: 'user',
+                name: 'admin',
                 path: ''
             }
         ]

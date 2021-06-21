@@ -42,7 +42,7 @@
           <v-icon medium right>mdi-comment</v-icon>{{ commentCount }}
         </v-col>
 
-        <v-col class="text-right mr-5">
+        <v-col class="text-right">
           <!-- Like button-->
           <v-tooltip bottom v-if="!liked && !disliked && loggedIn">
             <template v-slot:activator="{ on, attrs }">
@@ -166,11 +166,66 @@
             </v-card>
           </v-dialog>
           <!--End of dialog for adding comments-->
-        </v-col>
-      </v-row>
 
-      <v-row>
-        <v-col> </v-col>
+          <!--Dialog to report inappropriate content-->
+          <v-dialog
+            width="600px"
+            v-model="openedReportInappropriateContentDialog"
+          >
+            <template v-slot:activator="{ on: dialog }">
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on: tooltip }">
+                  <v-btn
+                    class="mx-2"
+                    fab
+                    x-small
+                    v-on="{ ...dialog, ...tooltip }"
+                    color="error"
+                    v-if="loggedIn"
+                    ><v-icon>mdi-alert-octagon</v-icon>
+                  </v-btn>
+                </template>
+                <span>Report as inappropriate</span>
+              </v-tooltip>
+            </template>
+            <!-- Dialog content -->
+            <v-card>
+              <v-card-title> <br /> </v-card-title>
+              <v-card-text>
+                <v-row>
+                  <v-textarea
+                    v-model="reportInappropriateContent.message"
+                    outlined
+                    name="input-7-4"
+                    no-resize
+                    label="Reason for report"
+                    clearable
+                    clear-icon="mdi-close-circle"
+                  ></v-textarea>
+                </v-row>
+                <v-spacer></v-spacer>
+                <br />
+                <v-btn
+                  color="primary"
+                  @click="
+                    reportInappropriatePost(post),
+                      (openedReportInappropriateContentDialog = false)
+                  "
+                >
+                  Confirm
+                </v-btn>
+                <v-btn
+                  text
+                  @click="openedReportInappropriateContentDialog = false"
+                >
+                  Close
+                </v-btn>
+              </v-card-text>
+            </v-card>
+            <!-- End of the dialog content -->
+          </v-dialog>
+          <!--End of dialog for reporting inappropriate content-->
+        </v-col>
       </v-row>
 
       <!--Expansion panels for showing comments-->
@@ -199,6 +254,7 @@
 
 <script>
 import { getToken, getParsedToken } from "../util/token";
+import { getTodayDateString } from "../util/dateHandler";
 
 export default {
   props: {
@@ -218,7 +274,18 @@ export default {
       openedNewCommentDialog: null,
       newCommentContent: "",
       user: null,
-      comments: []
+      comments: [],
+      openedReportInappropriateContentDialog: false,
+      reportInappropriateContent: {
+        story_id: "",
+        story_creator_id: "",
+        story_reporter_id: "",
+        post_id: "",
+        post_creator_id: "",
+        post_reporter_id: "",
+        time_stamp: "",
+        message: "",
+      },
     };
   },
   mounted() {
@@ -243,8 +310,7 @@ export default {
           this.user = res.data;
         });
 
-        if (this.post.comments)
-          this.comments = this.post.comments
+      if (this.post.comments) this.comments = this.post.comments;
     }
   },
   computed: {
@@ -389,6 +455,31 @@ export default {
         })
         .catch(() => {
           this.snackbarText = "Adding comment failed.";
+          this.snackbar = true;
+        });
+    },
+    reportInappropriatePost(post) {
+      this.reportInappropriateContent.post_id = post._id;
+      this.reportInappropriateContent.post_reporter_id = this.user._id;
+      this.reportInappropriateContent.time_stamp = getTodayDateString();
+
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_INAPPROPRIATE_POST,
+          this.reportInappropriateContent,
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then(() => {
+          this.snackbarText = "Sucessfully reported post as inappropriate.";
+          this.snackbar = true;
+        })
+        .catch(() => {
+          this.snackbarText = "Report failed.";
           this.snackbar = true;
         });
     },
