@@ -20,16 +20,12 @@
           <div class="font-weight-medium text-justify">
             {{ user.bio }}
           </div>
-          <div class="font-weight-medium text-justify">
-            <p class="ml-5" v-if="user.isPrivate == true">Profile is private</p>
-            <p class="ml-5" v-if="user.isPrivate == false">Profile is public</p>
-          </div>
         </v-col>
         <!--End of the first column-->
 
         <!--Column for the number of posts-->
         <v-col class="pa-4 mt-2">
-          <h3>250</h3>
+          <h3>{{ posts.length }}</h3>
           Posts
         </v-col>
         <!--End of the number of posts-->
@@ -86,7 +82,7 @@
             @click="block"
           >
             <v-icon left> mdi-alert </v-icon>
-            block
+            Block
           </v-btn>
 
           <v-btn
@@ -99,10 +95,10 @@
             @click="mute"
           >
             <v-icon left> mdi-access-point-remove </v-icon>
-            mute
+            Mute
           </v-btn>
 
-           <v-btn
+          <v-btn
             class="ml-5"
             outlined
             rounded
@@ -112,10 +108,8 @@
             @click="unmute"
           >
             <v-icon left> mdi-access-point-remove </v-icon>
-            unmute
+            Unmute
           </v-btn>
-
-          <v-col class="pa-4 mt-2" v-if="isBlocked"> USER IS BLOCKED!! </v-col>
         </v-col>
         <!--End of the column for edit profile button-->
       </v-row>
@@ -127,7 +121,6 @@
           <v-tab>Posts<v-icon>mdi-camera</v-icon></v-tab>
           <v-tab>Stories<v-icon>mdi-camera-iris</v-icon></v-tab>
           <v-tab>Highlights<v-icon>mdi-star-circle-outline</v-icon></v-tab>
-          <v-tab>Tagged<v-icon>mdi-tag</v-icon></v-tab>
         </v-tabs>
         <v-tabs-items v-model="tabs2">
           <!--Tab for photos and videos-->
@@ -135,148 +128,19 @@
             <v-card class="mx-auto" max-width="500">
               <v-container fluid>
                 <v-row dense>
-                  <v-col
-                    v-for="post in posts"
-                    :key="post.post_id"
-                    :cols="post.flex"
-                  >
-                    <!-- Image previw -->
-                    <v-card v-if="post.type == 'image'">
+                  <v-col v-for="post in posts" :key="post._id" cols="6">
+                    <!-- Post previw -->
+                    <v-card>
                       <v-img
+                        v-if="post.type == 'image'"
                         :src="getImageUrl(post)"
                         class="white--text align-end"
                         gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                         height="200px"
                       >
                       </v-img>
-                      <v-card-actions>
-                        <v-spacer></v-spacer>
-
-                        <!--Dialog for choosing photo-->
-                        <v-dialog width="600px">
-                          <template v-slot:activator="{ on, attrs }">
-                            <v-btn v-bind="attrs" v-on="on" icon>
-                              <v-icon right> mdi-plus-circle </v-icon>
-                            </v-btn>
-                          </template>
-                          <!--Card for comments-->
-                          <v-card>
-                            <v-card-title>
-                              <v-img
-                                lazy-src="https://picsum.photos/id/11/10/6"
-                                src="https://picsum.photos/id/11/500/300"
-                              ></v-img>
-                            </v-card-title>
-                            <v-card-text>
-                              <v-row>
-                                <v-col>
-                                  <!--The number of likes and comments-->
-                                  <v-icon medium>mdi-heart</v-icon>700
-                                  <v-icon medium right>mdi-comment</v-icon>10
-                                </v-col>
-
-                                <v-col class="text-right mr-5 mb-5">
-                                  <!--Button for likes-->
-                                  <v-btn
-                                    class="mx-2"
-                                    fab
-                                    x-small
-                                    color="primary"
-                                    ><v-icon>mdi-thumb-up</v-icon>
-                                  </v-btn>
-                                  <!--End of button for likes-->
-
-                                  <!--Button for dislikes-->
-                                  <v-btn
-                                    class="mx-2"
-                                    fab
-                                    x-small
-                                    color="primary"
-                                    ><v-icon>mdi-thumb-down</v-icon>
-                                  </v-btn>
-                                  <!--End of button for dislikes-->
-
-                                  <!--Dialog for adding comment-->
-                                  <v-dialog width="600px">
-                                    <template v-slot:activator="{ on, attrs }">
-                                      <v-btn
-                                        class="mx-2"
-                                        fab
-                                        x-small
-                                        v-bind="attrs"
-                                        v-on="on"
-                                        color="primary"
-                                        ><v-icon>mdi-pencil</v-icon>
-                                      </v-btn>
-                                    </template>
-                                    <v-card>
-                                      <v-card-title>
-                                        Add a new comment to the post
-                                      </v-card-title>
-                                      <v-card-text>
-                                        <!--Field for comments-->
-                                        <v-textarea
-                                          outlined
-                                          name="input-7-4"
-                                          no-resize
-                                          rows="3"
-                                          label="Comment"
-                                          clearable
-                                          clear-icon="mdi-close-circle"
-                                        ></v-textarea>
-                                        <!--End of field for comments-->
-                                      </v-card-text>
-                                      <v-card-actions>
-                                        <!--Buttons to confirm or cancel action-->
-                                        <v-spacer></v-spacer>
-                                        <v-btn color="error" text>
-                                          Cancel
-                                        </v-btn>
-                                        <v-btn color="primary" text>
-                                          Confirm
-                                        </v-btn>
-                                      </v-card-actions>
-                                    </v-card>
-                                  </v-dialog>
-                                  <!--End of dialog for adding comments-->
-                                </v-col>
-                              </v-row>
-
-                              <br /><br />
-                              <!--Expansion panels for showing comments-->
-                              <v-expansion-panels>
-                                <v-expansion-panel
-                                  v-for="(item, i) in 1"
-                                  :key="i"
-                                >
-                                  <v-expansion-panel-header>
-                                    Show all comments
-                                  </v-expansion-panel-header>
-                                  <v-expansion-panel-content
-                                    v-for="comment in comments"
-                                    :key="comment.id"
-                                  >
-                                    <h3>{{ comment.username }}</h3>
-                                    {{ comment.description }}
-                                  </v-expansion-panel-content>
-                                </v-expansion-panel>
-                              </v-expansion-panels>
-                              <!--End of expansion panels-->
-                            </v-card-text>
-                          </v-card>
-                        </v-dialog>
-                        <!--End of dialog for choosing photo-->
-
-                        <v-btn icon>
-                          <v-icon>mdi-bookmark</v-icon>
-                        </v-btn>
-                      </v-card-actions>
-                    </v-card>
-                    <!-- End of the image previw -->
-
-                    <!-- Video previw -->
-                    <v-card v-if="post.type == 'video'">
                       <video
+                        v-if="post.type == 'video'"
                         controls
                         :src="getImageUrl(post)"
                         class="white--text align-end"
@@ -287,127 +151,31 @@
                       <v-card-actions>
                         <v-spacer></v-spacer>
 
-                        <!--Dialog for choosing photo-->
+                        <!--Dialog for post details-->
                         <v-dialog width="600px">
                           <template v-slot:activator="{ on, attrs }">
-                            <v-btn v-bind="attrs" v-on="on" icon>
+                            <v-btn
+                              v-bind="attrs"
+                              v-on="on"
+                              @click="getEntirePost(post._id)"
+                              icon
+                            >
                               <v-icon right> mdi-plus-circle </v-icon>
                             </v-btn>
                           </template>
-                          <!--Card for comments-->
-                          <v-card>
-                            <v-card-title>
-                              <v-img
-                                lazy-src="https://picsum.photos/id/11/10/6"
-                                src="https://picsum.photos/id/11/500/300"
-                              ></v-img>
-                            </v-card-title>
-                            <v-card-text>
-                              <v-row>
-                                <v-col>
-                                  <!--The number of likes and comments-->
-                                  <v-icon medium>mdi-heart</v-icon>700
-                                  <v-icon medium right>mdi-comment</v-icon>10
-                                </v-col>
-
-                                <v-col class="text-right mr-5 mb-5">
-                                  <!--Button for likes-->
-                                  <v-btn
-                                    class="mx-2"
-                                    fab
-                                    x-small
-                                    color="primary"
-                                    ><v-icon>mdi-thumb-up</v-icon>
-                                  </v-btn>
-                                  <!--End of button for likes-->
-
-                                  <!--Button for dislikes-->
-                                  <v-btn
-                                    class="mx-2"
-                                    fab
-                                    x-small
-                                    color="primary"
-                                    ><v-icon>mdi-thumb-down</v-icon>
-                                  </v-btn>
-                                  <!--End of button for dislikes-->
-
-                                  <!--Dialog for adding comment-->
-                                  <v-dialog width="600px">
-                                    <template v-slot:activator="{ on, attrs }">
-                                      <v-btn
-                                        class="mx-2"
-                                        fab
-                                        x-small
-                                        v-bind="attrs"
-                                        v-on="on"
-                                        color="primary"
-                                        ><v-icon>mdi-pencil</v-icon>
-                                      </v-btn>
-                                    </template>
-                                    <v-card>
-                                      <v-card-title>
-                                        Add a new comment to the post
-                                      </v-card-title>
-                                      <v-card-text>
-                                        <!--Field for comments-->
-                                        <v-textarea
-                                          outlined
-                                          name="input-7-4"
-                                          no-resize
-                                          rows="3"
-                                          label="Comment"
-                                          clearable
-                                          clear-icon="mdi-close-circle"
-                                        ></v-textarea>
-                                        <!--End of field for comments-->
-                                      </v-card-text>
-                                      <v-card-actions>
-                                        <!--Buttons to confirm or cancel action-->
-                                        <v-spacer></v-spacer>
-                                        <v-btn color="error" text>
-                                          Cancel
-                                        </v-btn>
-                                        <v-btn color="primary" text>
-                                          Confirm
-                                        </v-btn>
-                                      </v-card-actions>
-                                    </v-card>
-                                  </v-dialog>
-                                  <!--End of dialog for adding comments-->
-                                </v-col>
-                              </v-row>
-
-                              <br /><br />
-                              <!--Expansion panels for showing comments-->
-                              <v-expansion-panels>
-                                <v-expansion-panel
-                                  v-for="(item, i) in 1"
-                                  :key="i"
-                                >
-                                  <v-expansion-panel-header>
-                                    Show all comments
-                                  </v-expansion-panel-header>
-                                  <v-expansion-panel-content
-                                    v-for="comment in comments"
-                                    :key="comment.id"
-                                  >
-                                    <h3>{{ comment.username }}</h3>
-                                    {{ comment.description }}
-                                  </v-expansion-panel-content>
-                                </v-expansion-panel>
-                              </v-expansion-panels>
-                              <!--End of expansion panels-->
-                            </v-card-text>
-                          </v-card>
+                          <postComponent
+                            v-if="entirePost"
+                            :post="entirePost"
+                          ></postComponent>
                         </v-dialog>
-                        <!--End of dialog for choosing photo-->
+                        <!--End of dialog for post details-->
 
-                        <v-btn icon>
+                        <v-btn v-if="loggedIn" @click="addToSaved(post)" icon>
                           <v-icon>mdi-bookmark</v-icon>
                         </v-btn>
                       </v-card-actions>
                     </v-card>
-                    <!-- End of the video previw -->
+                    <!-- End of the post previw -->
                   </v-col>
                 </v-row>
               </v-container>
@@ -420,35 +188,21 @@
             <v-card class="mx-auto" max-width="500">
               <v-container fluid>
                 <v-row dense>
-                  <v-col
-                    v-for="story in stories"
-                    :key="story.post_id"
-                    :cols="story.flex"
-                  >
-                    <!-- Image previw -->
-                    <v-card v-if="story.type == 'image'">
+                  <v-col v-for="story in stories" :key="story.post_id" cols="6">
+                    <!-- Story previw -->
+                    <v-card>
                       <v-img
+                        v-if="story.type == 'image'"
                         :src="getImageUrl(story)"
                         class="white--text align-end"
                         gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                         height="200px"
                       >
                       </v-img>
-                      <v-card-actions>
-                        <v-spacer></v-spacer>
-
-                        <v-btn icon>
-                          <v-icon>mdi-share-variant</v-icon>
-                        </v-btn>
-                      </v-card-actions>
-                    </v-card>
-                    <!-- End of the image previw -->
-
-                    <!-- Video previw -->
-                    <v-card v-if="story.type == 'video'">
                       <video
+                        v-if="story.type == 'video'"
                         controls
-                        :src="getImageUrl(story)"
+                        :src="getImageUrl(post)"
                         class="white--text align-end"
                         gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                         height="200px"
@@ -457,12 +211,27 @@
                       <v-card-actions>
                         <v-spacer></v-spacer>
 
-                        <v-btn icon>
-                          <v-icon>mdi-share-variant</v-icon>
-                        </v-btn>
+                        <!--Dialog for story details-->
+                        <v-dialog width="600px">
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                              v-bind="attrs"
+                              v-on="on"
+                              @click="getEntireStory(story._id)"
+                              icon
+                            >
+                              <v-icon right> mdi-plus-circle </v-icon>
+                            </v-btn>
+                          </template>
+                          <storyComponent
+                            v-if="entireStory"
+                            :post="entireStory"
+                          ></storyComponent>
+                        </v-dialog>
+                        <!--End of dialog for story details-->
                       </v-card-actions>
                     </v-card>
-                    <!-- End of the video previw -->
+                    <!-- End of the story previw -->
                   </v-col>
                 </v-row>
               </v-container>
@@ -551,10 +320,6 @@
             </v-card>
           </v-tab-item>
           <!--End of tab for highlights-->
-
-          <!--Tab for tagged-->
-          <v-tab-item> TAGGED </v-tab-item>
-          <!--End of tab for tagged-->
         </v-tabs-items>
       </v-row>
       <!-- End of posts, stories, saved, tagged -->
@@ -576,14 +341,22 @@
 
 <script>
 import { getToken, getUsernameFromToken } from "./../../../util/token";
+import postComponent from "../../../components/Post.vue";
+import storyComponent from "../../../components/Story.vue";
 
 export default {
+  components: {
+    postComponent,
+    storyComponent,
+  },
   props: {
     username: {
       required: true,
     },
   },
   data: () => ({
+    entirePost: null,
+    entireStory: null,
     slides: ["First", "Second", "Third", "Fourth", "Fifth"],
     colors: [
       "indigo",
@@ -599,7 +372,7 @@ export default {
     myusername: "",
     followed: true,
     isBlocked: false,
-    isMuted: null,
+    isMuted: false,
     user: {},
     posts: [],
     stories: [],
@@ -621,6 +394,62 @@ export default {
         if (this.username === this.myusername) {
           this.$router.push("/profile");
         }
+
+        this.axios
+          .get(
+            process.env.VUE_APP_BACKEND_URL +
+              process.env.VUE_APP_ISMUTED_ENDPOINT +
+              this.username,
+            {
+              headers: {
+                Authorization: "Bearer " + getToken(),
+              },
+            }
+          )
+          .then((response) => {
+            if (response.data === true) this.isMuted = true;
+            else if (response.data === false) this.isMuted = false;
+            else this.isMuted = null;
+          })
+          .catch((error) => {
+            if (
+              error.response &&
+              error.response.data &&
+              error.response.data.message
+            )
+              this.snackbarText = error.response.data.message;
+            else if (error.message) this.snackbarText = error.message;
+            else this.snackbarText = "An unknown error has occured.";
+            this.snackbar = true;
+          });
+
+        this.axios
+          .get(
+            process.env.VUE_APP_BACKEND_URL +
+              process.env.VUE_APP_RELATIONSHIP_ENDPOINT +
+              this.username,
+            {
+              headers: {
+                Authorization: "Bearer " + getToken(),
+              },
+            }
+          )
+          .then((response) => {
+            if (response.data === "BLOCKED") this.isBlocked = true;
+            else if (response.data === "NONE") this.followed = false;
+            else this.followed = true;
+          })
+          .catch((error) => {
+            if (
+              error.response &&
+              error.response.data &&
+              error.response.data.message
+            )
+              this.snackbarText = error.response.data.message;
+            else if (error.message) this.snackbarText = error.message;
+            else this.snackbarText = "An unknown error has occured.";
+            this.snackbar = true;
+          });
       }
 
       this.axios
@@ -653,63 +482,6 @@ export default {
           this.snackbar = true;
         });
 
-      this.axios
-        .get(
-          process.env.VUE_APP_BACKEND_URL +
-            process.env.VUE_APP_ISMUTED_ENDPOINT +
-            this.username,
-          {
-            headers: {
-              Authorization: "Bearer " + getToken(),
-            },
-          }
-        )
-        .then((response) => {
-          if (response.data === true) this.isMuted = true;
-          else if (response.data === false) this.isMuted = false;
-          else this.isMuted = null;
-        })
-        .catch((error) => {
-          if (
-            error.response &&
-            error.response.data &&
-            error.response.data.message
-          )
-            this.snackbarText = error.response.data.message;
-          else if (error.message) this.snackbarText = error.message;
-          else this.snackbarText = "An unknown error has occured.";
-          this.snackbar = true;
-        });
-
-
-      this.axios
-        .get(
-          process.env.VUE_APP_BACKEND_URL +
-            process.env.VUE_APP_RELATIONSHIP_ENDPOINT +
-            this.username,
-          {
-            headers: {
-              Authorization: "Bearer " + getToken(),
-            },
-          }
-        )
-        .then((response) => {
-          if (response.data === "BLOCKED") this.isBlocked = true;
-          else if (response.data === "NONE") this.followed = false;
-          else this.followed = true;
-        })
-        .catch((error) => {
-          if (
-            error.response &&
-            error.response.data &&
-            error.response.data.message
-          )
-            this.snackbarText = error.response.data.message;
-          else if (error.message) this.snackbarText = error.message;
-          else this.snackbarText = "An unknown error has occured.";
-          this.snackbar = true;
-        });
-
       if (!this.user.isPrivate) {
         this.axios
           .get(
@@ -725,8 +497,7 @@ export default {
                 this.posts.push({
                   _id: post.post_id,
                   path: post.first_content.path,
-                  type: post.first_content.type,
-                  flex: 6,
+                  type: post.first_content.type
                 });
               });
             }
@@ -735,10 +506,9 @@ export default {
               this.stories = [];
               res.data.stories.forEach((story) => {
                 this.stories.push({
-                  _id: story.post_id,
+                  _id: story.story_id,
                   path: story.first_content.path,
-                  type: story.first_content.type,
-                  flex: 6,
+                  type: story.first_content.type
                 });
               });
             }
@@ -890,6 +660,61 @@ export default {
           else if (error.message) this.snackbarText = error.message;
           else this.snackbarText = "An unknown error has occured.";
           this.snackbar = true;
+        });
+    },
+    getEntirePost(postID) {
+      // get entire post
+      this.axios
+        .get(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_PUBLIC_POST +
+            postID
+        )
+        .then((res) => {
+          this.entirePost = res.data;
+        });
+    },
+    getEntireStory(storyID) {
+      // get entire post
+      this.axios
+        .get(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_PUBLIC_STORY +
+            storyID
+        )
+        .then((res) => {
+          this.entireStory = res.data;
+        });
+    },
+    addToSaved(post) {
+      this.axios
+        .post(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_USER_SAVED +
+            this.user._id,
+          {
+            _id: post._id,
+            my_post: {
+              content: [
+                {
+                  path: post.path,
+                  type: post.type,
+                },
+              ],
+            },
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+          this.forceRerender();
+        })
+        .catch((error) => {
+          console.log(error);
         });
     },
   },

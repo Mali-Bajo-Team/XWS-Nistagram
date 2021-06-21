@@ -913,7 +913,7 @@
                   <v-col
                     v-for="post in posts"
                     :key="post._id"
-                    :cols="post.flex"
+                    cols="6"
                   >
                     <!-- Post previw -->
                     <v-card>
@@ -959,56 +959,6 @@
                         <v-btn @click="addToSaved(post)" icon>
                           <v-icon>mdi-bookmark</v-icon>
                         </v-btn>
-
-                        <!--Dialog to report inappropriate content-->
-                        <v-dialog
-                          width="600px"
-                          v-model="openedReportInappropriateContentDialog"
-                        >
-                          <template v-slot:activator="{ on, attrs }">
-                            <v-btn v-bind="attrs" v-on="on" icon>
-                              <v-icon right> mdi-alert-octagon </v-icon>
-                            </v-btn>
-                          </template>
-                          <!-- Dialog content -->
-                          <v-card>
-                            <v-card-title> <br /> </v-card-title>
-                            <v-card-text>
-                              <v-row>
-                                <v-textarea
-                                  v-model="reportInappropriateContent.message"
-                                  outlined
-                                  name="input-7-4"
-                                  no-resize
-                                  label="Add reason why you report this content"
-                                  clearable
-                                  clear-icon="mdi-close-circle"
-                                ></v-textarea>
-                              </v-row>
-                              <v-spacer></v-spacer>
-                              <br />
-                              <v-btn
-                                color="primary"
-                                @click="
-                                  reportInappropriatePost(post),
-                                    (openedReportInappropriateContentDialog = false)
-                                "
-                              >
-                                Confirm
-                              </v-btn>
-                              <v-btn
-                                text
-                                @click="
-                                  openedReportInappropriateContentDialog = false
-                                "
-                              >
-                                Close
-                              </v-btn>
-                            </v-card-text>
-                          </v-card>
-                          <!-- End of the dialog content -->
-                        </v-dialog>
-                        <!--End of dialog for reporting inappropriate content-->
                       </v-card-actions>
                     </v-card>
                     <!-- End of the post previw -->
@@ -1027,132 +977,22 @@
                   <v-col
                     v-for="story in stories"
                     :key="story.post_id"
-                    :cols="story.flex"
+                    cols="6"
                   >
-                    <!-- Image previw -->
-                    <v-card v-if="story.type == 'image'">
+                    <!-- Story previw -->
+                    <v-card>
                       <v-img
+                        v-if="story.type == 'image'"
                         :src="getImageUrl(story)"
                         class="white--text align-end"
                         gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                         height="200px"
                       >
                       </v-img>
-                      <v-card-actions>
-                        <v-spacer></v-spacer>
-
-                        <!--Dialog for story details-->
-                        <v-dialog width="600px">
-                          <template v-slot:activator="{ on, attrs }">
-                            <v-btn
-                              v-bind="attrs"
-                              v-on="on"
-                              @click="getEntireStory(story._id)"
-                              icon
-                            >
-                              <v-icon right> mdi-plus-circle </v-icon>
-                            </v-btn>
-                          </template>
-
-                          <v-card v-if="entireStory">
-                            <v-card-title>
-                              <!--List of photos-->
-                              <v-carousel
-                                v-if="entireStory.my_post"
-                                cycle
-                                height="400"
-                                hide-delimiter-background
-                                show-arrows-on-hover
-                              >
-                                <v-carousel-item
-                                  v-for="(slide, i) in entireStory.my_post
-                                    .content"
-                                  :key="i"
-                                >
-                                  <video
-                                    v-if="slide.type == 'video'"
-                                    controls
-                                    :src="getImageUrlByPATH(slide.path)"
-                                    class="white--text align-end"
-                                    gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                                    height="200px"
-                                    width="100%"
-                                  ></video>
-
-                                  <v-img
-                                    v-if="slide"
-                                    :src="getImageUrlByPATH(slide.path)"
-                                  ></v-img>
-                                </v-carousel-item>
-                              </v-carousel>
-                              <!--End of list of photos-->
-                            </v-card-title>
-                          </v-card>
-                        </v-dialog>
-                        <!--End of dialog for story details-->
-
-                        <v-btn icon>
-                          <v-icon>mdi-share-variant</v-icon>
-                        </v-btn>
-
-                        <!--Dialog to report inappropriate content-->
-                        <v-dialog
-                          width="600px"
-                          v-model="openedReportInappropriateContentDialog"
-                        >
-                          <template v-slot:activator="{ on, attrs }">
-                            <v-btn v-bind="attrs" v-on="on" icon>
-                              <v-icon right> mdi-alert-octagon </v-icon>
-                            </v-btn>
-                          </template>
-                          <!-- Dialog content -->
-                          <v-card>
-                            <v-card-title> <br /> </v-card-title>
-                            <v-card-text>
-                              <v-row>
-                                <v-textarea
-                                  v-model="reportInappropriateContent.message"
-                                  outlined
-                                  name="input-7-4"
-                                  no-resize
-                                  label="Add reason why you report this content"
-                                  clearable
-                                  clear-icon="mdi-close-circle"
-                                ></v-textarea>
-                              </v-row>
-                              <v-spacer></v-spacer>
-                              <br />
-                              <v-btn
-                                color="primary"
-                                @click="
-                                  reportInappropriateStory(story),
-                                    (openedReportInappropriateContentDialog = false)
-                                "
-                              >
-                                Confirm
-                              </v-btn>
-                              <v-btn
-                                text
-                                @click="
-                                  openedReportInappropriateContentDialog = false
-                                "
-                              >
-                                Close
-                              </v-btn>
-                            </v-card-text>
-                          </v-card>
-                          <!-- End of the dialog content -->
-                        </v-dialog>
-                        <!--End of dialog for reporting inappropriate content-->
-                      </v-card-actions>
-                    </v-card>
-                    <!-- End of the image previw -->
-
-                    <!-- Video previw -->
-                    <v-card v-if="story.type == 'video'">
                       <video
+                        v-if="story.type == 'video'"
                         controls
-                        :src="getImageUrl(story)"
+                        :src="getImageUrl(post)"
                         class="white--text align-end"
                         gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                         height="200px"
@@ -1173,100 +1013,15 @@
                               <v-icon right> mdi-plus-circle </v-icon>
                             </v-btn>
                           </template>
-
-                          <v-card v-if="entireStory">
-                            <v-card-title>
-                              <!--List of photos-->
-                              <v-carousel
-                                v-if="entireStory.my_post"
-                                cycle
-                                height="400"
-                                hide-delimiter-background
-                                show-arrows-on-hover
-                              >
-                                <v-carousel-item
-                                  v-for="(slide, i) in entireStory.my_post
-                                    .content"
-                                  :key="i"
-                                >
-                                  <video
-                                    v-if="slide.type == 'video'"
-                                    controls
-                                    :src="getImageUrlByPATH(slide.path)"
-                                    class="white--text align-end"
-                                    gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                                    height="200px"
-                                    width="100%"
-                                  ></video>
-
-                                  <v-img
-                                    v-if="slide"
-                                    :src="getImageUrlByPATH(slide.path)"
-                                  ></v-img>
-                                </v-carousel-item>
-                              </v-carousel>
-                              <!--End of list of photos-->
-                            </v-card-title>
-                          </v-card>
+                          <storyComponent
+                            v-if="entireStory"
+                            :post="entireStory"
+                          ></storyComponent>
                         </v-dialog>
                         <!--End of dialog for story details-->
-
-                        <v-btn icon>
-                          <v-icon>mdi-share-variant</v-icon>
-                        </v-btn>
-
-                        <!--Dialog to report inappropriate content-->
-                        <v-dialog
-                          width="600px"
-                          v-model="openedReportInappropriateContentDialog"
-                        >
-                          <template v-slot:activator="{ on, attrs }">
-                            <v-btn v-bind="attrs" v-on="on" icon>
-                              <v-icon right> mdi-alert-octagon </v-icon>
-                            </v-btn>
-                          </template>
-                          <!-- Dialog content -->
-                          <v-card>
-                            <v-card-title> <br /> </v-card-title>
-                            <v-card-text>
-                              <v-row>
-                                <v-textarea
-                                  v-model="reportInappropriateContent.message"
-                                  outlined
-                                  name="input-7-4"
-                                  no-resize
-                                  label="Add reason why you report this content"
-                                  clearable
-                                  clear-icon="mdi-close-circle"
-                                ></v-textarea>
-                              </v-row>
-                              <v-spacer></v-spacer>
-                              <br />
-                              <v-btn
-                                color="primary"
-                                @click="
-                                  reportInappropriateStory(story),
-                                    (openedReportInappropriateContentDialog = false)
-                                "
-                              >
-                                Confirm
-                              </v-btn>
-                              <v-btn
-                                text
-                                @click="
-                                  openedReportInappropriateContentDialog = false
-                                "
-                              >
-                                Close
-                              </v-btn>
-                            </v-card-text>
-                          </v-card>
-                          <!-- End of the dialog content -->
-                        </v-dialog>
-                        <!--End of dialog for reporting inappropriate content-->
                       </v-card-actions>
                     </v-card>
-                    <!-- End of the video previw -->
+                    <!-- End of the story previw -->
                   </v-col>
                 </v-row>
               </v-container>
@@ -1859,24 +1614,25 @@
 <script>
 import axios from "axios";
 import { getParsedToken } from "./../../../util/token";
-import { getTodayDateString } from "./../../../util/dateHandler";
 import postComponent from "../../../components/Post.vue";
+import storyComponent from "../../../components/Story.vue";
 
 export default {
   components: {
     postComponent,
+    storyComponent
   },
   data() {
     return {
       isVerifiedUserVar: false,
       verificationRequests: [],
       userCategories: [
-        "influencer",
-        "sports",
-        "new/media",
-        "business",
-        "brand",
-        "organization",
+        "Influencer",
+        "Sports",
+        "News/Media",
+        "Business",
+        "Brand",
+        "Organization",
       ], // TODO: Make API to get real one categories
       verificationRequest: {
         realName: "",
@@ -1885,35 +1641,12 @@ export default {
         imageOfOfficialDocument: "",
       },
       openedVerificationDialog: false,
-      openedReportInappropriateContentDialog: false,
-      reportInappropriateContent: {
-        story_id: "",
-        story_creator_id: "",
-        story_reporter_id: "",
-        post_id: "",
-        post_creator_id: "",
-        post_reporter_id: "",
-        time_stamp: "",
-        message: "",
-      },
       componentKey: 0,
       forceUpdateKey: {
         dialogForPostDetails: 0,
       },
       followers: [],
       following: [],
-      comments: [
-        {
-          id: 1,
-          description: "Amazing photo!<3 <3 <3",
-          username: "anaperisic12",
-        },
-        {
-          id: 2,
-          description: "WOW!Love this!!!",
-          username: "pipidugacarapa25",
-        },
-      ],
       menu: false,
       colors: [
         "indigo",
@@ -2135,8 +1868,7 @@ export default {
             this.posts.push({
               _id: post.post_id,
               path: post.first_content.path,
-              type: post.first_content.type,
-              flex: 6,
+              type: post.first_content.type
             });
           });
         }
@@ -2148,8 +1880,7 @@ export default {
             this.stories.push({
               _id: story.story_id,
               path: story.first_content.path,
-              type: story.first_content.type,
-              flex: 6,
+              type: story.first_content.type
             });
           });
         }
@@ -2274,64 +2005,6 @@ export default {
         .catch((error) => {
           console.log(error);
         });
-    },
-    reportInappropriatePost(post) {
-      console.log("------------------- report post start ----------------");
-      console.log(post);
-      this.reportInappropriateContent.post_id = post._id;
-      this.reportInappropriateContent.post_reporter_id = this.user._id;
-      this.reportInappropriateContent.time_stamp = getTodayDateString();
-      // TODO: Add post creator id for future faster find of this post (and remove)
-      // this.reportInappropriateContent.post_creator_id = post.creator.id or something similar;
-
-      this.axios
-        .post(
-          process.env.VUE_APP_BACKEND_URL +
-            process.env.VUE_APP_INAPPROPRIATE_POST,
-          this.reportInappropriateContent,
-          {
-            headers: {
-              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
-            },
-          }
-        )
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-
-      console.log("------------------- report post end ----------------");
-    },
-    reportInappropriateStory(post) {
-      console.log("------------------- report story start ----------------");
-      console.log(post);
-      this.reportInappropriateContent.story_id = post._id;
-      this.reportInappropriateContent.story_reporter_id = this.user._id;
-      this.reportInappropriateContent.time_stamp = getTodayDateString();
-      // TODO: Add story creator id for future faster find of this story (and remove)
-      // this.reportInappropriateContent.story_reporter_id = post.creator.id or something similar;
-
-      this.axios
-        .post(
-          process.env.VUE_APP_BACKEND_URL +
-            process.env.VUE_APP_INAPPROPRIATE_STORY,
-          this.reportInappropriateContent,
-          {
-            headers: {
-              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
-            },
-          }
-        )
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-
-      console.log("------------------- report story end ----------------");
     },
     forceRerender() {
       // Posto nisam nasao kako ide re-mount, odradim ovo trenutno
