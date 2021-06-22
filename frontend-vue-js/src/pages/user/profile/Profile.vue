@@ -904,7 +904,6 @@
           <v-tab>Disliked<v-icon>mdi-check-circle</v-icon></v-tab>
           <v-tab>Followers<v-icon>mdi-tag</v-icon></v-tab>
           <v-tab>Following<v-icon>mdi-tag</v-icon></v-tab>
-          <v-tab>Verifications<v-icon>mdi-check-circle</v-icon></v-tab>
         </v-tabs>
         <v-tabs-items v-model="tabs2">
           <!--Tab for photos and videos-->
@@ -1544,78 +1543,7 @@
             </v-card>
           </v-tab-item>
           <!--End of tab for following-->
-
-          <!--Tab for verification requests -->
-          <v-tab-item>
-            <v-card class="mx-auto" max-width="500">
-              <v-container fluid>
-                <v-row dense>
-                  <v-col
-                    v-for="verificationRequest in verificationRequests"
-                    :key="verificationRequest.id"
-                    :cols="12"
-                  >
-                    <!-- Image previw -->
-                    <v-card>
-                      <v-text-field
-                        v-model="verificationRequest.realName"
-                        disabled
-                        label="Solo"
-                        solo
-                      ></v-text-field>
-
-                      <v-text-field
-                        v-model="verificationRequest.realSurname"
-                        disabled
-                        label="Solo"
-                        solo
-                      ></v-text-field>
-
-                      <v-text-field
-                        v-model="verificationRequest.category"
-                        disabled
-                        label="Solo"
-                        solo
-                      ></v-text-field>
-                      <v-img
-                        :src="
-                          getImageUrlByPATH(
-                            verificationRequest.imageOfOfficialDocument
-                          )
-                        "
-                        class="white--text align-end"
-                        gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                        height="200px"
-                      >
-                      </v-img>
-                      <v-card-actions>
-                        <v-spacer></v-spacer>
-
-                        <v-btn
-                          @click="
-                            acceptVerificationRequest(verificationRequest)
-                          "
-                          icon
-                        >
-                          <v-icon>mdi-check-circle</v-icon>
-                        </v-btn>
-                        <v-btn
-                          @click="
-                            rejectVerificationRequest(verificationRequest)
-                          "
-                          icon
-                        >
-                          <v-icon>mdi-delete</v-icon>
-                        </v-btn>
-                      </v-card-actions>
-                    </v-card>
-                    <!-- End of the image previw --></v-col
-                  >
-                </v-row>
-              </v-container>
-            </v-card>
-          </v-tab-item>
-          <!--End of tab for verification requests -->
+          
         </v-tabs-items>
       </v-row>
       <!-- End of posts, highlights, stories, saved, followers, following, verification requests -->
@@ -1731,22 +1659,7 @@ export default {
     };
   },
   computed: {},
-  mounted() {
-    // get all verification requests
-    axios
-      .get(
-        process.env.VUE_APP_BACKEND_URL +
-          process.env.VUE_APP_VERIFICATION_REQUEST,
-        {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
-          },
-        }
-      )
-      .then((res) => {
-        this.verificationRequests = res.data;
-      });
-
+  mounted() {    
     this.axios
       .get(
         process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_FOLLOWER_ENDPOINT,

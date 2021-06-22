@@ -7,7 +7,8 @@ import { getParsedToken, getToken } from '../util/token';
 
 import User from './../pages/user/Container';
 import Guest from './../pages/user/Container-guest';
-import Admin from './../pages/user/Container-admin';
+import Admin from './../pages/admin/Container-admin';
+import Verifications from './../pages/admin/Verifications';
 import UserLanding from './../pages/user/landing/Landing';
 import Login from './../pages/user/login/Login';
 import Registration from './../pages/user/registration/Registration';
@@ -109,9 +110,15 @@ const routes = [
         },
         children: [
             {
-                component: UserLanding,
-                name: 'admin',
-                path: ''
+                component: Verifications,
+                name: 'verifications',
+                path: 'verifications'
+            },
+            {
+                component: OtherProfile,
+                name: 'auserProfile',
+                path: 'user/:username',
+                props: true
             }
         ]
     },
@@ -121,7 +128,7 @@ function getHomePage(role) {
     if (role == 'REGULAR')
         return '/'
     else if (role == 'ADMINISTRATOR')
-        return '/admin'
+        return '/admin/verifications'
     else
         return '/'
 }
