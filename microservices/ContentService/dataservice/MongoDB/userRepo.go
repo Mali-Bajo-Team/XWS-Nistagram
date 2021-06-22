@@ -3,11 +3,12 @@ package MongoDB
 import (
 	"content_service/model"
 	"context"
+	"log"
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"log"
-	"time"
 )
 
 func (postStoreRef *PostStore) UpdateUser(user model.UserUpdate) *mongo.UpdateResult {
@@ -30,6 +31,15 @@ func (postStoreRef *PostStore) CreateUser(user model.User) *mongo.InsertOneResul
 	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	result, _ := collectionUsers.InsertOne(ctx, user)
+
+	mod := mongo.IndexModel{
+		Keys: bson.M{
+			"username": 1,
+		}, Options: nil,
+	}
+
+	collectionUsers.Indexes().CreateOne(context.Background(), mod)
+
 	return result
 }
 
@@ -53,11 +63,6 @@ func (postStoreRef *PostStore) GetUserByUsername(username string) *mongo.SingleR
 
 func (postStoreRef *PostStore) UpdateUserPosts(post model.RegularPost) *mongo.UpdateResult {
 	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
-	// convert id string to ObjectId
-	objectId, err := primitive.ObjectIDFromHex(post.MyPost.PostCreatorRef)
-	if err != nil {
-		log.Println("Invalid id")
-	}
 
 	var userPosts []model.UserPost
 	var userPost model.UserPost
@@ -66,14 +71,14 @@ func (postStoreRef *PostStore) UpdateUserPosts(post model.RegularPost) *mongo.Up
 	userPosts = append(userPosts, userPost)
 
 	update := bson.M{
-		"$addToSet": bson.M{
-			"posts": bson.M{"$each": userPosts},
+		"$push": bson.M{
+			"posts": bson.M{"$each": userPosts, "$position": 0},
 		},
 	}
 
 	result, err := collectionUsers.UpdateOne(
 		context.Background(),
-		bson.M{"_id": objectId},
+		bson.M{"username": post.MyPost.CreatorUsername},
 		update,
 	)
 	if err != nil {

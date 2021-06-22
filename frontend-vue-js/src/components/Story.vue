@@ -10,7 +10,8 @@
       </template>
     </v-snackbar>
 
-    <v-card-title>
+    <v-card-title v-if="post.my_post">
+      {{ post.my_post.creator_username }}
       <!--List of photos and videos-->
       <v-carousel
         v-if="post.my_post"

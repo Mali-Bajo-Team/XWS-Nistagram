@@ -3,9 +3,11 @@ package usecase
 import (
 	"content_service/model"
 	"encoding/json"
+	"net/http"
+	"time"
+
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"net/http"
 )
 
 func InitializePostRouter(router *mux.Router, server *ContentServer) {
@@ -34,6 +36,8 @@ func (contentServerRef *ContentServer) CreatePostEndpoint(response http.Response
 	response.Header().Set("content-type", "application/json")
 	var post model.RegularPost
 	_ = json.NewDecoder(request.Body).Decode(&post)
+	post.MyPost.CreatorUsername = request.Header.Get("user-username")
+	post.MyPost.TimeStamp = time.Now()
 	var documentId = contentServerRef.postStore.CreatePost(post)
 	post.ID = documentId.InsertedID.(primitive.ObjectID)
 	contentServerRef.postStore.UpdateUserPosts(post)
@@ -84,6 +88,7 @@ func (contentServerRef *ContentServer) CreatePostCommentEndpoint(response http.R
 	response.Header().Set("content-type", "application/json")
 	var comment model.Comment
 	_ = json.NewDecoder(request.Body).Decode(&comment)
+	comment.Username = request.Header.Get("user-username")
 	params := mux.Vars(request)
 	contentServerRef.postStore.UpdatePostComments(comment, params["id"])
 	renderJSON(response, comment)
@@ -123,6 +128,8 @@ func (contentServerRef *ContentServer) CreateStoryEndpoint(response http.Respons
 	response.Header().Set("content-type", "application/json")
 	var story model.Story
 	_ = json.NewDecoder(request.Body).Decode(&story)
+	story.MyPost.CreatorUsername = request.Header.Get("user-username")
+	story.MyPost.TimeStamp = time.Now()
 	var documentId = contentServerRef.postStore.CreateStory(story)
 	story.ID = documentId.InsertedID.(primitive.ObjectID)
 	contentServerRef.postStore.UpdateUserStories(story)

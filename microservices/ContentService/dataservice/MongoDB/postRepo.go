@@ -3,13 +3,14 @@ package MongoDB
 import (
 	"content_service/model"
 	"context"
+	"log"
+	"os"
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
-	"os"
-	"time"
 )
 
 type PostStore struct {
@@ -69,7 +70,7 @@ func (postStoreRef *PostStore) GetEntirePost(postID string) model.RegularPost {
 func (postStoreRef *PostStore) GetAllInappropriatePosts() []model.InappropriatePost {
 	collectionInappropriatePosts := postStoreRef.ourClient.Database("content-service-db").Collection("inappropriatePosts")
 
-	cursor,err := collectionInappropriatePosts.Find(
+	cursor, err := collectionInappropriatePosts.Find(
 		context.Background(),
 		bson.M{},
 	)
@@ -79,21 +80,20 @@ func (postStoreRef *PostStore) GetAllInappropriatePosts() []model.InappropriateP
 	}
 	defer cursor.Next(context.Background())
 	var inappropriatePosts []model.InappropriatePost
-	for cursor.Next(context.Background()){
+	for cursor.Next(context.Background()) {
 		var inappropriatePost model.InappropriatePost
-		if err = cursor.Decode(&inappropriatePost); err != nil{
+		if err = cursor.Decode(&inappropriatePost); err != nil {
 			log.Fatal(err)
 		}
 		inappropriatePosts = append(inappropriatePosts, inappropriatePost)
 	}
-
 
 	return inappropriatePosts
 }
 func (postStoreRef *PostStore) GetAllInappropriateStories() []model.InappropriateStory {
 	collectionInappropriateStories := postStoreRef.ourClient.Database("content-service-db").Collection("inappropriateStories")
 
-	cursor,err := collectionInappropriateStories.Find(
+	cursor, err := collectionInappropriateStories.Find(
 		context.Background(),
 		bson.M{},
 	)
@@ -103,14 +103,13 @@ func (postStoreRef *PostStore) GetAllInappropriateStories() []model.Inappropriat
 	}
 	defer cursor.Next(context.Background())
 	var inappropriateStories []model.InappropriateStory
-	for cursor.Next(context.Background()){
+	for cursor.Next(context.Background()) {
 		var inappropriateStory model.InappropriateStory
-		if err = cursor.Decode(&inappropriateStory); err != nil{
+		if err = cursor.Decode(&inappropriateStory); err != nil {
 			log.Fatal(err)
 		}
 		inappropriateStories = append(inappropriateStories, inappropriateStory)
 	}
-
 
 	return inappropriateStories
 }
@@ -223,7 +222,7 @@ func (postStoreRef *PostStore) CreateStoryHighlight(storyHighlight *model.StoryH
 		log.Println("Invalid id")
 	}
 
-	storyHighlight.ID =  primitive.NewObjectID()
+	storyHighlight.ID = primitive.NewObjectID()
 
 	var storyHighlights []model.StoryHighlight
 	storyHighlights = append(storyHighlights, *storyHighlight)
@@ -254,7 +253,7 @@ func (postStoreRef *PostStore) CreateCollection(collection *model.Collection, us
 		log.Println("Invalid id")
 	}
 
-	collection.ID =  primitive.NewObjectID()
+	collection.ID = primitive.NewObjectID()
 
 	var collections []model.Collection
 	collections = append(collections, *collection)
@@ -460,7 +459,6 @@ func (postStoreRef *PostStore) DeletePostReaction(reaction model.Reaction, postI
 		"$pull": bson.M{
 			"reactions": bson.M{"$in": postReactions},
 		},
-
 	}
 
 	result, err := collectionPosts.UpdateOne(
@@ -496,11 +494,6 @@ func (postStoreRef *PostStore) GetPostByID(postID string) *mongo.SingleResult {
 
 func (postStoreRef *PostStore) UpdateUserStories(story model.Story) *mongo.UpdateResult {
 	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
-	// convert id string to ObjectId
-	objectId, err := primitive.ObjectIDFromHex(story.MyPost.PostCreatorRef)
-	if err != nil {
-		log.Println("Invalid id")
-	}
 
 	var userStories []model.UserStory
 	var userStory model.UserStory
@@ -509,14 +502,14 @@ func (postStoreRef *PostStore) UpdateUserStories(story model.Story) *mongo.Updat
 	userStories = append(userStories, userStory)
 
 	update := bson.M{
-		"$addToSet": bson.M{
-			"stories": bson.M{"$each": userStories},
+		"$push": bson.M{
+			"stories": bson.M{"$each": userStories, "$position": 0},
 		},
 	}
 
 	result, err := collectionUsers.UpdateOne(
 		context.Background(),
-		bson.M{"_id": objectId},
+		bson.M{"username": story.MyPost.CreatorUsername},
 		update,
 	)
 	if err != nil {
@@ -533,7 +526,7 @@ func (postStoreRef *PostStore) CloseConnection() error {
 func (postStoreRef *PostStore) GetPostsByLocation(longitude float64, latitude float64) []model.RegularPost {
 	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
 	var result []model.RegularPost
-	
+
 	mod := mongo.IndexModel{
 		Keys: bson.M{
 			"my_post.post_location": "2dsphere",
@@ -545,16 +538,16 @@ func (postStoreRef *PostStore) GetPostsByLocation(longitude float64, latitude fl
 	cursor, err := collectionPosts.Find(
 		context.Background(),
 		bson.M{
-		"my_post.post_location": bson.M{
-			"$nearSphere": bson.M{
-				"$geometry": bson.M{
-					"type":        "Point",
-					"coordinates": []float64{longitude, latitude},
+			"my_post.post_location": bson.M{
+				"$nearSphere": bson.M{
+					"$geometry": bson.M{
+						"type":        "Point",
+						"coordinates": []float64{longitude, latitude},
+					},
+					"$maxDistance": 3000,
 				},
-				"$maxDistance": 3000,
 			},
-		},
-	})
+		})
 	if err != nil {
 		log.Fatal(err)
 	}
