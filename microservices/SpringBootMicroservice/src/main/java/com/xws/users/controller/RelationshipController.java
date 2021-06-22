@@ -197,4 +197,18 @@ public class RelationshipController {
 		return ResponseEntity.noContent().build();
 	}
 	
+	@GetMapping("internal/users-for-feed")
+	@PreAuthorize("hasRole('REGULAR')")
+	public ResponseEntity<List<String>> getUsersForFeed(Authentication authentication) {
+		UserAccount user = (UserAccount) authentication.getPrincipal();
+
+		List<RegularUser> following = relationshipService.findFollowingAndUnmuted(user.getId());
+		List<String> retVal = new ArrayList<String>();
+		for (RegularUser ruser : following) {
+			retVal.add(ruser.getUsername());
+		}
+
+		return ResponseEntity.ok(retVal);
+	}
+	
 }

@@ -4,6 +4,8 @@ import (
 	"content_service/model"
 	"encoding/json"
 	"net/http"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -16,6 +18,9 @@ func InitializePostRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/post/inappropriate/", server.GetInappropriatePostsEndpoint).Methods("GET")
 	router.HandleFunc("/story/inappropriate/", server.CreateInappropriateStoryEndpoint).Methods("POST")
 	router.HandleFunc("/story/inappropriate/", server.GetInappropriateStoryEndpoint).Methods("GET")
+
+	router.HandleFunc("/post/feed/{page}", server.GetPostsForFeedEndpoint).Methods("GET")
+	router.HandleFunc("/story/feed/{page}", server.GetStoriesForFeedEndpoint).Methods("GET")
 
 	router.HandleFunc("/post/", server.CreatePostEndpoint).Methods("POST")
 	router.HandleFunc("/story/", server.CreateStoryEndpoint).Methods("POST")
@@ -199,6 +204,52 @@ func (contentServerRef *ContentServer) SearchByHashtag(response http.ResponseWri
 	params := mux.Vars(request)
 
 	var result = contentServerRef.postStore.GetPostsByHashtag(params["hashtag"])
+
+	renderJSON(response, result)
+}
+
+func (contentServerRef *ContentServer) GetPostsForFeedEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	userService, present := os.LookupEnv("USER_SERVICE")
+	if !present {
+		userService = "http://user-service:8081"
+	}
+
+	params := mux.Vars(request)
+	page, _ := strconv.ParseInt(params["page"], 10, 64)
+
+	var client = &http.Client{Timeout: 10 * time.Second}
+	req, _ := http.NewRequest("GET", userService+"/internal/users-for-feed", nil)
+	req.Header.Add("Authorization", request.Header.Get("Authorization"))
+	resp, _ := client.Do(req)
+
+	var usernames []string
+	_ = json.NewDecoder(resp.Body).Decode(&usernames)
+
+	var result = contentServerRef.postStore.GetPostsByCreators(usernames, page)
+
+	renderJSON(response, result)
+}
+
+func (contentServerRef *ContentServer) GetStoriesForFeedEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	userService, present := os.LookupEnv("USER_SERVICE")
+	if !present {
+		userService = "http://user-service:8081"
+	}
+
+	params := mux.Vars(request)
+	page, _ := strconv.ParseInt(params["page"], 10, 64)
+
+	var client = &http.Client{Timeout: 10 * time.Second}
+	req, _ := http.NewRequest("GET", userService+"/internal/users-for-feed", nil)
+	req.Header.Add("Authorization", request.Header.Get("Authorization"))
+	resp, _ := client.Do(req)
+
+	var usernames []string
+	_ = json.NewDecoder(resp.Body).Decode(&usernames)
+
+	var result = contentServerRef.postStore.GetStoriesByCreators(usernames, page)
 
 	renderJSON(response, result)
 }

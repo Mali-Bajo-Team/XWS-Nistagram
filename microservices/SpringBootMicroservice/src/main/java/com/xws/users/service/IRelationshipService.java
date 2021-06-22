@@ -13,6 +13,8 @@ public interface IRelationshipService {
 
 	List<RegularUser> findFollowing(Long id);
 	
+	List<RegularUser> findFollowingAndUnmuted(Long id);
+	
 	void follow(String fromUsername, String towardsUsername);
 	
 	void unfollow(String fromUsername, String towardsUsername);

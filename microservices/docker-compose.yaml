@@ -55,6 +55,7 @@ services:
           - content-service-db
     environment:
           - MONGO_PATH=mongodb://content-service-db:27017
+          - USER_SERVICE=http://user-service:8081
     volumes:
           - content-service-file-volume:/dist/post-content/
 
