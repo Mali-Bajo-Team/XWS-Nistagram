@@ -19,8 +19,17 @@ export default {
   data: () => ({
     links: [
       {
-        title: "Home",
-        to: "/"
+        title: "Feed",
+        children: [
+          {
+            title: "Posts",
+            to: "/feed/posts"
+          },
+          {
+            title: "Stories",
+            to: "/feed/stories"
+          }
+        ],
       },
       {
         title: "My profile",

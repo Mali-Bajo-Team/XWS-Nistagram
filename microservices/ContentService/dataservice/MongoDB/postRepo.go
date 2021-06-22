@@ -639,3 +639,57 @@ func (postStoreRef *PostStore) GetReactions(username string, reactionType string
 
 	return result
 }
+
+func (postStoreRef *PostStore) GetPostsByCreators(usernames []string, page int64) []model.RegularPost {
+	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
+	var result []model.RegularPost
+
+	queryOptions := options.Find()
+	queryOptions.SetSort(bson.D{{"my_post.timestamp", -1}})
+	queryOptions.SetLimit(10)
+	queryOptions.SetSkip(10 * page)
+
+	cursor, err := collectionPosts.Find(
+		context.Background(),
+		bson.M{"my_post.creator_username": bson.M{"$in": usernames}},
+		queryOptions,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err = cursor.All(context.Background(), &result); err != nil {
+		log.Fatal(err)
+	}
+
+	return result
+}
+
+func (postStoreRef *PostStore) GetStoriesByCreators(usernames []string, page int64) []model.Story {
+	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("stories")
+	var result []model.Story
+
+	queryOptions := options.Find()
+	queryOptions.SetSort(bson.D{{"my_post.timestamp", -1}})
+	queryOptions.SetLimit(10)
+	queryOptions.SetSkip(10 * page)
+
+	diff := 24 * time.Hour
+	then := time.Now().Add(-diff)
+
+	cursor, err := collectionPosts.Find(
+		context.Background(),
+		bson.M{"my_post.creator_username": bson.M{"$in": usernames},
+			"my_post.timestamp": bson.M{"$gte": then}},
+		queryOptions,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err = cursor.All(context.Background(), &result); err != nil {
+		log.Fatal(err)
+	}
+
+	return result
+}

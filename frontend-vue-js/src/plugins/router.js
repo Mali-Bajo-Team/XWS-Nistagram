@@ -9,7 +9,6 @@ import User from './../pages/user/Container';
 import Guest from './../pages/user/Container-guest';
 import Admin from './../pages/admin/Container-admin';
 import Verifications from './../pages/admin/Verifications';
-import UserLanding from './../pages/user/landing/Landing';
 import Login from './../pages/user/login/Login';
 import Registration from './../pages/user/registration/Registration';
 import Profile from './../pages/user/profile/Profile';
@@ -17,6 +16,8 @@ import UserSearch from './../pages/user/user-search/UserSearch';
 import HashtagSearch from './../pages/user/post-search/HashtagSearch';
 import LocationSearch from './../pages/user/post-search/LocationSearch';
 import OtherProfile from './../pages/user/profile/OtherProfile';
+import PostFeed from './../pages/user/feed/PostFeed'
+import StoryFeed from './../pages/user/feed/StoryFeed'
 
 
 const routes = [
@@ -29,9 +30,14 @@ const routes = [
         },
         children: [
             {
-                component: UserLanding,
-                name: 'user',
-                path: ''
+                component: PostFeed,
+                name: 'postfeed',
+                path: 'feed/posts'
+            },
+            {
+                component: StoryFeed,
+                name: 'storyfeed',
+                path: 'feed/stories'
             },
             {
                 component:Profile,
@@ -126,7 +132,7 @@ const routes = [
 
 function getHomePage(role) {
     if (role == 'REGULAR')
-        return '/'
+        return '/feed/posts'
     else if (role == 'ADMINISTRATOR')
         return '/admin/verifications'
     else

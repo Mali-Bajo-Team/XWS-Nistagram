@@ -11,6 +11,6 @@ public interface IFollowRequestRepository extends JpaRepository<FollowRequest, L
 
 	List<FollowRequest> findByAccountToFollowId(Long accountToFollowId);
 
-	FollowRequest findByAccountToFollowAndRequester(RegularUser accountToFollow, RegularUser requester);
+	FollowRequest findByAccountToFollowAndRequster(RegularUser accountToFollow, RegularUser requster);
 
 }

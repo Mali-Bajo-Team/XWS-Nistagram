@@ -69,6 +69,24 @@ public class RelationshipService implements IRelationshipService {
 	}
 
 	@Override
+	public List<RegularUser> findFollowingAndUnmuted(Long id) {
+		RegularUser user = userRepository.findById(id).orElse(null);
+		if (user == null)
+			throw new USAuthenticationException("User not found.");
+
+		List<RegularUser> following = new ArrayList<RegularUser>();
+
+		for (Relationship relationship : user.getOutRelationships()) {
+			if (!relationship.isMuted() && (relationship.getRelationshipType().equals(RelationshipType.FOLLOWED)
+					|| relationship.getRelationshipType().equals(RelationshipType.CLOSE_FRIEND))) {
+				following.add(relationship.getTowards());
+			}
+		}
+
+		return following;
+	}
+
+	@Override
 	public void follow(String fromUsername, String towardsUsername) {
 		RegularUser from = userRepository.findByUsername(fromUsername);
 		if (from == null)
@@ -265,10 +283,10 @@ public class RelationshipService implements IRelationshipService {
 		existingRelationship.setRelationshipType(RelationshipType.BLOCKED);
 		oppositeRelationship.setRelationshipType(RelationshipType.BLOCKED);
 
-		FollowRequest followRequest = followRequestRepository.findByAccountToFollowAndRequester(from, towards);
+		FollowRequest followRequest = followRequestRepository.findByAccountToFollowAndRequster(from, towards);
 		if (followRequest != null)
 			followRequestRepository.delete(followRequest);
-		followRequest = followRequestRepository.findByAccountToFollowAndRequester(towards, from);
+		followRequest = followRequestRepository.findByAccountToFollowAndRequster(towards, from);
 		if (followRequest != null)
 			followRequestRepository.delete(followRequest);
 
@@ -288,7 +306,8 @@ public class RelationshipService implements IRelationshipService {
 		Relationship existingRelationship = relationshipRepository.findByFromAndTowards(from, towards);
 
 		if (existingRelationship != null
-				&& existingRelationship.getRelationshipType().equals(RelationshipType.FOLLOWED)) {
+				&& (existingRelationship.getRelationshipType().equals(RelationshipType.FOLLOWED)
+						|| existingRelationship.getRelationshipType().equals(RelationshipType.CLOSE_FRIEND))) {
 			existingRelationship.setMuted(true);
 		} else {
 			throw new USConflictException("You cannot mute the requested user because you have not following them.");
@@ -310,7 +329,8 @@ public class RelationshipService implements IRelationshipService {
 		Relationship existingRelationship = relationshipRepository.findByFromAndTowards(from, towards);
 
 		if (existingRelationship != null
-				&& existingRelationship.getRelationshipType().equals(RelationshipType.FOLLOWED)) {
+				&& (existingRelationship.getRelationshipType().equals(RelationshipType.FOLLOWED)
+						|| existingRelationship.getRelationshipType().equals(RelationshipType.CLOSE_FRIEND))) {
 			existingRelationship.setMuted(false);
 		} else {
 			throw new USConflictException("You cannot unmute the requested user because you have not following them.");
