@@ -900,6 +900,8 @@
           <v-tab>Stories<v-icon>mdi-camera-iris</v-icon></v-tab>
           <v-tab>Highlights<v-icon>mdi-star-circle-outline</v-icon></v-tab>
           <v-tab>Saved<v-icon>mdi-check-circle</v-icon></v-tab>
+          <v-tab>Liked<v-icon>mdi-check-circle</v-icon></v-tab>
+          <v-tab>Disliked<v-icon>mdi-check-circle</v-icon></v-tab>
           <v-tab>Followers<v-icon>mdi-tag</v-icon></v-tab>
           <v-tab>Following<v-icon>mdi-tag</v-icon></v-tab>
           <v-tab>Verifications<v-icon>mdi-check-circle</v-icon></v-tab>
@@ -1460,6 +1462,18 @@
           </v-tab-item>
           <!--End of tab for saved/favorites-->
 
+          <!--Tab for liked posts-->
+          <v-tab-item>
+            <reactionComponent reactiontype="like"></reactionComponent>
+          </v-tab-item>
+          <!--End of tab for liked posts-->
+
+          <!--Tab for disliked posts-->
+          <v-tab-item>
+            <reactionComponent reactiontype="dislike"></reactionComponent>
+          </v-tab-item>
+          <!--End of tab for liked posts-->
+
           <!--Tab for followers-->
           <v-tab-item>
             <v-card v-if="followers.length > 0" flat>
@@ -1616,11 +1630,13 @@ import axios from "axios";
 import { getParsedToken } from "./../../../util/token";
 import postComponent from "../../../components/Post.vue";
 import storyComponent from "../../../components/Story.vue";
+import reactionComponent from "../../../components/Reactions.vue";
 
 export default {
   components: {
     postComponent,
-    storyComponent
+    storyComponent,
+    reactionComponent
   },
   data() {
     return {

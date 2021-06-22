@@ -3,13 +3,14 @@ package MongoDB
 import (
 	"content_service/model"
 	"context"
+	"log"
+	"os"
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
-	"os"
-	"time"
 )
 
 type PostStore struct {
@@ -69,7 +70,7 @@ func (postStoreRef *PostStore) GetEntirePost(postID string) model.RegularPost {
 func (postStoreRef *PostStore) GetAllInappropriatePosts() []model.InappropriatePost {
 	collectionInappropriatePosts := postStoreRef.ourClient.Database("content-service-db").Collection("inappropriatePosts")
 
-	cursor,err := collectionInappropriatePosts.Find(
+	cursor, err := collectionInappropriatePosts.Find(
 		context.Background(),
 		bson.M{},
 	)
@@ -79,21 +80,20 @@ func (postStoreRef *PostStore) GetAllInappropriatePosts() []model.InappropriateP
 	}
 	defer cursor.Next(context.Background())
 	var inappropriatePosts []model.InappropriatePost
-	for cursor.Next(context.Background()){
+	for cursor.Next(context.Background()) {
 		var inappropriatePost model.InappropriatePost
-		if err = cursor.Decode(&inappropriatePost); err != nil{
+		if err = cursor.Decode(&inappropriatePost); err != nil {
 			log.Fatal(err)
 		}
 		inappropriatePosts = append(inappropriatePosts, inappropriatePost)
 	}
-
 
 	return inappropriatePosts
 }
 func (postStoreRef *PostStore) GetAllInappropriateStories() []model.InappropriateStory {
 	collectionInappropriateStories := postStoreRef.ourClient.Database("content-service-db").Collection("inappropriateStories")
 
-	cursor,err := collectionInappropriateStories.Find(
+	cursor, err := collectionInappropriateStories.Find(
 		context.Background(),
 		bson.M{},
 	)
@@ -103,14 +103,13 @@ func (postStoreRef *PostStore) GetAllInappropriateStories() []model.Inappropriat
 	}
 	defer cursor.Next(context.Background())
 	var inappropriateStories []model.InappropriateStory
-	for cursor.Next(context.Background()){
+	for cursor.Next(context.Background()) {
 		var inappropriateStory model.InappropriateStory
-		if err = cursor.Decode(&inappropriateStory); err != nil{
+		if err = cursor.Decode(&inappropriateStory); err != nil {
 			log.Fatal(err)
 		}
 		inappropriateStories = append(inappropriateStories, inappropriateStory)
 	}
-
 
 	return inappropriateStories
 }
@@ -186,26 +185,34 @@ func (postStoreRef *PostStore) UpdatePostComments(comment model.Comment, postID 
 	return result
 }
 
-func (postStoreRef *PostStore) CreatePostReaction(reaction model.Reaction, postID string) *mongo.UpdateResult {
+func (postStoreRef *PostStore) CreatePostReaction(reaction model.Reaction) *mongo.UpdateResult {
 	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
-	// convert id string to ObjectId
-	objectId, err := primitive.ObjectIDFromHex(postID)
-	if err != nil {
-		log.Println("Invalid id")
+	collectionReactions := postStoreRef.ourClient.Database("content-service-db").Collection("reactions")
+
+	collectionReactions.InsertOne(context.Background(), reaction)
+
+	var post model.RegularPost
+	postStoreRef.GetPostByID(reaction.PostID).Decode(&post)
+	newLikeCount := post.LikeCount
+	newDislikeCount := post.DislikeCount
+
+	if reaction.ReactionType == "like" {
+		newLikeCount = newLikeCount + 1
+	}
+	if reaction.ReactionType == "dislike" {
+		newDislikeCount = newDislikeCount + 1
 	}
 
-	var postReactions []model.Reaction
-	postReactions = append(postReactions, reaction)
-
 	update := bson.M{
-		"$addToSet": bson.M{
-			"reactions": bson.M{"$each": postReactions},
+		"$set": bson.M{
+			"like_count":    newLikeCount,
+			"dislike_count": newDislikeCount,
 		},
 	}
 
 	result, err := collectionPosts.UpdateOne(
 		context.Background(),
-		bson.M{"_id": objectId},
+		bson.M{"_id": post.ID},
 		update,
 	)
 	if err != nil {
@@ -223,7 +230,7 @@ func (postStoreRef *PostStore) CreateStoryHighlight(storyHighlight *model.StoryH
 		log.Println("Invalid id")
 	}
 
-	storyHighlight.ID =  primitive.NewObjectID()
+	storyHighlight.ID = primitive.NewObjectID()
 
 	var storyHighlights []model.StoryHighlight
 	storyHighlights = append(storyHighlights, *storyHighlight)
@@ -254,7 +261,7 @@ func (postStoreRef *PostStore) CreateCollection(collection *model.Collection, us
 		log.Println("Invalid id")
 	}
 
-	collection.ID =  primitive.NewObjectID()
+	collection.ID = primitive.NewObjectID()
 
 	var collections []model.Collection
 	collections = append(collections, *collection)
@@ -444,28 +451,58 @@ func (postStoreRef *PostStore) AddPostToCollection(post model.RegularPost, userI
 	return retVal
 }
 
-func (postStoreRef *PostStore) DeletePostReaction(reaction model.Reaction, postID string) *mongo.UpdateResult {
-	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
-	// convert id string to ObjectId
-	objectId, err := primitive.ObjectIDFromHex(postID)
-	if err != nil {
-		log.Println("Invalid id")
+func (postStoreRef *PostStore) GetPostReaction(username string, postID string) *model.Reaction {
+	collectionReactions := postStoreRef.ourClient.Database("content-service-db").Collection("reactions")
+
+	result := collectionReactions.FindOne(
+		context.Background(),
+		bson.M{"creator_username": username, "post_id": postID},
+	)
+
+	if result.Err() == mongo.ErrNoDocuments {
+		return nil
 	}
 
-	var postReactions []model.Reaction
-	postReactions = append(postReactions, reaction)
-	//reactionCreatorID,_:= primitive.ObjectIDFromHex(reaction.ReactionCreatorRef)
+	var reaction model.Reaction
+	result.Decode(&reaction)
+
+	return &reaction
+}
+
+func (postStoreRef *PostStore) DeletePostReaction(username string, postID string) *mongo.UpdateResult {
+	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
+	collectionReactions := postStoreRef.ourClient.Database("content-service-db").Collection("reactions")
+
+	deleteResult := collectionReactions.FindOneAndDelete(
+		context.Background(),
+		bson.M{"creator_username": username, "post_id": postID},
+	)
+
+	var reaction model.Reaction
+	deleteResult.Decode(&reaction)
+
+	var post model.RegularPost
+	postStoreRef.GetPostByID(postID).Decode(&post)
+	newLikeCount := post.LikeCount
+	newDislikeCount := post.DislikeCount
+
+	if reaction.ReactionType == "like" {
+		newLikeCount = newLikeCount - 1
+	}
+	if reaction.ReactionType == "dislike" {
+		newDislikeCount = newDislikeCount - 1
+	}
 
 	update := bson.M{
-		"$pull": bson.M{
-			"reactions": bson.M{"$in": postReactions},
+		"$set": bson.M{
+			"like_count":    newLikeCount,
+			"dislike_count": newDislikeCount,
 		},
-
 	}
 
 	result, err := collectionPosts.UpdateOne(
 		context.Background(),
-		bson.M{"_id": objectId},
+		bson.M{"_id": post.ID},
 		update,
 	)
 	if err != nil {
@@ -496,11 +533,6 @@ func (postStoreRef *PostStore) GetPostByID(postID string) *mongo.SingleResult {
 
 func (postStoreRef *PostStore) UpdateUserStories(story model.Story) *mongo.UpdateResult {
 	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
-	// convert id string to ObjectId
-	objectId, err := primitive.ObjectIDFromHex(story.MyPost.PostCreatorRef)
-	if err != nil {
-		log.Println("Invalid id")
-	}
 
 	var userStories []model.UserStory
 	var userStory model.UserStory
@@ -509,14 +541,14 @@ func (postStoreRef *PostStore) UpdateUserStories(story model.Story) *mongo.Updat
 	userStories = append(userStories, userStory)
 
 	update := bson.M{
-		"$addToSet": bson.M{
-			"stories": bson.M{"$each": userStories},
+		"$push": bson.M{
+			"stories": bson.M{"$each": userStories, "$position": 0},
 		},
 	}
 
 	result, err := collectionUsers.UpdateOne(
 		context.Background(),
-		bson.M{"_id": objectId},
+		bson.M{"username": story.MyPost.CreatorUsername},
 		update,
 	)
 	if err != nil {
@@ -533,7 +565,7 @@ func (postStoreRef *PostStore) CloseConnection() error {
 func (postStoreRef *PostStore) GetPostsByLocation(longitude float64, latitude float64) []model.RegularPost {
 	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
 	var result []model.RegularPost
-	
+
 	mod := mongo.IndexModel{
 		Keys: bson.M{
 			"my_post.post_location": "2dsphere",
@@ -545,16 +577,16 @@ func (postStoreRef *PostStore) GetPostsByLocation(longitude float64, latitude fl
 	cursor, err := collectionPosts.Find(
 		context.Background(),
 		bson.M{
-		"my_post.post_location": bson.M{
-			"$nearSphere": bson.M{
-				"$geometry": bson.M{
-					"type":        "Point",
-					"coordinates": []float64{longitude, latitude},
+			"my_post.post_location": bson.M{
+				"$nearSphere": bson.M{
+					"$geometry": bson.M{
+						"type":        "Point",
+						"coordinates": []float64{longitude, latitude},
+					},
+					"$maxDistance": 3000,
 				},
-				"$maxDistance": 3000,
 			},
-		},
-	})
+		})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -573,6 +605,29 @@ func (postStoreRef *PostStore) GetPostsByHashtag(hashtag string) []model.Regular
 	cursor, err := collectionPosts.Find(
 		context.Background(),
 		bson.M{"my_post.hashtags": hashtag},
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err = cursor.All(context.Background(), &result); err != nil {
+		log.Fatal(err)
+	}
+
+	return result
+}
+
+func (postStoreRef *PostStore) GetReactions(username string, reactionType string) []model.Reaction {
+	collectionReactions := postStoreRef.ourClient.Database("content-service-db").Collection("reactions")
+	var result []model.Reaction
+
+	queryOptions := options.Find()
+	queryOptions.SetSort(bson.D{{"timestamp", -1}})
+
+	cursor, err := collectionReactions.Find(
+		context.Background(),
+		bson.M{"creator_username": username, "reaction_type": reactionType},
+		queryOptions,
 	)
 	if err != nil {
 		log.Fatal(err)

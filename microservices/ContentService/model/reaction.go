@@ -1,7 +1,10 @@
 package model
 
+import "time"
+
 type Reaction struct {
-	ReactionCreatorRef string             `json:"reaction_creator_ref,omitempty" bson:"reaction_creator_ref,omitempty"`
-	ReactionType       string             `json:"reaction_type,omitempty" bson:"reaction_type,omitempty"`
-	CreationTime       string             `json:"creation_time,omitempty" bson:"creation_time,omitempty"`
+	CreatorUsername string    `json:"creator_username,omitempty" bson:"creator_username,omitempty"`
+	ReactionType    string    `json:"reaction_type,omitempty" bson:"reaction_type,omitempty"`
+	CreationTime    time.Time `json:"creation_time,omitempty" bson:"creation_time,omitempty"`
+	PostID          string    `json:"post_id,omitempty" bson:"post_id,omitempty"`
 }
