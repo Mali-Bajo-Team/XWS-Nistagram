@@ -24,6 +24,8 @@ func InitializePostRouter(router *mux.Router, server *ContentServer) {
 
 	// TODO: Find some better naming for reaction-undo-reaction
 	router.HandleFunc("/post/reaction/{id}", server.CreatePostReactionEndpoint).Methods("POST")
+	router.HandleFunc("/post/reaction/{id}", server.GetPostReactionEndpoint).Methods("GET")
+	router.HandleFunc("/reaction/{type}", server.GetReactionsEndpoint).Methods("GET")
 	router.HandleFunc("/post/unreaction/{id}", server.DeletePostReactionEndpoint).Methods("POST")
 	router.HandleFunc("/post/comment/{id}", server.CreatePostCommentEndpoint).Methods("POST")
 	router.HandleFunc("/post/comment/{id}", server.GetPostCommentsEndpoint).Methods("GET")
@@ -38,6 +40,8 @@ func (contentServerRef *ContentServer) CreatePostEndpoint(response http.Response
 	_ = json.NewDecoder(request.Body).Decode(&post)
 	post.MyPost.CreatorUsername = request.Header.Get("user-username")
 	post.MyPost.TimeStamp = time.Now()
+	post.LikeCount = 0
+	post.DislikeCount = 0
 	var documentId = contentServerRef.postStore.CreatePost(post)
 	post.ID = documentId.InsertedID.(primitive.ObjectID)
 	contentServerRef.postStore.UpdateUserPosts(post)
@@ -99,17 +103,35 @@ func (contentServerRef *ContentServer) CreatePostReactionEndpoint(response http.
 	var reaction model.Reaction
 	_ = json.NewDecoder(request.Body).Decode(&reaction)
 	params := mux.Vars(request)
-	contentServerRef.postStore.CreatePostReaction(reaction, params["id"])
-	renderJSON(response, reaction)
+	reaction.CreationTime = time.Now()
+	reaction.PostID = params["id"]
+	reaction.CreatorUsername = request.Header.Get("user-username")
+	contentServerRef.postStore.CreatePostReaction(reaction)
+	response.WriteHeader(http.StatusNoContent)
 }
 
 func (contentServerRef *ContentServer) DeletePostReactionEndpoint(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("content-type", "application/json")
-	var reaction model.Reaction
-	_ = json.NewDecoder(request.Body).Decode(&reaction)
 	params := mux.Vars(request)
-	contentServerRef.postStore.DeletePostReaction(reaction, params["id"])
+	contentServerRef.postStore.DeletePostReaction(request.Header.Get("user-username"), params["id"])
+	response.WriteHeader(http.StatusNoContent)
+}
+
+func (contentServerRef *ContentServer) GetPostReactionEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	params := mux.Vars(request)
+	reaction := contentServerRef.postStore.GetPostReaction(request.Header.Get("user-username"), params["id"])
+	if reaction == nil {
+		response.WriteHeader(http.StatusNoContent)
+	}
 	renderJSON(response, reaction)
+}
+
+func (contentServerRef *ContentServer) GetReactionsEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	params := mux.Vars(request)
+	reactions := contentServerRef.postStore.GetReactions(request.Header.Get("user-username"), params["type"])
+	renderJSON(response, reactions)
 }
 
 func (contentServerRef *ContentServer) GetPostCommentsEndpoint(response http.ResponseWriter, request *http.Request) {

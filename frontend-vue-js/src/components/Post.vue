@@ -266,7 +266,7 @@ export default {
   },
   data() {
     return {
-      // TODO - fix model to fetch correct data
+      likeCount: 0,
       liked: false,
       disliked: false,
       loggedIn: false,
@@ -311,17 +311,33 @@ export default {
           this.user = res.data;
         });
 
+      this.axios
+        .get(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_REACTION +
+            this.post._id,
+          {
+            headers: {
+              Authorization: "Bearer " + getToken(),
+            },
+          }
+        )
+        .then((res) => {
+          if (res.data) {
+            if (res.data.reaction_type == "like") this.liked = true;
+            if (res.data.reaction_type == "dislike") this.disliked = true;
+          }
+        })
+        .catch(() => {});
+
       if (this.post.comments) this.comments = this.post.comments;
+      if (this.post.like_count) this.likeCount = this.post.like_count;
     }
   },
   computed: {
     commentCount: function () {
       if (!this.comments) return 0;
       else return this.comments.length;
-    },
-    likeCount: function () {
-      // TODO: fix model so you can actually get this
-      return 0;
     },
   },
   methods: {
@@ -342,7 +358,6 @@ export default {
             process.env.VUE_APP_CONTENT_REACTION +
             postID,
           {
-            reaction_creator_ref: this.user._id,
             reaction_type: "like",
           },
           {
@@ -353,7 +368,7 @@ export default {
         )
         .then(() => {
           this.liked = true;
-          console.log(this.liked);
+          this.likeCount = this.likeCount + 1;
         })
         .catch(() => {
           this.snackbarText = "Liking post failed.";
@@ -367,7 +382,6 @@ export default {
             process.env.VUE_APP_CONTENT_REACTION +
             postID,
           {
-            reaction_creator_ref: this.user._id,
             reaction_type: "dislike",
           },
           {
@@ -390,10 +404,7 @@ export default {
           process.env.VUE_APP_BACKEND_URL +
             process.env.VUE_APP_CONTENT_UNREACTION +
             postID,
-          {
-            reaction_creator_ref: this.user._id,
-            reaction_type: "like",
-          },
+          {},
           {
             headers: {
               Authorization: "Bearer " + getToken(),
@@ -402,6 +413,7 @@ export default {
         )
         .then(() => {
           this.liked = false;
+          this.likeCount = this.likeCount - 1;
         })
         .catch(() => {
           this.snackbarText = "Unliking post failed.";
@@ -414,10 +426,7 @@ export default {
           process.env.VUE_APP_BACKEND_URL +
             process.env.VUE_APP_CONTENT_UNREACTION +
             postID,
-          {
-            reaction_creator_ref: this.user._id,
-            reaction_type: "dislike",
-          },
+          {},
           {
             headers: {
               Authorization: "Bearer " + getToken(),

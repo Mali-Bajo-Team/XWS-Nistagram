@@ -185,26 +185,34 @@ func (postStoreRef *PostStore) UpdatePostComments(comment model.Comment, postID 
 	return result
 }
 
-func (postStoreRef *PostStore) CreatePostReaction(reaction model.Reaction, postID string) *mongo.UpdateResult {
+func (postStoreRef *PostStore) CreatePostReaction(reaction model.Reaction) *mongo.UpdateResult {
 	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
-	// convert id string to ObjectId
-	objectId, err := primitive.ObjectIDFromHex(postID)
-	if err != nil {
-		log.Println("Invalid id")
+	collectionReactions := postStoreRef.ourClient.Database("content-service-db").Collection("reactions")
+
+	collectionReactions.InsertOne(context.Background(), reaction)
+
+	var post model.RegularPost
+	postStoreRef.GetPostByID(reaction.PostID).Decode(&post)
+	newLikeCount := post.LikeCount
+	newDislikeCount := post.DislikeCount
+
+	if reaction.ReactionType == "like" {
+		newLikeCount = newLikeCount + 1
+	}
+	if reaction.ReactionType == "dislike" {
+		newDislikeCount = newDislikeCount + 1
 	}
 
-	var postReactions []model.Reaction
-	postReactions = append(postReactions, reaction)
-
 	update := bson.M{
-		"$addToSet": bson.M{
-			"reactions": bson.M{"$each": postReactions},
+		"$set": bson.M{
+			"like_count":    newLikeCount,
+			"dislike_count": newDislikeCount,
 		},
 	}
 
 	result, err := collectionPosts.UpdateOne(
 		context.Background(),
-		bson.M{"_id": objectId},
+		bson.M{"_id": post.ID},
 		update,
 	)
 	if err != nil {
@@ -443,27 +451,58 @@ func (postStoreRef *PostStore) AddPostToCollection(post model.RegularPost, userI
 	return retVal
 }
 
-func (postStoreRef *PostStore) DeletePostReaction(reaction model.Reaction, postID string) *mongo.UpdateResult {
-	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
-	// convert id string to ObjectId
-	objectId, err := primitive.ObjectIDFromHex(postID)
-	if err != nil {
-		log.Println("Invalid id")
+func (postStoreRef *PostStore) GetPostReaction(username string, postID string) *model.Reaction {
+	collectionReactions := postStoreRef.ourClient.Database("content-service-db").Collection("reactions")
+
+	result := collectionReactions.FindOne(
+		context.Background(),
+		bson.M{"creator_username": username, "post_id": postID},
+	)
+
+	if result.Err() == mongo.ErrNoDocuments {
+		return nil
 	}
 
-	var postReactions []model.Reaction
-	postReactions = append(postReactions, reaction)
-	//reactionCreatorID,_:= primitive.ObjectIDFromHex(reaction.ReactionCreatorRef)
+	var reaction model.Reaction
+	result.Decode(&reaction)
+
+	return &reaction
+}
+
+func (postStoreRef *PostStore) DeletePostReaction(username string, postID string) *mongo.UpdateResult {
+	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
+	collectionReactions := postStoreRef.ourClient.Database("content-service-db").Collection("reactions")
+
+	deleteResult := collectionReactions.FindOneAndDelete(
+		context.Background(),
+		bson.M{"creator_username": username, "post_id": postID},
+	)
+
+	var reaction model.Reaction
+	deleteResult.Decode(&reaction)
+
+	var post model.RegularPost
+	postStoreRef.GetPostByID(postID).Decode(&post)
+	newLikeCount := post.LikeCount
+	newDislikeCount := post.DislikeCount
+
+	if reaction.ReactionType == "like" {
+		newLikeCount = newLikeCount - 1
+	}
+	if reaction.ReactionType == "dislike" {
+		newDislikeCount = newDislikeCount - 1
+	}
 
 	update := bson.M{
-		"$pull": bson.M{
-			"reactions": bson.M{"$in": postReactions},
+		"$set": bson.M{
+			"like_count":    newLikeCount,
+			"dislike_count": newDislikeCount,
 		},
 	}
 
 	result, err := collectionPosts.UpdateOne(
 		context.Background(),
-		bson.M{"_id": objectId},
+		bson.M{"_id": post.ID},
 		update,
 	)
 	if err != nil {
@@ -566,6 +605,29 @@ func (postStoreRef *PostStore) GetPostsByHashtag(hashtag string) []model.Regular
 	cursor, err := collectionPosts.Find(
 		context.Background(),
 		bson.M{"my_post.hashtags": hashtag},
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err = cursor.All(context.Background(), &result); err != nil {
+		log.Fatal(err)
+	}
+
+	return result
+}
+
+func (postStoreRef *PostStore) GetReactions(username string, reactionType string) []model.Reaction {
+	collectionReactions := postStoreRef.ourClient.Database("content-service-db").Collection("reactions")
+	var result []model.Reaction
+
+	queryOptions := options.Find()
+	queryOptions.SetSort(bson.D{{"timestamp", -1}})
+
+	cursor, err := collectionReactions.Find(
+		context.Background(),
+		bson.M{"creator_username": username, "reaction_type": reactionType},
+		queryOptions,
 	)
 	if err != nil {
 		log.Fatal(err)
