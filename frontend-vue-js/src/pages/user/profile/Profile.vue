@@ -903,6 +903,7 @@
           <v-tab>Liked<v-icon>mdi-check-circle</v-icon></v-tab>
           <v-tab>Disliked<v-icon>mdi-check-circle</v-icon></v-tab>
           <v-tab>Followers<v-icon>mdi-tag</v-icon></v-tab>
+          <v-tab>Follow requests<v-icon>mdi-tag</v-icon></v-tab>
           <v-tab>Following<v-icon>mdi-tag</v-icon></v-tab>
         </v-tabs>
         <v-tabs-items v-model="tabs2">
@@ -911,11 +912,7 @@
             <v-card class="mx-auto" max-width="500">
               <v-container fluid>
                 <v-row dense>
-                  <v-col
-                    v-for="post in posts"
-                    :key="post._id"
-                    cols="6"
-                  >
+                  <v-col v-for="post in posts" :key="post._id" cols="6">
                     <!-- Post previw -->
                     <v-card>
                       <v-img
@@ -975,11 +972,7 @@
             <v-card class="mx-auto" max-width="500">
               <v-container fluid>
                 <v-row dense>
-                  <v-col
-                    v-for="story in stories"
-                    :key="story.post_id"
-                    cols="6"
-                  >
+                  <v-col v-for="story in stories" :key="story.post_id" cols="6">
                     <!-- Story previw -->
                     <v-card>
                       <v-img
@@ -1519,6 +1512,50 @@
           </v-tab-item>
           <!--End of tab for followers-->
 
+          <!--Tab for follow requests-->
+          <v-tab-item>
+            <v-card v-if="requests.length > 0" flat>
+              <v-list>
+                <v-list-item-group color="primary">
+                  <v-list-item v-for="(request, i) in requests" :key="i">
+                    <v-list-item-avatar>
+                      <v-img :src="request.requesterProfileImagePath"></v-img>
+                    </v-list-item-avatar>
+                    <v-list-item-content>
+                      <v-list-item-title
+                        v-text="request.requesterUsername"
+                      ></v-list-item-title>
+                    </v-list-item-content>
+
+                    <v-list-item-action>
+                      <v-btn
+                        outlined
+                        rounded
+                        medium
+                        color="primary"
+                        @click="acceptFollower(request)"
+                      >
+                        <v-icon left> mdi-check-circle </v-icon>
+                        Accept
+                      </v-btn>
+                      <v-btn
+                        outlined
+                        rounded
+                        medium
+                        color="danger"
+                        @click="rejectFollower(request)"
+                      >
+                        <v-icon left> mdi-delete </v-icon>
+                        Reject
+                      </v-btn>
+                    </v-list-item-action>
+                  </v-list-item>
+                </v-list-item-group>
+              </v-list>
+            </v-card>
+          </v-tab-item>
+          <!--End of tab for follow requests-->
+
           <!--Tab for following-->
           <v-tab-item>
             <v-card v-if="following.length > 0" flat>
@@ -1543,7 +1580,6 @@
             </v-card>
           </v-tab-item>
           <!--End of tab for following-->
-          
         </v-tabs-items>
       </v-row>
       <!-- End of posts, highlights, stories, saved, followers, following, verification requests -->
@@ -1564,12 +1600,12 @@ export default {
   components: {
     postComponent,
     storyComponent,
-    reactionComponent
+    reactionComponent,
   },
   data() {
     return {
       isVerifiedUserVar: false,
-      verificationRequests: [],
+      requests: [],
       userCategories: [
         "Influencer",
         "Sports",
@@ -1659,7 +1695,23 @@ export default {
     };
   },
   computed: {},
-  mounted() {    
+  mounted() {
+this.axios
+      .get(
+        process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_FOLLOW_REQUEST_ENDPOINT,
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+          },
+        }
+      )
+      .then((response) => {
+        this.requests = response.data
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
     this.axios
       .get(
         process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_FOLLOWER_ENDPOINT,
@@ -1797,7 +1849,7 @@ export default {
             this.posts.push({
               _id: post.post_id,
               path: post.first_content.path,
-              type: post.first_content.type
+              type: post.first_content.type,
             });
           });
         }
@@ -1809,7 +1861,7 @@ export default {
             this.stories.push({
               _id: story.story_id,
               path: story.first_content.path,
-              type: story.first_content.type
+              type: story.first_content.type,
             });
           });
         }
@@ -1861,12 +1913,13 @@ export default {
       });
   },
   methods: {
-    acceptVerificationRequest(verification) {
+    acceptFollower(request) {
       this.axios
         .post(
           process.env.VUE_APP_BACKEND_URL +
-            process.env.VUE_APP_ACCEPT_VERIFICATION_REQUEST +
-            verification.id,
+            process.env.VUE_APP_FOLLOW_REQUEST_ENDPOINT +
+            request.id +
+            "/accept",
           {},
           {
             headers: {
@@ -1874,25 +1927,31 @@ export default {
             },
           }
         )
-        .then((res) => {
-          console.log(res);
-          for (let verificationRequest of this.verificationRequests) {
-            if (verificationRequest.id == verification.id) {
-              this.verificationRequests.pop(verificationRequest);
+        .then(() => {
+          for (let followRequest of this.requests) {
+            if (request.id == followRequest.id) {
+              this.requests.pop(followRequest);
               break;
             }
           }
+          this.followers.push({
+            id: request.requesterId,
+            username: request.requesterUsername,
+            profileImagePath: request.requesterProfileImagePath,
+            isClose: false,
+          });
         })
         .catch((error) => {
           console.log(error);
         });
     },
-    rejectVerificationRequest(verification) {
+    rejectFollower(request) {
       this.axios
         .post(
           process.env.VUE_APP_BACKEND_URL +
-            process.env.VUE_APP_REJECT_VERIFICATION_REQUEST +
-            verification.id,
+            process.env.VUE_APP_FOLLOW_REQUEST_ENDPOINT +
+            request.id +
+            "/reject",
           {},
           {
             headers: {
@@ -1900,11 +1959,10 @@ export default {
             },
           }
         )
-        .then((res) => {
-          console.log(res);
-          for (let verificationRequest of this.verificationRequests) {
-            if (verificationRequest.id == verification.id) {
-              this.verificationRequests.pop(verificationRequest);
+        .then(() => {
+          for (let followRequest of this.requests) {
+            if (request.id == followRequest.id) {
+              this.requests.pop(followRequest);
               break;
             }
           }

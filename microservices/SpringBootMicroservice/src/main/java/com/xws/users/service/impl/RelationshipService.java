@@ -265,6 +265,13 @@ public class RelationshipService implements IRelationshipService {
 		existingRelationship.setRelationshipType(RelationshipType.BLOCKED);
 		oppositeRelationship.setRelationshipType(RelationshipType.BLOCKED);
 
+		FollowRequest followRequest = followRequestRepository.findByAccountToFollowAndRequester(from, towards);
+		if (followRequest != null)
+			followRequestRepository.delete(followRequest);
+		followRequest = followRequestRepository.findByAccountToFollowAndRequester(towards, from);
+		if (followRequest != null)
+			followRequestRepository.delete(followRequest);
+
 		relationshipRepository.save(existingRelationship);
 		relationshipRepository.save(oppositeRelationship);
 	}
@@ -283,7 +290,7 @@ public class RelationshipService implements IRelationshipService {
 		if (existingRelationship != null
 				&& existingRelationship.getRelationshipType().equals(RelationshipType.FOLLOWED)) {
 			existingRelationship.setMuted(true);
-		}else{
+		} else {
 			throw new USConflictException("You cannot mute the requested user because you have not following them.");
 		}
 
@@ -305,7 +312,7 @@ public class RelationshipService implements IRelationshipService {
 		if (existingRelationship != null
 				&& existingRelationship.getRelationshipType().equals(RelationshipType.FOLLOWED)) {
 			existingRelationship.setMuted(false);
-		}else{
+		} else {
 			throw new USConflictException("You cannot unmute the requested user because you have not following them.");
 		}
 
