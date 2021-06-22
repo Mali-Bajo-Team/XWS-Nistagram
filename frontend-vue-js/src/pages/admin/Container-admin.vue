@@ -19,8 +19,8 @@ export default {
   data: () => ({
     links: [
       {
-        title: "Home",
-        to: "/admin"
+        title: "Verifications",
+        to: "/admin/verifications"
       }
     ],
   }),

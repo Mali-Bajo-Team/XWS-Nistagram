@@ -35,9 +35,7 @@ public class VerificationController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('REGULAR')")
-    // Todo: Change to administrator, this is only for test purpose
-//    @PreAuthorize("hasRole('ADMINISTRATOR')")
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     public ResponseEntity<List<VerificationRequestDTO>> getAllPendingVerificationRequest() {
         List<VerificationRequestDTO> retVal = new ArrayList<VerificationRequestDTO>();
         List<VerificationRequest> verificationRequests = verificationRequestService.findAllByRequestStatus(RequestStatus.PENDING);
@@ -48,17 +46,13 @@ public class VerificationController {
     }
 
     @PostMapping("/accept/{id}")
-    @PreAuthorize("hasRole('REGULAR')")
-    // Todo: Change to administrator, this is only for test purpose
-//    @PreAuthorize("hasRole('ADMINISTRATOR')")
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     public ResponseEntity<VerificationRequestDTO> acceptVerificationRequest(@PathVariable(required = true) Long id) {
         return ResponseEntity.ok(new VerificationRequestDTO(verificationRequestService.acceptVerificationRequest(id)));
     }
 
     @PostMapping("/reject/{id}")
-    @PreAuthorize("hasRole('REGULAR')")
-    // Todo: Change to administrator, this is only for test purpose
-//    @PreAuthorize("hasRole('ADMINISTRATOR')")
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     public ResponseEntity<VerificationRequestDTO> rejectVerificationRequest(@PathVariable(required = true) Long id) {
         return ResponseEntity.ok(new VerificationRequestDTO(verificationRequestService.rejectVerificationRequest(id)));
     }
