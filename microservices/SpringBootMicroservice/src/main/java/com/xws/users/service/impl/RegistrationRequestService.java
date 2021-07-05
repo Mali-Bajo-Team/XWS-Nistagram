@@ -11,6 +11,9 @@ public class RegistrationRequestService implements IRegistrationRequestService {
 
     @Override
     public RegistrationRequest createRegistrationRequest(RegistrationRequestDTO registrationRequestDTO) {
+
+        RegistrationRequest registrationRequest=new RegistrationRequest();
+
         return null;
     }
 }
