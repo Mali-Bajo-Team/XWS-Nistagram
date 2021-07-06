@@ -12,6 +12,7 @@
 <script>
 import io from 'socket.io-client';
 import ChatRoom from './../../../components/ChatRoom';
+import { getToken, getUsernameFromToken } from "./../../../util/token";
 
 export default {
 	name: 'app',
@@ -52,11 +53,7 @@ export default {
 		}
 	},
 	mounted: function () {
-		this.username = prompt("What is your username?", "Anonymous");
-
-		if (!this.username) {
-			this.username = "Anonymous";
-		}
+		this.username = getUsernameFromToken();
 
 		this.joinServer();
 	}
