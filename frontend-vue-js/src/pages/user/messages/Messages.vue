@@ -1,63 +1,62 @@
 <template>
-	<div id="app">
-		<div class="header">
-			<h1>Chatroom</h1>
-			<p class="username">Username: {{ username }}</p>
-			<p class="online">Online: {{ users.length }}</p>
-		</div>
-		<ChatRoom v-bind:messages="messages" v-on:sendMessage="this.sendMessage" />
-	</div>
+  <div id="messages">
+    <select-username
+      v-if="!usernameAlreadySelected"
+      @input="onUsernameSelection"
+    />
+    <chat v-else />
+  </div>
 </template>
 
 <script>
-import io from 'socket.io-client';
-import ChatRoom from './../../../components/ChatRoom';
-import { getToken, getUsernameFromToken } from "./../../../util/token";
+import SelectUsername from "./../../../components/SelectUsername";
+import Chat from "./../../../components/Chat";
+import socket from "./../../../socket";
 
 export default {
-	name: 'app',
-	components: {
-		ChatRoom
-	},
-	data: function () {
-		return {
-			username: "",
-			socket: io("http://localhost:3000"),
-			messages: [],
-			users: []
-		}
-	},
-	methods: {
-		joinServer: function () {
-			this.socket.on('loggedIn', data => {
-				this.messages = data.messages;
-				this.users = data.users;
-				this.socket.emit('newuser', this.username);
-			});
-
-			this.listen();
-		},
-		listen: function () {
-			this.socket.on('userOnline', user => {
-				this.users.push(user);
-			});
-			this.socket.on('userLeft', user => {
-				this.users.splice(this.users.indexOf(user), 1);
-			});
-			this.socket.on('msg', message => {
-				this.messages.push(message);
-			});
-		},
-		sendMessage: function (message) {
-			this.socket.emit('msg', message);
-		}
-	},
-	mounted: function () {
-		this.username = getUsernameFromToken();
-
-		this.joinServer();
-	}
-}
+  name: "App",
+  components: {
+    Chat,
+    SelectUsername,
+  },
+  data() {
+    return {
+      usernameAlreadySelected: false,
+    };
+  },
+  methods: {
+    onUsernameSelection(username) {
+      this.usernameAlreadySelected = true;
+      socket.auth = { username };
+      socket.connect();
+    },
+  },
+  created() {
+    socket.on("connect_error", (err) => {
+      if (err.message === "invalid username") {
+        this.usernameAlreadySelected = false;
+      }
+    });
+  },
+  destroyed() {
+    socket.off("connect_error");
+  },
+};
 </script>
 
+<style>
+body {
+  margin: 0;
+}
 
+@font-face {
+  font-family: Lato;
+  src: url("/fonts/Lato-Regular.ttf");
+}
+
+#messages {
+  margin-top: 23px;
+  font-family: Lato, Arial, sans-serif;
+  font-size: 14px;
+}
+</style>
