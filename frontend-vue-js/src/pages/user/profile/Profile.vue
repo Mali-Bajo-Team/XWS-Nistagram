@@ -944,7 +944,14 @@
                               @click="getEntirePost(post._id)"
                               icon
                             >
-                              <v-icon right> mdi-plus-circle </v-icon>
+                            <v-icon right> mdi-plus-circle </v-icon>
+                            </v-btn>
+                             <v-btn
+                         
+                              @click="copyPostID(getImageUrl(post))"
+                              icon
+                            >
+                              <v-icon right> mdi-share </v-icon>
                             </v-btn>
                           </template>
                           <postComponent
@@ -2210,6 +2217,14 @@ this.axios
           this.entirePost = res.data;
         });
     },
+    copyPostID(postID) {
+        var text = postID;
+        navigator.clipboard.writeText(text).then(function() {
+        console.log('Async: Copying to clipboard was successful!');
+      }, function(err) {
+        console.error('Async: Could not copy text: ', err);
+      });
+    },
     getEntireStory(storyID) {
       // get entire post
       axios
@@ -2282,13 +2297,7 @@ this.axios
           alert("Error: " + error);
         });
     },
-    getImageUrl(post) {
-      return (
-        process.env.VUE_APP_BACKEND_URL +
-        process.env.VUE_APP_FILE_ENDPOINT +
-        post.path
-      );
-    },
+
     getImageUrlByPATH(path) {
       if (path)
         return (
@@ -2551,6 +2560,13 @@ this.axios
         .then((res) => {
           this.form.isallowedtags = res.data;
         });
+    },
+    getImageUrl(post) {
+      return (
+        process.env.VUE_APP_BACKEND_URL +
+        process.env.VUE_APP_FILE_ENDPOINT +
+        post.path
+      );
     },
     banTagsPrivacySettings() {
       this.axios

@@ -8,13 +8,16 @@
 </template>
 
 <script>
-
+import { getUsernameFromToken } from "./../util/token";
 export default {
   name: "SelectUsername",
   data() {
     return {
       username: "",
     };
+  },
+  beforeMount(){
+      this.$emit("input", getUsernameFromToken());
   },
   computed: {
     isValid() {
