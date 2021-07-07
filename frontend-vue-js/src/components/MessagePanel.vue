@@ -14,15 +14,31 @@
           {{ message.fromSelf ? "(yourself)" : user.username }}
         </div>
         
-        <img v-if="message.content.includes('http')" v-bind:src="message.content" /> 
+        <img width="200px" v-if="message.content.includes('http')" v-bind:src="message.content" /> 
 
         <p v-if="!message.content.includes('http')" > {{message.content}}</p> 
-       
+
+        <!-- <p  >Methods date call: "{{ getEntirePost('60e5fbef1b8ceffde5005a13') }}"</p> -->
         
+                          <v-dialog  width="600px">
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                              v-if="message.content.length == 24"
+                              v-bind="attrs"
+                              v-on="on"
+                              @click="getEntirePost(message.content)"
+                              icon
+                            
+                            >Open
+                            <v-icon right> mdi-plus-circle </v-icon>
+                            </v-btn>
+                          
+                          </template>
                           <postComponent
                             v-if="entirePost"
                             :post="entirePost"
                           ></postComponent>
+                        </v-dialog>
       </li>
     </ul>
 
@@ -36,7 +52,7 @@
 <script>
 import axios from "axios";
 import StatusIcon from "./StatusIcon";
-import postComponent from "../components/Post.vue";
+import postComponent from "./../components/Post.vue";
 
 export default {
   name: "MessagePanel",
@@ -80,6 +96,8 @@ export default {
         )
         .then((res) => {
           this.entirePost = res.data;
+          console.log("AAAAAAAAAAAAAAAAAAAAA")
+          return res.data;
         });
     },
   },

@@ -948,7 +948,7 @@
                             </v-btn>
                              <v-btn
                          
-                              @click="copyPostID(getImageUrl(post))"
+                              @click="copyPostID(post._id)"
                               icon
                             >
                               <v-icon right> mdi-share </v-icon>
