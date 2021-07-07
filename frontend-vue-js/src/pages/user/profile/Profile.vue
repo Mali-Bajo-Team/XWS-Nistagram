@@ -947,7 +947,6 @@
                             <v-icon right> mdi-plus-circle </v-icon>
                             </v-btn>
                              <v-btn
-                         
                               @click="copyPostID(post._id)"
                               icon
                             >
@@ -1012,6 +1011,12 @@
                               icon
                             >
                               <v-icon right> mdi-plus-circle </v-icon>
+                            </v-btn>          
+                             <v-btn
+                              @click="copyStoryID(story._id)"
+                              icon
+                            >
+                              <v-icon right> mdi-share </v-icon>
                             </v-btn>
                           </template>
                           <storyComponent
@@ -2218,7 +2223,15 @@ this.axios
         });
     },
     copyPostID(postID) {
-        var text = postID;
+        var text = postID+'post';
+        navigator.clipboard.writeText(text).then(function() {
+        console.log('Async: Copying to clipboard was successful!');
+      }, function(err) {
+        console.error('Async: Could not copy text: ', err);
+      });
+    },
+    copyStoryID(storyID) {
+        var text = storyID+'story';
         navigator.clipboard.writeText(text).then(function() {
         console.log('Async: Copying to clipboard was successful!');
       }, function(err) {

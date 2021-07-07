@@ -19,17 +19,16 @@
         <p v-if="!message.content.includes('http')" > {{message.content}}</p> 
 
         <!-- <p  >Methods date call: "{{ getEntirePost('60e5fbef1b8ceffde5005a13') }}"</p> -->
-        
                           <v-dialog  width="600px">
                           <template v-slot:activator="{ on, attrs }">
                             <v-btn
-                              v-if="message.content.length == 24"
+                              v-if="message.content.includes('post')"
                               v-bind="attrs"
                               v-on="on"
-                              @click="getEntirePost(message.content)"
+                              @click="getEntirePost(message.content.substr(0, message.content.length - 4))"
                               icon
                             
-                            >Open
+                            >Open post
                             <v-icon right> mdi-plus-circle </v-icon>
                             </v-btn>
                           
@@ -38,6 +37,26 @@
                             v-if="entirePost"
                             :post="entirePost"
                           ></postComponent>
+                        </v-dialog>
+
+
+                        <v-dialog width="600px">
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                             v-if="message.content.includes('story')"
+                              v-bind="attrs"
+                              v-on="on"
+                              @click="getEntireStory(message.content.substr(0, message.content.length - 5))"
+                              icon
+                            >
+                            Open story
+                              <v-icon right> mdi-plus-circle </v-icon>
+                             </v-btn>
+                          </template>
+                          <storyComponent
+                            v-if="entireStory"
+                            :post="entireStory"
+                          ></storyComponent>
                         </v-dialog>
       </li>
     </ul>
@@ -53,12 +72,13 @@
 import axios from "axios";
 import StatusIcon from "./StatusIcon";
 import postComponent from "./../components/Post.vue";
-
+import storyComponent from "./../components/Story.vue";
 export default {
   name: "MessagePanel",
   components: {
     StatusIcon,
     postComponent,
+    storyComponent
   },
   props: {
     user: Object,
@@ -67,6 +87,7 @@ export default {
     return {
       input: "",
       entirePost: null,
+      entireStory: null,
     };
   },
   methods: {
@@ -80,6 +101,24 @@ export default {
         this.user.messages[index - 1].fromSelf !==
           this.user.messages[index].fromSelf
       );
+    },
+     getEntireStory(storyID) {
+      // get entire post
+      axios
+        .get(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_STORY +
+            storyID,
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log(storyID)
+          this.entireStory = res.data;
+        });
     },
      getEntirePost(postID) {
       // get entire post
@@ -96,8 +135,6 @@ export default {
         )
         .then((res) => {
           this.entirePost = res.data;
-          console.log("AAAAAAAAAAAAAAAAAAAAA")
-          return res.data;
         });
     },
   },
