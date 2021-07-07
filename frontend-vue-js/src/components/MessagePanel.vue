@@ -13,7 +13,16 @@
         <div v-if="displaySender(message, index)" class="sender">
           {{ message.fromSelf ? "(yourself)" : user.username }}
         </div>
-        {{ message.content }}
+        
+        <img v-if="message.content.includes('http')" v-bind:src="message.content" /> 
+
+        <p v-if="!message.content.includes('http')" > {{message.content}}</p> 
+       
+        
+                          <postComponent
+                            v-if="entirePost"
+                            :post="entirePost"
+                          ></postComponent>
       </li>
     </ul>
 
@@ -25,12 +34,15 @@
 </template>
 
 <script>
+import axios from "axios";
 import StatusIcon from "./StatusIcon";
+import postComponent from "../components/Post.vue";
 
 export default {
   name: "MessagePanel",
   components: {
     StatusIcon,
+    postComponent,
   },
   props: {
     user: Object,
@@ -38,6 +50,7 @@ export default {
   data() {
     return {
       input: "",
+      entirePost: null,
     };
   },
   methods: {
@@ -51,6 +64,23 @@ export default {
         this.user.messages[index - 1].fromSelf !==
           this.user.messages[index].fromSelf
       );
+    },
+     getEntirePost(postID) {
+      // get entire post
+      axios
+        .get(
+          process.env.VUE_APP_BACKEND_URL +
+            process.env.VUE_APP_CONTENT_POST +
+            postID,
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
+            },
+          }
+        )
+        .then((res) => {
+          this.entirePost = res.data;
+        });
     },
   },
   computed: {
