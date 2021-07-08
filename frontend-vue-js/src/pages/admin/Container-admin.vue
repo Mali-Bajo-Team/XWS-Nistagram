@@ -21,6 +21,10 @@ export default {
       {
         title: "Verifications",
         to: "/admin/verifications"
+      },
+      {
+        title: "Inappropriate contents",
+        to:"/admin/inappropriatecontents"
       }
     ],
   }),

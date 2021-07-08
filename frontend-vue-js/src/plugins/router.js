@@ -18,6 +18,7 @@ import LocationSearch from './../pages/user/post-search/LocationSearch';
 import OtherProfile from './../pages/user/profile/OtherProfile';
 import PostFeed from './../pages/user/feed/PostFeed'
 import StoryFeed from './../pages/user/feed/StoryFeed'
+import InappropriateContent from './../pages/admin/InappropriateContent'
 
 
 const routes = [
@@ -119,6 +120,11 @@ const routes = [
                 component: Verifications,
                 name: 'verifications',
                 path: 'verifications'
+            },
+            {
+                component:InappropriateContent,
+                name:'inappropriatecontents',
+                path:'inappropriatecontents'
             },
             {
                 component: OtherProfile,
