@@ -3,7 +3,7 @@ using RecommendationService.Service.FollowServices;
 
 namespace RecommendationService.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class FollowController : ControllerBase
     {

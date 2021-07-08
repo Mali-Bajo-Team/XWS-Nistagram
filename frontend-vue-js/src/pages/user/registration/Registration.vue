@@ -249,6 +249,12 @@ export default {
 							username: this.form.username,
 						}
 					),
+					axios.post(
+						process.env.VUE_APP_BACKEND_URL +
+							process.env.VUE_APP_RECOMMENDATION_CREATE_USER +
+							this.form.username,
+						{}
+					),
 				])
 				.then(
 					axios.spread((data1, data2) => {

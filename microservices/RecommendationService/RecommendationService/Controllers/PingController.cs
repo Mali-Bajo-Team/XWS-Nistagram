@@ -4,7 +4,7 @@ using RecommendationService.Model;
 
 namespace RecommendationService.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class PingController : ControllerBase
     {
