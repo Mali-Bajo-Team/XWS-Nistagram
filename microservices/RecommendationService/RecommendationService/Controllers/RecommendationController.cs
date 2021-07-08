@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using RecommendationService.Model;
-using RecommendationService.Service.UserServices;
+using RecommendationService.Service.RecommendationServices;
 
 namespace RecommendationService.Controllers
 {
@@ -8,20 +9,17 @@ namespace RecommendationService.Controllers
     [ApiController]
     public class RecommendationController : ControllerBase
     {
-        private readonly IUserService _userService;
+        private readonly IRecommendationService _recommendationService;
 
-        public RecommendationController(IUserService userService)
+        public RecommendationController(IRecommendationService recommendationService)
         {
-            _userService = userService;
+            _recommendationService = recommendationService;
         }
 
-
-
         [HttpGet("{id}")]
-        public IActionResult GetUser(string id)
+        public async Task<IActionResult> GetUserRecommendations(string id)
         {
-            User user = new User {Id = id};
-            return Ok(user);
+            return Ok( await _recommendationService.GetUserRecommendations(id));
         }
     }
 }

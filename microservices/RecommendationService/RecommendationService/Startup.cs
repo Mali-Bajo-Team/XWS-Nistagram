@@ -13,8 +13,10 @@ using System.Threading.Tasks;
 using Microsoft.OpenApi.Models;
 using Neo4jClient;
 using RecommendationService.Repository.FollowRepo;
+using RecommendationService.Repository.RecommendationRepo;
 using RecommendationService.Repository.UserRepo;
 using RecommendationService.Service.FollowServices;
+using RecommendationService.Service.RecommendationServices;
 using RecommendationService.Service.UserServices;
 
 namespace RecommendationService
@@ -46,6 +48,9 @@ namespace RecommendationService
 
             services.AddScoped<IFollowService, FollowService>();
             services.AddScoped<IFollowRepository, FollowRepository>();
+
+            services.AddScoped<IRecommendationService,Service.RecommendationServices.RecommendationService>();
+            services.AddScoped<IRecommendationRepository, RecommendationRepository>();
 
             services.AddControllers();
 
