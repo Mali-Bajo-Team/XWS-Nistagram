@@ -60,7 +60,7 @@ namespace RecommendationService
             services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
             {
                 builder
-                    .WithOrigins(new[] { "http://localhost:3000" })
+                    .WithOrigins(new[] { "http://localhost:8082" })
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials();
