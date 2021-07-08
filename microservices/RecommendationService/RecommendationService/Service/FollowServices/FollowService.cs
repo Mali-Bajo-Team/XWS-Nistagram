@@ -19,5 +19,16 @@ namespace RecommendationService.Service.FollowServices
         {
             _followRepository.UnFollow(sourceUserId,destinationUserId);
         }
+
+        public void Block(string sourceUserId, string destinationUserId)
+        {
+            _followRepository.Block(sourceUserId, destinationUserId);
+        }
+
+        public void UnBlock(string sourceUserId, string destinationUserId)
+        {
+            _followRepository.UnBlock(sourceUserId, destinationUserId);
+
+        }
     }
 }

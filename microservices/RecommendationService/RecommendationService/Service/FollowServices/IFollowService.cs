@@ -9,5 +9,7 @@ namespace RecommendationService.Service.FollowServices
     {
         void Follow(string sourceUserId, string destinationUserId);
         void UnFollow(string sourceUserId, string destinationUserId);
+        void Block(string sourceUserId, string destinationUserId);
+        void UnBlock(string sourceUserId, string destinationUserId);
     }
 }

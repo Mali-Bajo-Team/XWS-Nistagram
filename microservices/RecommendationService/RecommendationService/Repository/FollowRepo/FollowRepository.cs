@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Neo4jClient;
-using RecommendationService.Model;
+﻿using Neo4jClient;
 
 namespace RecommendationService.Repository.FollowRepo
 {
@@ -27,6 +22,21 @@ namespace RecommendationService.Repository.FollowRepo
         {
             _graphClient.Cypher
                 .Match("(:User { Id: '" + sourceUserId + "' })-[relationship:FOLLOW]->(:User {Id: '" + destinationUserId + "'})")
+                .Delete("relationship")
+                .ExecuteWithoutResultsAsync();
+        }
+
+        public void Block(string sourceUserId, string destinationUserId)
+        {
+            _graphClient.Cypher
+                .Match("(sourceUser:User { Id: '" + sourceUserId + "' }), (destinationUser:User {Id: '" + destinationUserId + "'})")
+                .Create("(sourceUser)-[:BLOCK]->(destinationUser)").ExecuteWithoutResultsAsync();
+        }
+
+        public void UnBlock(string sourceUserId, string destinationUserId)
+        {
+            _graphClient.Cypher
+                .Match("(:User { Id: '" + sourceUserId + "' })-[relationship:BLOCK]->(:User {Id: '" + destinationUserId + "'})")
                 .Delete("relationship")
                 .ExecuteWithoutResultsAsync();
         }
