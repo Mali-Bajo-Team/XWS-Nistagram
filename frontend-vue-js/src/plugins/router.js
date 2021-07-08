@@ -19,6 +19,8 @@ import OtherProfile from './../pages/user/profile/OtherProfile';
 import PostFeed from './../pages/user/feed/PostFeed'
 import StoryFeed from './../pages/user/feed/StoryFeed'
 import InappropriateContent from './../pages/admin/InappropriateContent'
+import RecommendedFollowers from './../pages/user/recommendations/RecommendedFollowers'
+
 
 
 const routes = [
@@ -65,6 +67,12 @@ const routes = [
                 name: 'userProfile',
                 path: 'user/:username',
                 props: true
+            },
+            
+            {
+                component:RecommendedFollowers,
+                name:'recommendations',
+                path:'recommendations'
             }
         ]
     },
