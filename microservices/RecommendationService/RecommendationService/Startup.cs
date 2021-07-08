@@ -60,10 +60,9 @@ namespace RecommendationService
             services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
             {
                 builder
-                    .WithOrigins(new[] { "http://localhost:8082" })
+                    .AllowAnyOrigin()
                     .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials();
+                    .AllowAnyHeader();
             }));
 
             services.AddSwaggerGen(c =>
