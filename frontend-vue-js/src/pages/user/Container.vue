@@ -51,6 +51,10 @@ export default {
             to: "/locationsearch"
           }
         ],
+      },
+      {
+        title:"Recommendations",
+        to:"/recommendations"
       }
     ],
   }),
