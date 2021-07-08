@@ -9,5 +9,6 @@ namespace RecommendationService.Service.UserServices
     public interface IUserService
     {
         User CreateUser(string userId);
+        void DeleteUser(string userId);
     }
 }

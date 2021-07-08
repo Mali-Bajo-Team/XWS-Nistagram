@@ -22,11 +22,13 @@ namespace RecommendationService.Controllers
             return Ok(_userService.CreateUser(id));
         }
 
-        [HttpGet("{id}")]
-        public IActionResult GetUser(string id)
+
+        [HttpDelete]
+        [Route("{id}")]
+        public IActionResult DeleteUser(string id)
         {
-            User user = new User {Id = id};
-            return Ok(user);
+            _userService.DeleteUser(id);
+            return Ok();
         }
     }
 }

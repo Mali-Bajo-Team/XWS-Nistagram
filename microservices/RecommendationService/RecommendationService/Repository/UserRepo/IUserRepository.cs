@@ -9,5 +9,6 @@ namespace RecommendationService.Repository.UserRepo
     public interface IUserRepository
     {
         User CreateUser(string userId);
+        void DeleteUser(string userId);
     }
 }

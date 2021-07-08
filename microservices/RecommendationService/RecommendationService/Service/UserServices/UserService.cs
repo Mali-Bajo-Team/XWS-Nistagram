@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using RecommendationService.Model;
+﻿using RecommendationService.Model;
 using RecommendationService.Repository.UserRepo;
 
 namespace RecommendationService.Service.UserServices
@@ -20,6 +16,11 @@ namespace RecommendationService.Service.UserServices
         public User CreateUser(string userId)
         {
             return _userRepository.CreateUser(userId);
+        }
+
+        public void DeleteUser(string userId)
+        {
+           _userRepository.DeleteUser(userId);
         }
     }
 }

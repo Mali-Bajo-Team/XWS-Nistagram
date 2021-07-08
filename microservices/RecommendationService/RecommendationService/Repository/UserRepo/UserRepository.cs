@@ -24,5 +24,12 @@ namespace RecommendationService.Repository.UserRepo
 
             return user;
         }
+
+        public void DeleteUser(string userId)
+        {
+            _graphClient.Cypher.Match("(user:User { Id: '"+userId+"' } )").Delete("user").ExecuteWithoutResultsAsync();
+        }
+
+
     }
 }
