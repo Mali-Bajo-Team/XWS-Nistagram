@@ -19,10 +19,16 @@ namespace RecommendationService.Repository.FollowRepo
         public void Follow(string sourceUserId, string destinationUserId)
         {
             _graphClient.Cypher
-                .Match("(sourceUser:User), (destinationUser:User)")
-                .Where((User sourceUser) => sourceUser.Id == sourceUserId)
-                .AndWhere((User destinationUser) => destinationUser.Id == destinationUserId)
+                .Match("(sourceUser:User { Id: '" + sourceUserId + "' }), (destinationUser:User {Id: '" + destinationUserId + "'})")
                 .Create("(sourceUser)-[:FOLLOW]->(destinationUser)").ExecuteWithoutResultsAsync();
+        }
+
+        public void UnFollow(string sourceUserId, string destinationUserId)
+        {
+            _graphClient.Cypher
+                .Match("(:User { Id: '" + sourceUserId + "' })-[relationship:FOLLOW]->(:User {Id: '" + destinationUserId + "'})")
+                .Delete("relationship")
+                .ExecuteWithoutResultsAsync();
         }
     }
 }

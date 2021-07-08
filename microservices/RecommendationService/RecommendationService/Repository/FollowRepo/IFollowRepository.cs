@@ -8,5 +8,6 @@ namespace RecommendationService.Repository.FollowRepo
     public interface IFollowRepository
     {
         void Follow(string sourceUserId, string destinationUserId);
+        void UnFollow(string sourceUserId, string destinationUserId);
     }
 }

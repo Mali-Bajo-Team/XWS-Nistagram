@@ -8,5 +8,6 @@ namespace RecommendationService.Service.FollowServices
     public interface IFollowService
     {
         void Follow(string sourceUserId, string destinationUserId);
+        void UnFollow(string sourceUserId, string destinationUserId);
     }
 }

@@ -14,5 +14,10 @@ namespace RecommendationService.Service.FollowServices
         {
             _followRepository.Follow(sourceUserId,destinationUserId);
         }
+
+        public void UnFollow(string sourceUserId, string destinationUserId)
+        {
+            _followRepository.UnFollow(sourceUserId,destinationUserId);
+        }
     }
 }

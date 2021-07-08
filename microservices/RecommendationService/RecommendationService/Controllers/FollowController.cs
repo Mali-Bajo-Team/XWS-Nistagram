@@ -21,5 +21,13 @@ namespace RecommendationService.Controllers
             _followService.Follow(sourceUserId, destinationUserId);
             return Ok();
         }
+
+        [HttpDelete]
+        [Route("{sourceUserId}/{destinationUserId}")]
+        public IActionResult DeleteFollow(string sourceUserId, string destinationUserId)
+        {
+            _followService.UnFollow(sourceUserId, destinationUserId);
+            return Ok();
+        }
     }
 }
