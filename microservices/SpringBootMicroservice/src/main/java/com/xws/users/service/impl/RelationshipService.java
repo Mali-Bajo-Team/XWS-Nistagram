@@ -314,12 +314,16 @@ public class RelationshipService implements IRelationshipService {
 			throw new USConflictException("You cannot block the requested user because they have blocked you.");
 		}
 
-		existingRelationship = new Relationship();
-		oppositeRelationship = new Relationship();
-		existingRelationship.setFrom(from);
-		existingRelationship.setTowards(towards);
-		oppositeRelationship.setFrom(towards);
-		oppositeRelationship.setTowards(from);
+		if (existingRelationship == null) {
+			existingRelationship = new Relationship();
+			existingRelationship.setFrom(from);
+			existingRelationship.setTowards(towards);
+		}
+		if (oppositeRelationship == null) {
+			oppositeRelationship = new Relationship();
+			oppositeRelationship.setFrom(towards);
+			oppositeRelationship.setTowards(from);		
+		}
 
 		existingRelationship.setRelationshipType(RelationshipType.BLOCKED);
 		oppositeRelationship.setRelationshipType(RelationshipType.BLOCKED);
