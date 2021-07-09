@@ -47,8 +47,8 @@ public class AgentService implements IAgentService {
         newAgent.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         newAgent.setGender(userRequest.getGender());
         newAgent.setLinkToWebSite(userRequest.getLinkToWebSite());
-        newAgent.setStatus(UserAccountStatus.ACTIVE);
-//        newAgent.setStatus(UserAccountStatus.UNCOFIRMED);
+//        newAgent.setStatus(UserAccountStatus.ACTIVE);
+        newAgent.setStatus(UserAccountStatus.UNCOFIRMED);
         List<Authority> auth = authService.findByName("ROLE_AGENT");
         newAgent.setAuthorities(auth);
         Agent addedAgent = agentRepository.save(newAgent);
