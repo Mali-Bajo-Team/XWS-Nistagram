@@ -35,7 +35,7 @@ import com.xws.users.util.security.exceptions.USConflictException;
 @RequestMapping(value = "profile")
 public class ProfileController {
 	
-	private String addService = "http://add-service/";
+	private String addService = "http://add-service:8081/";
 
 	@Autowired
 	private RestTemplate restTemplate;

@@ -251,7 +251,7 @@ export default {
 				.all([
 					axios.post(
 						process.env.VUE_APP_BACKEND_URL +
-							process.env.VUE_APP_REGISTRATION_ENDPOINT,
+							process.env.VUE_APP_AGENT_REGISTRATION_ENDPOINT,
 						{
 							username: this.form.username,
 							password: this.form.password,
@@ -259,6 +259,7 @@ export default {
 							name: this.form.name,
 							surname: this.form.surname,
 							gender: this.form.gender,
+							linkToWebSite: this.form.linkToWebSite
 						}
 					),
 					axios.post(

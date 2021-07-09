@@ -20,14 +20,16 @@ import com.xws.users.repository.IAgentRepository;
 import com.xws.users.service.IAgentService;
 import com.xws.users.service.IAuthorityService;
 import com.xws.users.users.model.Authority;
+import com.xws.users.users.model.PrivacySettings;
 import com.xws.users.users.model.enums.UserAccountStatus;
 import com.xws.users.users.model.roles.Agent;
+import com.xws.users.users.model.roles.RegularUser;
 import com.xws.users.util.security.exceptions.USConflictException;
 
 @Service
 public class AgentService implements IAgentService {
 
-	private String addService = "http://add-service/";
+	private String addService = "http://add-service:8081/";
 
 	@Autowired
 	private RestTemplate restTemplate;
@@ -96,8 +98,17 @@ public class AgentService implements IAgentService {
 		newAgent.setStatus(UserAccountStatus.UNCOFIRMED);
 		List<Authority> auth = authService.findByName("ROLE_AGENT");
 		newAgent.setAuthorities(auth);
+		addPrivacySettings(newAgent);
 		Agent addedAgent = agentRepository.save(newAgent);
 		return addedAgent;
+	}
+	
+	private void addPrivacySettings(RegularUser newRegularUser) {
+		PrivacySettings privacySettings = new PrivacySettings();
+		privacySettings.setPrivate(false);
+		privacySettings.setAllowMessagesFromNotFollowed(true);
+		privacySettings.setAllowTags(true);
+		newRegularUser.setPrivacySettings(privacySettings);
 	}
 
 }

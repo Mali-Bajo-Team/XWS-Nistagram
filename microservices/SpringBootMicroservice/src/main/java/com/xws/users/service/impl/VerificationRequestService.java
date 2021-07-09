@@ -29,7 +29,7 @@ import com.xws.users.util.security.exceptions.USConflictException;
 @Service
 public class VerificationRequestService implements IVerificationRequestService {
 
-	private String addService = "http://add-service/";
+	private String addService = "http://add-service:8081/";
 
 	@Autowired
 	private RestTemplate restTemplate;

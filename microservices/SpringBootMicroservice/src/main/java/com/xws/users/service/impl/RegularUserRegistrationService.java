@@ -28,7 +28,7 @@ import com.xws.users.util.security.exceptions.USConflictException;
 @Service
 public class RegularUserRegistrationService implements IRegularUserRegistrationService {
 
-	private String addService = "http://add-service/";
+	private String addService = "http://add-service:8081/";
 	
 	@Autowired
 	private RestTemplate restTemplate;
