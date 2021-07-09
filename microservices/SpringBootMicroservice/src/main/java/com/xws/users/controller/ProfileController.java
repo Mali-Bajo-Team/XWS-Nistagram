@@ -2,7 +2,9 @@ package com.xws.users.controller;
 
 
 import com.xws.users.dto.RegularUserImageUpdateDTO;
+import com.xws.users.service.IAgentService;
 import com.xws.users.users.model.PrivacySettings;
+import com.xws.users.users.model.roles.Agent;
 import com.xws.users.users.model.roles.UserAccount;
 import com.xws.users.util.security.exceptions.USConflictException;
 import javax.annotation.security.PermitAll;
@@ -18,6 +20,8 @@ import com.xws.users.dto.UserProfileDTO;
 import com.xws.users.service.impl.RegularUserService;
 import com.xws.users.users.model.roles.RegularUser;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "profile")
 public class ProfileController {
@@ -25,7 +29,10 @@ public class ProfileController {
 	@Autowired
 	private RegularUserService regularUserService;
 
-	@PreAuthorize("hasRole('REGULAR')")
+	@Autowired
+	private IAgentService agentService;
+
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	@GetMapping
 	public ResponseEntity<RegularUserUpdateDTO> addUser(@RequestHeader(value = "user-username") String username) {
 		RegularUser regularUser = regularUserService.findByUsername(username);
@@ -37,7 +44,7 @@ public class ProfileController {
 		return ResponseEntity.ok(new RegularUserUpdateDTO(regularUser));
 	}
 
-	@PreAuthorize("hasRole('REGULAR')")
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	@PutMapping(consumes = "application/json")
 	public ResponseEntity<RegularUserUpdateDTO> updateUserAcc(@RequestBody RegularUserUpdateDTO regularUserUpdateDTO) {
 
@@ -66,7 +73,7 @@ public class ProfileController {
 		return new ResponseEntity<>(new RegularUserUpdateDTO(regularUserForUpdated), HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasRole('REGULAR')")
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	@PostMapping("imageurlupdate")
 	public ResponseEntity<RegularUserImageUpdateDTO> setProfileImageURL(@RequestBody RegularUserImageUpdateDTO regularUserImageUpdateDTO) {
 
@@ -100,7 +107,7 @@ public class ProfileController {
 	}
 
 	@PostMapping("setprivate/{username}")
-	@PreAuthorize("hasRole('REGULAR')")
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	public ResponseEntity<Boolean> setprivate(@PathVariable(required = true) String username, Authentication authentication) {
 		RegularUser regularUser = regularUserService.findByUsername(username);
 		Boolean isPrivate;
@@ -120,7 +127,7 @@ public class ProfileController {
 	}
 
 	@PostMapping("setpublic/{username}")
-	@PreAuthorize("hasRole('REGULAR')")
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	public ResponseEntity<Boolean> setpublic(@PathVariable(required = true) String username, Authentication authentication) {
 		RegularUser regularUser = regularUserService.findByUsername(username);
 		Boolean isPrivate;
@@ -140,7 +147,7 @@ public class ProfileController {
 	}
 
 	@PostMapping("allowmessages/{username}")
-	@PreAuthorize("hasRole('REGULAR')")
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	public ResponseEntity<Boolean> allowMessagesFromNotFollowed(@PathVariable(required = true) String username, Authentication authentication) {
 		RegularUser regularUser = regularUserService.findByUsername(username);
 		Boolean isAllowed;
@@ -160,7 +167,7 @@ public class ProfileController {
 	}
 
 	@PostMapping("notallowmessages/{username}")
-	@PreAuthorize("hasRole('REGULAR')")
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	public ResponseEntity<Boolean> notAllowMessagesFromNotFollowed(@PathVariable(required = true) String username, Authentication authentication) {
 		RegularUser regularUser = regularUserService.findByUsername(username);
 		Boolean isAllowed;
@@ -180,7 +187,7 @@ public class ProfileController {
 	}
 
 	@PostMapping("allowtags/{username}")
-	@PreAuthorize("hasRole('REGULAR')")
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	public ResponseEntity<Boolean> allowtags(@PathVariable(required = true) String username, Authentication authentication) {
 		RegularUser regularUser = regularUserService.findByUsername(username);
 		Boolean isBanned;
@@ -200,7 +207,7 @@ public class ProfileController {
 	}
 
 	@PostMapping("bantags/{username}")
-	@PreAuthorize("hasRole('REGULAR')")
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	public ResponseEntity<Boolean> bantags(@PathVariable(required = true) String username, Authentication authentication) {
 		RegularUser regularUser = regularUserService.findByUsername(username);
 		Boolean isBanned;
@@ -218,4 +225,5 @@ public class ProfileController {
 
 		return new ResponseEntity<>(isBanned, HttpStatus.OK);
 	}
+
 }

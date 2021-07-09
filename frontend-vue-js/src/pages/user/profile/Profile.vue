@@ -944,12 +944,9 @@
                               @click="getEntirePost(post._id)"
                               icon
                             >
-                            <v-icon right> mdi-plus-circle </v-icon>
+                              <v-icon right> mdi-plus-circle </v-icon>
                             </v-btn>
-                             <v-btn
-                              @click="copyPostID(post._id)"
-                              icon
-                            >
+                            <v-btn @click="copyPostID(post._id)" icon>
                               <v-icon right> mdi-share </v-icon>
                             </v-btn>
                           </template>
@@ -1011,11 +1008,8 @@
                               icon
                             >
                               <v-icon right> mdi-plus-circle </v-icon>
-                            </v-btn>          
-                             <v-btn
-                              @click="copyStoryID(story._id)"
-                              icon
-                            >
+                            </v-btn>
+                            <v-btn @click="copyStoryID(story._id)" icon>
                               <v-icon right> mdi-share </v-icon>
                             </v-btn>
                           </template>
@@ -1596,7 +1590,6 @@
       </v-row>
       <!-- End of posts, highlights, stories, saved, followers, following, verification requests -->
     </v-col>
-
     <v-spacer></v-spacer>
   </v-row>
 </template>
@@ -1708,9 +1701,10 @@ export default {
   },
   computed: {},
   mounted() {
-this.axios
+    this.axios
       .get(
-        process.env.VUE_APP_BACKEND_URL + process.env.VUE_APP_FOLLOW_REQUEST_ENDPOINT,
+        process.env.VUE_APP_BACKEND_URL +
+          process.env.VUE_APP_FOLLOW_REQUEST_ENDPOINT,
         {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("JWT-CPIS"),
@@ -1718,7 +1712,7 @@ this.axios
         }
       )
       .then((response) => {
-        this.requests = response.data
+        this.requests = response.data;
       })
       .catch((error) => {
         console.log(error);
@@ -2222,22 +2216,6 @@ this.axios
           this.entirePost = res.data;
         });
     },
-    copyPostID(postID) {
-        var text = postID+'post';
-        navigator.clipboard.writeText(text).then(function() {
-        console.log('Async: Copying to clipboard was successful!');
-      }, function(err) {
-        console.error('Async: Could not copy text: ', err);
-      });
-    },
-    copyStoryID(storyID) {
-        var text = storyID+'story';
-        navigator.clipboard.writeText(text).then(function() {
-        console.log('Async: Copying to clipboard was successful!');
-      }, function(err) {
-        console.error('Async: Could not copy text: ', err);
-      });
-    },
     getEntireStory(storyID) {
       // get entire post
       axios
@@ -2310,7 +2288,13 @@ this.axios
           alert("Error: " + error);
         });
     },
-
+    getImageUrl(post) {
+      return (
+        process.env.VUE_APP_BACKEND_URL +
+        process.env.VUE_APP_FILE_ENDPOINT +
+        post.path
+      );
+    },
     getImageUrlByPATH(path) {
       if (path)
         return (
@@ -2574,13 +2558,6 @@ this.axios
           this.form.isallowedtags = res.data;
         });
     },
-    getImageUrl(post) {
-      return (
-        process.env.VUE_APP_BACKEND_URL +
-        process.env.VUE_APP_FILE_ENDPOINT +
-        post.path
-      );
-    },
     banTagsPrivacySettings() {
       this.axios
         .post(
@@ -2601,6 +2578,28 @@ this.axios
     onFileSelected(event) {
       this.selectedFiles = event;
       console.log(this.selectedFiles);
+    },
+    copyPostID(postID) {
+      var text = postID + "post";
+      navigator.clipboard.writeText(text).then(
+        function () {
+          console.log("Async: Copying to clipboard was successful!");
+        },
+        function (err) {
+          console.error("Async: Could not copy text: ", err);
+        }
+      );
+    },
+    copyStoryID(storyID) {
+      var text = storyID + "story";
+      navigator.clipboard.writeText(text).then(
+        function () {
+          console.log("Async: Copying to clipboard was successful!");
+        },
+        function (err) {
+          console.error("Async: Could not copy text: ", err);
+        }
+      );
     },
   },
 };

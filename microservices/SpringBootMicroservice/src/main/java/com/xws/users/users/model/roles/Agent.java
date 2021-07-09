@@ -5,7 +5,7 @@ import javax.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("Agent")
-public class Agent extends UserAccount {
+public class Agent extends RegularUser {
 	
 	private static final long serialVersionUID = -1092631021400279490L;
 

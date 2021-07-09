@@ -3,8 +3,15 @@ package com.xws.users.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.xws.users.dto.FollowerDTO;
 import com.xws.users.repository.IFollowRequestRepository;
@@ -21,6 +28,11 @@ import com.xws.users.util.security.exceptions.USConflictException;
 
 @Service
 public class RelationshipService implements IRelationshipService {
+
+	private String recommendationService = "http://recommendationservice/";
+
+	@Autowired
+	private RestTemplate restTemplate;
 
 	@Autowired
 	private IRegularUserRepository userRepository;
@@ -86,6 +98,7 @@ public class RelationshipService implements IRelationshipService {
 		return following;
 	}
 
+	@Transactional
 	@Override
 	public void follow(String fromUsername, String towardsUsername) {
 		RegularUser from = userRepository.findByUsername(fromUsername);
@@ -126,8 +139,17 @@ public class RelationshipService implements IRelationshipService {
 		existingRelationship.setRelationshipType(RelationshipType.FOLLOWED);
 
 		relationshipRepository.save(existingRelationship);
+
+		String url = recommendationService + "Follow/follow/" + fromUsername + "/" + towardsUsername;
+		HttpHeaders headers = new HttpHeaders();
+		HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+		ResponseEntity<Void> responseEntity = restTemplate.exchange(url, HttpMethod.POST, entity, Void.class);
+		if (!responseEntity.getStatusCode().is2xxSuccessful()) {
+			throw new USConflictException();
+		}
 	}
 
+	@Transactional
 	@Override
 	public void unfollow(String fromUsername, String towardsUsername) {
 		RegularUser from = userRepository.findByUsername(fromUsername);
@@ -147,6 +169,14 @@ public class RelationshipService implements IRelationshipService {
 		existingRelationship.setMuted(false);
 
 		relationshipRepository.delete(existingRelationship);
+
+		String url = recommendationService + "Follow/follow/" + fromUsername + "/" + towardsUsername;
+		HttpHeaders headers = new HttpHeaders();
+		HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+		ResponseEntity<Void> responseEntity = restTemplate.exchange(url, HttpMethod.DELETE, entity, Void.class);
+		if (!responseEntity.getStatusCode().is2xxSuccessful()) {
+			throw new USConflictException();
+		}
 	}
 
 	private void createFollowRequest(RegularUser from, RegularUser towards) {
@@ -157,6 +187,7 @@ public class RelationshipService implements IRelationshipService {
 		followRequestRepository.save(request);
 	}
 
+	@Transactional
 	@Override
 	public void acceptFollowRequest(Long id, Long userId) {
 		FollowRequest request = followRequestRepository.findById(id).orElse(null);
@@ -179,6 +210,15 @@ public class RelationshipService implements IRelationshipService {
 
 		relationshipRepository.save(existingRelationship);
 		followRequestRepository.delete(request);
+
+		String url = recommendationService + "Follow/follow/" + existingRelationship.getFrom().getUsername() + "/"
+				+ existingRelationship.getTowards().getUsername();
+		HttpHeaders headers = new HttpHeaders();
+		HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+		ResponseEntity<Void> responseEntity = restTemplate.exchange(url, HttpMethod.POST, entity, Void.class);
+		if (!responseEntity.getStatusCode().is2xxSuccessful()) {
+			throw new USConflictException();
+		}
 	}
 
 	@Override
@@ -252,6 +292,7 @@ public class RelationshipService implements IRelationshipService {
 		relationshipRepository.save(relationship);
 	}
 
+	@Transactional
 	@Override
 	public void block(String fromUsername, String towardsUsername) {
 		RegularUser from = userRepository.findByUsername(fromUsername);
@@ -273,12 +314,16 @@ public class RelationshipService implements IRelationshipService {
 			throw new USConflictException("You cannot block the requested user because they have blocked you.");
 		}
 
-		existingRelationship = new Relationship();
-		oppositeRelationship = new Relationship();
-		existingRelationship.setFrom(from);
-		existingRelationship.setTowards(towards);
-		oppositeRelationship.setFrom(towards);
-		oppositeRelationship.setTowards(from);
+		if (existingRelationship == null) {
+			existingRelationship = new Relationship();
+			existingRelationship.setFrom(from);
+			existingRelationship.setTowards(towards);
+		}
+		if (oppositeRelationship == null) {
+			oppositeRelationship = new Relationship();
+			oppositeRelationship.setFrom(towards);
+			oppositeRelationship.setTowards(from);		
+		}
 
 		existingRelationship.setRelationshipType(RelationshipType.BLOCKED);
 		oppositeRelationship.setRelationshipType(RelationshipType.BLOCKED);
@@ -292,6 +337,15 @@ public class RelationshipService implements IRelationshipService {
 
 		relationshipRepository.save(existingRelationship);
 		relationshipRepository.save(oppositeRelationship);
+
+		String url = recommendationService + "Follow/block/" + existingRelationship.getFrom().getUsername() + "/"
+				+ existingRelationship.getTowards().getUsername();
+		HttpHeaders headers = new HttpHeaders();
+		HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+		ResponseEntity<Void> responseEntity = restTemplate.exchange(url, HttpMethod.POST, entity, Void.class);
+		if (!responseEntity.getStatusCode().is2xxSuccessful()) {
+			throw new USConflictException();
+		}
 	}
 
 	@Override
