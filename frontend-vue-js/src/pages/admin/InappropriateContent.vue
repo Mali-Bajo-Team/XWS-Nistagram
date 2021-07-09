@@ -49,7 +49,7 @@
 								outlined
 								rounded
 								color="primary"
-								@click="removeContent('kao kontent')"
+								@click="removeContent(inappropriatePost)"
 							>
 								<v-icon>
 									mdi-delete-circle
@@ -128,6 +128,48 @@ export default {
 	methods: {
 		removeContent(content) {
 			console.log('\n\n\n remove content' + content + ' \n\n\n');
+
+			// DELETE USER POST IN CONTENT SERVICE
+			this.axios
+				.get(
+					process.env.VUE_APP_BACKEND_URL +
+						process.env.VUE_APP_USER_POST_DELETE +
+						content.post_creator_username +
+						'/' +
+						content.post_id,
+					{
+						headers: {
+							Authorization: 'Bearer ' + localStorage.getItem('JWT-CPIS'),
+						},
+					}
+				)
+				.then((response) => {
+					console.log(response);
+				})
+				.catch((e) => {
+					console.log('Inappropriate content error: ' + e);
+				});
+
+			// DELETE INAPPROPRIATE POST IN CONTENT SERVICE
+			this.axios
+				.get(
+					process.env.VUE_APP_BACKEND_URL +
+						process.env.VUE_APP_DELETE_INAPPROPRIATE_POST +
+						content._id +
+						'/' +
+						content.post_id,
+					{
+						headers: {
+							Authorization: 'Bearer ' + localStorage.getItem('JWT-CPIS'),
+						},
+					}
+				)
+				.then((response) => {
+					console.log(response);
+				})
+				.catch((e) => {
+					console.log('Inappropriate content error: ' + e);
+				});
 		},
 		removeProfile(username) {
 			console.log('\n\n\n remove profile' + username + ' \n\n');

@@ -469,14 +469,21 @@ func (postStoreRef *PostStore) GetPostReaction(username string, postID string) *
 	return &reaction
 }
 
-func (postStoreRef *PostStore) DeleteInappropriatePost(inappropriatePostID string) *mongo.DeleteResult {
+func (postStoreRef *PostStore) DeleteInappropriatePost(inappropriatePostID string, postID string) (*mongo.DeleteResult, *mongo.DeleteResult) {
 	collectionInappropriatePosts := postStoreRef.ourClient.Database("content-service-db").Collection("inappropriatePosts")
+	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
 	InappropriatePostObjectID,_ := primitive.ObjectIDFromHex(inappropriatePostID)
+	PostObjectID,_ := primitive.ObjectIDFromHex(postID)
 	deleteResult,_ := collectionInappropriatePosts.DeleteOne(
 		context.Background(),
 		bson.M{"_id": InappropriatePostObjectID},
 	)
-	return deleteResult
+
+	del2,_ := collectionPosts.DeleteOne(
+		context.Background(),
+		bson.M{"_id": PostObjectID},
+	)
+	return deleteResult,del2
 }
 
 
