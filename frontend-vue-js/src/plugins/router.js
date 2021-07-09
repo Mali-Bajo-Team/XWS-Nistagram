@@ -6,6 +6,7 @@ Vue.use(VueRouter);
 import { getParsedToken, getToken } from '../util/token';
 
 import User from './../pages/user/Container';
+import Agent from './../pages/agent/Container';
 import Guest from './../pages/user/Container-guest';
 import Admin from './../pages/admin/Container-admin';
 import Verifications from './../pages/admin/Verifications';
@@ -71,6 +72,58 @@ const routes = [
 			{
 				component: RecommendedFollowers,
 				name: 'recommendations',
+				path: 'recommendations',
+			},
+		],
+	},
+	{
+		component: Agent,
+		path: '/agent',
+		meta: {
+			requiresAuth: true,
+			role: 'AGENT',
+		},
+		children: [
+			{
+				component: PostFeed,
+				name: 'apostfeed',
+				path: 'feed/posts',
+			},
+			{
+				component: StoryFeed,
+				name: 'astoryfeed',
+				path: 'feed/stories',
+			},
+			{
+				component: Profile,
+				name: 'aprofile',
+				path: 'profile',
+			},
+			{
+				component: UserSearch,
+				name: 'ausersearch',
+				path: 'usersearch',
+			},
+			{
+				component: HashtagSearch,
+				name: 'ahashtagsearch',
+				path: 'hashtagsearch',
+			},
+			{
+				component: LocationSearch,
+				name: 'alocationsearch',
+				path: 'locationsearch',
+			},
+			{
+				component: OtherProfile,
+				name: 'auserProfile',
+				path: 'user/:username',
+				props: true,
+			},
+
+			{
+				component: RecommendedFollowers,
+				name: 'arecommendations',
 				path: 'recommendations',
 			},
 		],
@@ -151,6 +204,7 @@ const routes = [
 function getHomePage(role) {
 	if (role == 'REGULAR') return '/feed/posts';
 	else if (role == 'ADMINISTRATOR') return '/admin/verifications';
+	else if (role == 'AGENT') return '/agent/feed/posts';
 	else return '/';
 }
 
