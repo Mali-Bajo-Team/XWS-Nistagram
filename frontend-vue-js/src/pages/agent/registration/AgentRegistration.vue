@@ -3,7 +3,7 @@
 		<v-spacer></v-spacer>
 		<v-col sm="8" md="6" lg="4" xl="4" cols="12">
 			<v-card elevation="4" class="pa-5">
-				<v-card-title>User Register</v-card-title>
+				<v-card-title>Agent Registration</v-card-title>
 
 				<v-form>
 					<v-text-field
@@ -69,6 +69,14 @@
 						label="Gender"
 						outlined
 					></v-select>
+
+					<v-text-field
+						v-model="form.linkToWebSite"
+						:error-messages="linkToWebSiteErrors"
+						label="Link to website"
+						@blur="$v.form.linkToWebSite.$touch()"
+						@input="$v.form.linkToWebSite.$touch()"
+					></v-text-field>
 
 					<v-card-actions class="pt-5">
 						<v-btn color="secondary" text @click="reset">
@@ -143,6 +151,7 @@ export default {
 				name: '',
 				surname: '',
 				gender: '',
+				linkToWebSite: '',
 			},
 		};
 	},
@@ -168,6 +177,9 @@ export default {
 				required,
 			},
 			surname: {
+				required,
+			},
+			linkToWebSite: {
 				required,
 			},
 			gender: {
@@ -211,6 +223,13 @@ export default {
 			const errors = [];
 			if (!this.$v.form.surname.$dirty) return errors;
 			!this.$v.form.surname.required && errors.push('Surname is required.');
+			return errors;
+		},
+		linkToWebSiteErrors() {
+			const errors = [];
+			if (!this.$v.form.linkToWebSite.$dirty) return errors;
+			!this.$v.form.linkToWebSite.required &&
+				errors.push('Link To Web Site is required.');
 			return errors;
 		},
 		usernameErrors() {
@@ -289,6 +308,7 @@ export default {
 			this.form.name = '';
 			this.form.surname = '';
 			this.form.gender = '';
+			this.form.linkToWebSite = '';
 		},
 	},
 };
