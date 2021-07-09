@@ -19,6 +19,10 @@ func InitializePostRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/story/inappropriate/", server.CreateInappropriateStoryEndpoint).Methods("POST")
 	router.HandleFunc("/story/inappropriate/", server.GetInappropriateStoryEndpoint).Methods("GET")
 
+	// TODO: This should be delete method, but deadline is tomorrow, so fix this when you get a time :D
+	router.HandleFunc("/post/delete/{username}/{postid}", server.DeleteUserPostEndpoint).Methods("GET")
+
+
 	router.HandleFunc("/post/feed/{page}", server.GetPostsForFeedEndpoint).Methods("GET")
 	router.HandleFunc("/story/feed/{page}", server.GetStoriesForFeedEndpoint).Methods("GET")
 

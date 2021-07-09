@@ -693,3 +693,4 @@ func (postStoreRef *PostStore) GetStoriesByCreators(usernames []string, page int
 
 	return result
 }
+

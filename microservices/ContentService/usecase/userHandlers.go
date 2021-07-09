@@ -11,8 +11,10 @@ import (
 func InitializeUserRouter(router *mux.Router, server *ContentServer) {
 	router.HandleFunc("/user/", server.CreateUserEndpoint).Methods("POST")
 	router.HandleFunc("/user/update/", server.UpdateUserEndpoint).Methods("POST")
+
 	router.HandleFunc("/user/id/{id}", server.GetUserByIDEndpoint).Methods("GET")
 	router.HandleFunc("/user/username/{username}", server.GetUserByUsernameEndpoint).Methods("GET")
+
 
 	router.HandleFunc("/user/post/{id}", server.GetUserPostsByIDEndpoint).Methods("GET")
 	router.HandleFunc("/user/story/{id}", server.GetUserStoriesByIDEndpoint).Methods("GET")
@@ -28,6 +30,19 @@ func InitializeUserRouter(router *mux.Router, server *ContentServer) {
 
 	router.HandleFunc("/user/saved/{userid}", server.AddPostToUserSavedEndpoint).Methods("POST")
 	router.HandleFunc("/user/saved/{userid}", server.GetUserSavedPostsEndpoint).Methods("GET")
+}
+
+func (contentServerRef *ContentServer) DeleteUserPostEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	params := mux.Vars(request)
+	contentServerRef.postStore.DeleteUserPost(params["username"],params["postid"])
+	var result = contentServerRef.postStore.GetUserByUsername(params["username"])
+	var user model.User
+	err := result.Decode(&user)
+	if err != nil {
+		return
+	}
+	renderJSON(response, user)
 }
 
 func (contentServerRef *ContentServer) CreateUserEndpoint(response http.ResponseWriter, request *http.Request) {
