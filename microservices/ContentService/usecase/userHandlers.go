@@ -45,6 +45,12 @@ func (contentServerRef *ContentServer) DeleteUserPostEndpoint(response http.Resp
 	renderJSON(response, user)
 }
 
+func (contentServerRef *ContentServer) DeleteInappropriatePostEndpoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+	params := mux.Vars(request)
+	renderJSON(response, contentServerRef.postStore.DeleteInappropriatePost(params["id"]))
+}
+
 func (contentServerRef *ContentServer) CreateUserEndpoint(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("content-type", "application/json")
 
