@@ -5,7 +5,11 @@
 		<v-col sm="8" md="12" lg="4" cols="12">
 			<v-row>
 				<v-col>
-					<v-card>
+					<v-card
+						v-for="inappropriatePost in inappropriatePosts"
+						:key="inappropriatePost._id"
+						style="margin-bottom:3em;"
+					>
 						<!--Inappropriate content-->
 						<v-img
 							height="250"
@@ -15,11 +19,13 @@
 						<!--Information:usernames and date about content-->
 						<v-card-text>
 							The owner of content:
-							<b>ivkica@gmail.com</b>
+							<b>{{ inappropriatePost.post_creator_id }}</b>
 							<br />
-							The person who reported this content:<b>ancica@gmail.com</b>
+							The person who reported this content:<b>
+								{{ inappropriatePost.post_reporter_id }}
+							</b>
 							<br />
-							Content reporting date: <b>12-05-2021</b>
+							Content reporting date: <b>{{ inappropriatePost.time_stamp }}</b>
 						</v-card-text>
 
 						<!--End of information about  content-->
@@ -31,7 +37,7 @@
 							The reason of reporting this content as inappropriate:
 							<br />
 
-							<b>I dont like mentioning nations and racism</b>
+							<b>{{ inappropriatePost.message }}</b>
 						</v-card-text>
 						<!--End of reason for reporting-->
 
