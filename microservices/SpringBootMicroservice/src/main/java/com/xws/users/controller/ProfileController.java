@@ -1,30 +1,44 @@
 package com.xws.users.controller;
 
-
-import com.xws.users.dto.RegularUserImageUpdateDTO;
-import com.xws.users.service.IAgentService;
-import com.xws.users.users.model.PrivacySettings;
-import com.xws.users.users.model.roles.Agent;
-import com.xws.users.users.model.roles.UserAccount;
-import com.xws.users.util.security.exceptions.USConflictException;
 import javax.annotation.security.PermitAll;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
+import com.xws.users.dto.RegularUserImageUpdateDTO;
 import com.xws.users.dto.RegularUserUpdateDTO;
 import com.xws.users.dto.UserProfileDTO;
+import com.xws.users.dto.adds.AddConsumer;
+import com.xws.users.dto.adds.UserUpdateDTO;
+import com.xws.users.service.IAgentService;
 import com.xws.users.service.impl.RegularUserService;
+import com.xws.users.users.model.PrivacySettings;
 import com.xws.users.users.model.roles.RegularUser;
-
-import java.util.List;
+import com.xws.users.util.security.exceptions.USConflictException;
 
 @RestController
 @RequestMapping(value = "profile")
 public class ProfileController {
+	
+	private String addService = "http://add-service/";
+
+	@Autowired
+	private RestTemplate restTemplate;
 
 	@Autowired
 	private RegularUserService regularUserService;
@@ -50,14 +64,17 @@ public class ProfileController {
 
 		RegularUser regularUserForUpdate = regularUserService.findByUsername(regularUserUpdateDTO.getUsername());
 
-		RegularUser regularUserForNewUsername = regularUserService.findByUsername(regularUserUpdateDTO.getNewusername());
-		if (regularUserForUpdate == null ) {
+		RegularUser regularUserForNewUsername = regularUserService
+				.findByUsername(regularUserUpdateDTO.getNewusername());
+		if (regularUserForUpdate == null) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 
 		if (regularUserForNewUsername != null && !isUsernameChanged(regularUserUpdateDTO)) {
 			throw new USConflictException("The username is already taken.");
 		}
+
+		String oldUsername = regularUserForUpdate.getUsername();
 
 		regularUserForUpdate.setName(regularUserUpdateDTO.getName());
 		regularUserForUpdate.setSurname(regularUserUpdateDTO.getSurname());
@@ -67,26 +84,40 @@ public class ProfileController {
 		regularUserForUpdate.setDateOfBirth(regularUserUpdateDTO.getBirthdaydate());
 		regularUserForUpdate.setGender(regularUserUpdateDTO.getGender());
 		regularUserForUpdate.setLinkToWebSite(regularUserUpdateDTO.getWebsite());
-		regularUserForUpdate.setBio(regularUserUpdateDTO.getBio());
+		regularUserForUpdate.setBio(regularUserUpdateDTO.getBio());			
 
 		RegularUser regularUserForUpdated = regularUserService.save(regularUserForUpdate);
+		
+
+		UserUpdateDTO dto = new UserUpdateDTO(oldUsername, regularUserForUpdated);
+		
+		String url = addService + "internal/update";
+		HttpHeaders headers = new HttpHeaders();
+		HttpEntity<UserUpdateDTO> entity = new HttpEntity<UserUpdateDTO>(dto, headers);
+		ResponseEntity<Void> responseEntity = restTemplate.exchange(url, HttpMethod.POST, entity, Void.class);
+		if (!responseEntity.getStatusCode().is2xxSuccessful()) {
+			throw new USConflictException();
+		}
+		
 		return new ResponseEntity<>(new RegularUserUpdateDTO(regularUserForUpdated), HttpStatus.OK);
 	}
 
 	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	@PostMapping("imageurlupdate")
-	public ResponseEntity<RegularUserImageUpdateDTO> setProfileImageURL(@RequestBody RegularUserImageUpdateDTO regularUserImageUpdateDTO) {
+	public ResponseEntity<RegularUserImageUpdateDTO> setProfileImageURL(
+			@RequestBody RegularUserImageUpdateDTO regularUserImageUpdateDTO) {
 
 		RegularUser regularUserForUpdate = regularUserService.findByUsername(regularUserImageUpdateDTO.getUsername());
 
-		if (regularUserForUpdate == null ) {
+		if (regularUserForUpdate == null) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 
 		regularUserForUpdate.setProfileImagePath(regularUserImageUpdateDTO.getProfileimagepath());
 
 		regularUserService.save(regularUserForUpdate);
-		RegularUserImageUpdateDTO regularUserImageUpdate = new RegularUserImageUpdateDTO(regularUserForUpdate.getProfileImagePath(), regularUserForUpdate.getUsername());
+		RegularUserImageUpdateDTO regularUserImageUpdate = new RegularUserImageUpdateDTO(
+				regularUserForUpdate.getProfileImagePath(), regularUserForUpdate.getUsername());
 		return new ResponseEntity<>(regularUserImageUpdate, HttpStatus.OK);
 	}
 
@@ -108,11 +139,12 @@ public class ProfileController {
 
 	@PostMapping("setprivate/{username}")
 	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
-	public ResponseEntity<Boolean> setprivate(@PathVariable(required = true) String username, Authentication authentication) {
+	public ResponseEntity<Boolean> setprivate(@PathVariable(required = true) String username,
+			Authentication authentication) {
 		RegularUser regularUser = regularUserService.findByUsername(username);
 		Boolean isPrivate;
 
-		if (regularUser == null ) {
+		if (regularUser == null) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 
@@ -128,11 +160,12 @@ public class ProfileController {
 
 	@PostMapping("setpublic/{username}")
 	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
-	public ResponseEntity<Boolean> setpublic(@PathVariable(required = true) String username, Authentication authentication) {
+	public ResponseEntity<Boolean> setpublic(@PathVariable(required = true) String username,
+			Authentication authentication) {
 		RegularUser regularUser = regularUserService.findByUsername(username);
 		Boolean isPrivate;
 
-		if (regularUser == null ) {
+		if (regularUser == null) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 
@@ -148,11 +181,12 @@ public class ProfileController {
 
 	@PostMapping("allowmessages/{username}")
 	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
-	public ResponseEntity<Boolean> allowMessagesFromNotFollowed(@PathVariable(required = true) String username, Authentication authentication) {
+	public ResponseEntity<Boolean> allowMessagesFromNotFollowed(@PathVariable(required = true) String username,
+			Authentication authentication) {
 		RegularUser regularUser = regularUserService.findByUsername(username);
 		Boolean isAllowed;
 
-		if (regularUser == null ) {
+		if (regularUser == null) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 
@@ -168,11 +202,12 @@ public class ProfileController {
 
 	@PostMapping("notallowmessages/{username}")
 	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
-	public ResponseEntity<Boolean> notAllowMessagesFromNotFollowed(@PathVariable(required = true) String username, Authentication authentication) {
+	public ResponseEntity<Boolean> notAllowMessagesFromNotFollowed(@PathVariable(required = true) String username,
+			Authentication authentication) {
 		RegularUser regularUser = regularUserService.findByUsername(username);
 		Boolean isAllowed;
 
-		if (regularUser == null ) {
+		if (regularUser == null) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 
@@ -188,11 +223,12 @@ public class ProfileController {
 
 	@PostMapping("allowtags/{username}")
 	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
-	public ResponseEntity<Boolean> allowtags(@PathVariable(required = true) String username, Authentication authentication) {
+	public ResponseEntity<Boolean> allowtags(@PathVariable(required = true) String username,
+			Authentication authentication) {
 		RegularUser regularUser = regularUserService.findByUsername(username);
 		Boolean isBanned;
 
-		if (regularUser == null ) {
+		if (regularUser == null) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 
@@ -208,11 +244,12 @@ public class ProfileController {
 
 	@PostMapping("bantags/{username}")
 	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
-	public ResponseEntity<Boolean> bantags(@PathVariable(required = true) String username, Authentication authentication) {
+	public ResponseEntity<Boolean> bantags(@PathVariable(required = true) String username,
+			Authentication authentication) {
 		RegularUser regularUser = regularUserService.findByUsername(username);
 		Boolean isBanned;
 
-		if (regularUser == null ) {
+		if (regularUser == null) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 
