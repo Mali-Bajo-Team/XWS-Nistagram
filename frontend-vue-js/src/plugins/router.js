@@ -21,6 +21,7 @@ import OtherProfile from './../pages/user/profile/OtherProfile';
 import PostFeed from './../pages/user/feed/PostFeed';
 import StoryFeed from './../pages/user/feed/StoryFeed';
 import InappropriateContent from './../pages/admin/InappropriateContent';
+import AgentRegistrationRequests from './../pages/admin/agentRequests/AgentRegistrationRequests';
 import RecommendedFollowers from './../pages/user/recommendations/RecommendedFollowers';
 
 const routes = [
@@ -190,6 +191,11 @@ const routes = [
 				component: InappropriateContent,
 				name: 'inappropriatecontents',
 				path: 'inappropriatecontents',
+			},
+			{
+				component: AgentRegistrationRequests,
+				name: 'arequests',
+				path: 'arequests',
 			},
 			{
 				component: OtherProfile,
