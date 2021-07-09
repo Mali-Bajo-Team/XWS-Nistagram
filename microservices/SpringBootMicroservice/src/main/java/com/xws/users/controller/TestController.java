@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TestController {
 
-	@PreAuthorize("hasRole('REGULAR', 'AGENT', 'INFLUENCER')")
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	@GetMapping("/test")
 	public ResponseEntity<String> getUsersAccs(@RequestHeader(value = "user-username") String username,
 			@RequestHeader(value = "user-role") String role, @RequestHeader(value = "user-id") String id) {

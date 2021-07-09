@@ -29,7 +29,7 @@ public class RelationshipController {
 	private IRelationshipService relationshipService;
 
 	@GetMapping("following")
-	@PreAuthorize("hasRole('REGULAR', 'AGENT', 'INFLUENCER')")
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	public ResponseEntity<List<RegularUserMiniDTO>> findFollowing(Authentication authentication) {
 		UserAccount user = (UserAccount) authentication.getPrincipal();
 
@@ -43,7 +43,7 @@ public class RelationshipController {
 	}
 
 	@GetMapping("followers")
-	@PreAuthorize("hasRole('REGULAR', 'AGENT', 'INFLUENCER')")
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	public ResponseEntity<List<FollowerDTO>> findFollowers(Authentication authentication) {
 		UserAccount user = (UserAccount) authentication.getPrincipal();
 		
@@ -51,7 +51,7 @@ public class RelationshipController {
 	}
 
 	@PostMapping("follow/{username}")
-	@PreAuthorize("hasRole('REGULAR', 'AGENT', 'INFLUENCER')")
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	public ResponseEntity<Void> follow(@PathVariable(required = true) String username, Authentication authentication) {
 		UserAccount user = (UserAccount) authentication.getPrincipal();
 
@@ -61,7 +61,7 @@ public class RelationshipController {
 	}
 
 	@PostMapping("block/{username}")
-	@PreAuthorize("hasRole('REGULAR', 'AGENT', 'INFLUENCER')")
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	public ResponseEntity<Void> block(@PathVariable(required = true) String username, Authentication authentication) {
 		UserAccount user = (UserAccount) authentication.getPrincipal();
 
@@ -72,7 +72,7 @@ public class RelationshipController {
 	}
 
 	@PostMapping("mute/{username}")
-	@PreAuthorize("hasRole('REGULAR', 'AGENT', 'INFLUENCER')")
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	public ResponseEntity<Void> mute(@PathVariable(required = true) String username, Authentication authentication) {
 		UserAccount user = (UserAccount) authentication.getPrincipal();
 
@@ -82,7 +82,7 @@ public class RelationshipController {
 	}
 
 	@PostMapping("unmute/{username}")
-	@PreAuthorize("hasRole('REGULAR', 'AGENT', 'INFLUENCER')")
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	public ResponseEntity<Void> unmute(@PathVariable(required = true) String username, Authentication authentication) {
 		UserAccount user = (UserAccount) authentication.getPrincipal();
 
@@ -92,7 +92,7 @@ public class RelationshipController {
 	}
 	
 	@PostMapping("unfollow/{username}")
-	@PreAuthorize("hasRole('REGULAR', 'AGENT', 'INFLUENCER')")
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	public ResponseEntity<Void> unfollow(@PathVariable(required = true) String username, Authentication authentication) {
 		UserAccount user = (UserAccount) authentication.getPrincipal();
 
@@ -102,7 +102,7 @@ public class RelationshipController {
 	}
 
 	@GetMapping("follow-requests")
-	@PreAuthorize("hasRole('REGULAR', 'AGENT', 'INFLUENCER')")
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	public ResponseEntity<List<FollowRequestDTO>> findFollowRequests(Authentication authentication) {
 		UserAccount user = (UserAccount) authentication.getPrincipal();
 
@@ -116,7 +116,7 @@ public class RelationshipController {
 	}
 
 	@PostMapping("follow-requests/{id}/accept")
-	@PreAuthorize("hasRole('REGULAR', 'AGENT', 'INFLUENCER')")
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	public ResponseEntity<Void> acceptFollowRequest(@PathVariable(required = true) Long id,
 			Authentication authentication) {
 		UserAccount user = (UserAccount) authentication.getPrincipal();
@@ -127,7 +127,7 @@ public class RelationshipController {
 	}
 
 	@PostMapping("follow-requests/{id}/reject")
-	@PreAuthorize("hasRole('REGULAR', 'AGENT', 'INFLUENCER')")
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	public ResponseEntity<Void> rejectFollowRequest(@PathVariable(required = true) Long id,
 			Authentication authentication) {
 		UserAccount user = (UserAccount) authentication.getPrincipal();
@@ -138,7 +138,7 @@ public class RelationshipController {
 	}
 	
 	@GetMapping("relationship/{username}")
-	@PreAuthorize("hasRole('REGULAR', 'AGENT', 'INFLUENCER')")
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	public ResponseEntity<RelationshipType> getRelationship(@PathVariable(required = true) String username,
 			Authentication authentication) {
 		UserAccount user = (UserAccount) authentication.getPrincipal();
@@ -151,7 +151,7 @@ public class RelationshipController {
 	}
 
 	@GetMapping("ismuted/{username}")
-	@PreAuthorize("hasRole('REGULAR', 'AGENT', 'INFLUENCER')")
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	public ResponseEntity<Boolean> isMuted(@PathVariable(required = true) String username,
 															Authentication authentication) {
 		UserAccount user = (UserAccount) authentication.getPrincipal();
@@ -164,7 +164,7 @@ public class RelationshipController {
 	}
 	
 	@GetMapping("close-friends")
-	@PreAuthorize("hasRole('REGULAR', 'AGENT', 'INFLUENCER')")
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	public ResponseEntity<List<RegularUserMiniDTO>> findCloseFriends(Authentication authentication) {
 		UserAccount user = (UserAccount) authentication.getPrincipal();
 
@@ -178,7 +178,7 @@ public class RelationshipController {
 	}
 	
 	@PostMapping("close-friends/add/{username}")
-	@PreAuthorize("hasRole('REGULAR', 'AGENT', 'INFLUENCER')")
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	public ResponseEntity<Void> addToClose(@PathVariable(required = true) String username, Authentication authentication) {
 		UserAccount user = (UserAccount) authentication.getPrincipal();
 
@@ -188,7 +188,7 @@ public class RelationshipController {
 	}
 	
 	@PostMapping("close-friends/remove/{username}")
-	@PreAuthorize("hasRole('REGULAR', 'AGENT', 'INFLUENCER')")
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	public ResponseEntity<Void> removeFromClose(@PathVariable(required = true) String username, Authentication authentication) {
 		UserAccount user = (UserAccount) authentication.getPrincipal();
 
@@ -198,7 +198,7 @@ public class RelationshipController {
 	}
 	
 	@GetMapping("internal/users-for-feed")
-	@PreAuthorize("hasRole('REGULAR', 'AGENT', 'INFLUENCER')")
+	@PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
 	public ResponseEntity<List<String>> getUsersForFeed(Authentication authentication) {
 		UserAccount user = (UserAccount) authentication.getPrincipal();
 
