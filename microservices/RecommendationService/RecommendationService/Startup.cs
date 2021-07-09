@@ -18,6 +18,7 @@ using RecommendationService.Repository.UserRepo;
 using RecommendationService.Service.FollowServices;
 using RecommendationService.Service.RecommendationServices;
 using RecommendationService.Service.UserServices;
+using System.Threading;
 
 namespace RecommendationService
 {
@@ -39,8 +40,21 @@ namespace RecommendationService
             var graphDatabaseURI = "http://neo4j:7474"; // TODO: Change this to the docker paths !!!
             // var graphDB = new GraphClient(new Uri(graphDatabaseURI), "neo4j", "secret");
             var graphDB = new GraphClient(new Uri(graphDatabaseURI));
-
-            var task = graphDB.ConnectAsync();
+            int retryCount = 0;
+            while (retryCount < 100)
+            {
+                try
+                {
+                    var task = graphDB.ConnectAsync();
+                    task.Wait();
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Connection failed. Retrying.");
+                    retryCount = retryCount + 1;
+                    Thread.Sleep(30000);
+                }
+            }           
             
 
             services.AddScoped<IUserService, UserService>();
@@ -68,7 +82,7 @@ namespace RecommendationService
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("XWS", new OpenApiInfo { Title = "RecommendationService", Version = "v1" });
-            }); task.Wait();
+            }); 
             services.AddApplicationInsightsTelemetry();
         }
 
