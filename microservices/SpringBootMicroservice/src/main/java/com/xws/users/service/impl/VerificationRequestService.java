@@ -4,7 +4,9 @@ import com.xws.users.dto.VerificationRequestDTO;
 import com.xws.users.repository.IRegularUserRepository;
 import com.xws.users.repository.IUserCategoryRepository;
 import com.xws.users.repository.IVerificationRequestRepository;
+import com.xws.users.service.IAuthorityService;
 import com.xws.users.service.IVerificationRequestService;
+import com.xws.users.users.model.Authority;
 import com.xws.users.users.model.VerificationRequest;
 import com.xws.users.users.model.enums.RequestStatus;
 import com.xws.users.users.model.roles.RegularUser;
@@ -16,60 +18,76 @@ import java.util.List;
 @Service
 public class VerificationRequestService implements IVerificationRequestService {
 
-    @Autowired
-    private IVerificationRequestRepository verificationRequestRepository;
+	@Autowired
+	private IVerificationRequestRepository verificationRequestRepository;
 
-    @Autowired
-    private IUserCategoryRepository userCategoryRepository;
+	@Autowired
+	private IUserCategoryRepository userCategoryRepository;
 
-    @Autowired
-    private IRegularUserRepository regularUserRepository;
+	@Autowired
+	private IRegularUserRepository regularUserRepository;
 
-    @Override
-    public VerificationRequest createVerificationRequest(VerificationRequestDTO verificationRequestDTO) {
-        VerificationRequest verificationRequest = new VerificationRequest();
-        verificationRequest.setRealName(verificationRequestDTO.getRealName());
-        verificationRequest.setRealSurname(verificationRequestDTO.getRealSurname());
-        verificationRequest.setImageOfOfficialDocument(verificationRequestDTO.getImageOfOfficialDocument());
-        verificationRequest.setCategory(userCategoryRepository.findByName(verificationRequestDTO.getCategory()));
-        verificationRequest.setRequester(regularUserRepository.findByUsername(verificationRequestDTO.getRequesterUsername()));
+	@Autowired
+	private IAuthorityService authService;
 
-        VerificationRequest verificationRequestAdded = verificationRequestRepository.save(verificationRequest);
-        return verificationRequestAdded;
-    }
+	@Override
+	public VerificationRequest createVerificationRequest(VerificationRequestDTO verificationRequestDTO) {
+		VerificationRequest verificationRequest = new VerificationRequest();
+		verificationRequest.setRealName(verificationRequestDTO.getRealName());
+		verificationRequest.setRealSurname(verificationRequestDTO.getRealSurname());
+		verificationRequest.setImageOfOfficialDocument(verificationRequestDTO.getImageOfOfficialDocument());
+		verificationRequest.setCategory(userCategoryRepository.findByName(verificationRequestDTO.getCategory()));
+		verificationRequest
+				.setRequester(regularUserRepository.findByUsername(verificationRequestDTO.getRequesterUsername()));
 
-    @Override
-    public VerificationRequest acceptVerificationRequest(Long verificationID) {
-        VerificationRequest verificationRequestOld = verificationRequestRepository.findById(verificationID).orElse(null);
-        if(verificationRequestOld == null) return null; // Todo: Throw some exception
-        verificationRequestOld.setRequestStatus(RequestStatus.ACCEPTED);
-        VerificationRequest verificationRequestNew = verificationRequestRepository.save(verificationRequestOld);
+		VerificationRequest verificationRequestAdded = verificationRequestRepository.save(verificationRequest);
+		return verificationRequestAdded;
+	}
 
-        RegularUser regularUser = regularUserRepository.findById(verificationRequestNew.getRequester().getId()).orElse(null);
-        if (regularUser == null) return null; // TODO: Throw some exception
-        regularUser.setUserCategory(verificationRequestNew.getCategory());
-        regularUserRepository.save(regularUser);
+	@Override
+	public VerificationRequest acceptVerificationRequest(Long verificationID) {
+		VerificationRequest verificationRequestOld = verificationRequestRepository.findById(verificationID)
+				.orElse(null);
+		if (verificationRequestOld == null)
+			return null; // Todo: Throw some exception
+		verificationRequestOld.setRequestStatus(RequestStatus.ACCEPTED);
+		VerificationRequest verificationRequestNew = verificationRequestRepository.save(verificationRequestOld);
 
-        return verificationRequestNew;
-    }
+		RegularUser regularUser = regularUserRepository.findById(verificationRequestNew.getRequester().getId())
+				.orElse(null);
+		if (regularUser == null)
+			return null; // TODO: Throw some exception
+		regularUser.setUserCategory(verificationRequestNew.getCategory());
 
-    @Override
-    public VerificationRequest rejectVerificationRequest(Long verificationID) {
-        VerificationRequest verificationRequestOld = verificationRequestRepository.findById(verificationID).orElse(null);
-        if(verificationRequestOld == null) return null; // Todo: Throw some exception
-        verificationRequestOld.setRequestStatus(RequestStatus.REJECTED);
-        VerificationRequest verificationRequestNew = verificationRequestRepository.save(verificationRequestOld);
-        return verificationRequestNew;
-    }
+		if (verificationRequestNew.getCategory().getName().equals("Influencer")) {
+			List<Authority> auth = authService.findByName("ROLE_INFLUENCER");
+			regularUser.setAuthorities(auth);
+		}
 
-    @Override
-    public boolean isVerifiedUser(String username) {
-        RegularUser regularUser = regularUserRepository.findByUsername(username);
-        return regularUser.getUserCategory() != null;
-    }
+		regularUserRepository.save(regularUser);
 
-    @Override
-    public List<VerificationRequest> findAllByRequestStatus(RequestStatus requestStatus) {
-        return verificationRequestRepository.findByRequestStatus(requestStatus);
-    }
+		return verificationRequestNew;
+	}
+
+	@Override
+	public VerificationRequest rejectVerificationRequest(Long verificationID) {
+		VerificationRequest verificationRequestOld = verificationRequestRepository.findById(verificationID)
+				.orElse(null);
+		if (verificationRequestOld == null)
+			return null; // Todo: Throw some exception
+		verificationRequestOld.setRequestStatus(RequestStatus.REJECTED);
+		VerificationRequest verificationRequestNew = verificationRequestRepository.save(verificationRequestOld);
+		return verificationRequestNew;
+	}
+
+	@Override
+	public boolean isVerifiedUser(String username) {
+		RegularUser regularUser = regularUserRepository.findByUsername(username);
+		return regularUser.getUserCategory() != null;
+	}
+
+	@Override
+	public List<VerificationRequest> findAllByRequestStatus(RequestStatus requestStatus) {
+		return verificationRequestRepository.findByRequestStatus(requestStatus);
+	}
 }

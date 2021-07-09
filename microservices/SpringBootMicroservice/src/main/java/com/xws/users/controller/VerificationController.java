@@ -26,7 +26,7 @@ public class VerificationController {
     private IVerificationRequestService verificationRequestService;
 
     @PostMapping
-    @PreAuthorize("hasRole('REGULAR', 'AGENT')")
+    @PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
     public ResponseEntity<VerificationRequestDTO> createVerificationRequest(@RequestBody VerificationRequestDTO verificationRequestDTO, Authentication authentication) {
         UserAccount user = (UserAccount) authentication.getPrincipal();
         verificationRequestDTO.setRequesterUsername(user.getUsername());
@@ -58,7 +58,7 @@ public class VerificationController {
     }
 
     @GetMapping("/user/{username}")
-    @PreAuthorize("hasRole('REGULAR', 'AGENT')")
+    @PreAuthorize("hasAnyRole('REGULAR', 'AGENT', 'INFLUENCER')")
     public ResponseEntity<IsVerifiedUserDTO> isVerifiedUser(@PathVariable(required = true) String username) {
         return ResponseEntity.ok(new IsVerifiedUserDTO(verificationRequestService.isVerifiedUser(username)));
     }

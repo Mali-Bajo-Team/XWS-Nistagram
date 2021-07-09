@@ -6,6 +6,7 @@ Vue.use(VueRouter);
 import { getParsedToken, getToken } from '../util/token';
 
 import User from './../pages/user/Container';
+import Influencer from './../pages/user/Container-influencer';
 import Agent from './../pages/agent/Container';
 import Guest from './../pages/user/Container-guest';
 import Admin from './../pages/admin/Container-admin';
@@ -73,6 +74,58 @@ const routes = [
 			{
 				component: RecommendedFollowers,
 				name: 'recommendations',
+				path: 'recommendations',
+			},
+		],
+	},
+	{
+		component: Influencer,
+		path: '/influencer',
+		meta: {
+			requiresAuth: true,
+			role: 'INFLUENCER',
+		},
+		children: [
+			{
+				component: PostFeed,
+				name: 'ipostfeed',
+				path: 'feed/posts',
+			},
+			{
+				component: StoryFeed,
+				name: 'istoryfeed',
+				path: 'feed/stories',
+			},
+			{
+				component: Profile,
+				name: 'iprofile',
+				path: 'profile',
+			},
+			{
+				component: UserSearch,
+				name: 'iusersearch',
+				path: 'usersearch',
+			},
+			{
+				component: HashtagSearch,
+				name: 'ihashtagsearch',
+				path: 'hashtagsearch',
+			},
+			{
+				component: LocationSearch,
+				name: 'ilocationsearch',
+				path: 'locationsearch',
+			},
+			{
+				component: OtherProfile,
+				name: 'iuserProfile',
+				path: 'user/:username',
+				props: true,
+			},
+
+			{
+				component: RecommendedFollowers,
+				name: 'irecommendations',
 				path: 'recommendations',
 			},
 		],
