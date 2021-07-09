@@ -79,10 +79,45 @@
 export default {
 	data() {
 		return {
-			test: '',
+			inappropriatePosts: [],
+			inappropriateStories: [],
 		};
 	},
-	mounted() {},
+	mounted() {
+		this.axios
+			.get(
+				process.env.VUE_APP_BACKEND_URL +
+					process.env.VUE_APP_INAPPROPRIATE_POST,
+				{
+					headers: {
+						Authorization: 'Bearer ' + localStorage.getItem('JWT-CPIS'),
+					},
+				}
+			)
+			.then((response) => {
+				this.inappropriatePosts = response.data;
+			})
+			.catch((e) => {
+				console.log('Inappropriate content error: ' + e);
+			});
+
+		this.axios
+			.get(
+				process.env.VUE_APP_BACKEND_URL +
+					process.env.VUE_APP_INAPPROPRIATE_STORY,
+				{
+					headers: {
+						Authorization: 'Bearer ' + localStorage.getItem('JWT-CPIS'),
+					},
+				}
+			)
+			.then((response) => {
+				this.inappropriateStories = response.data;
+			})
+			.catch((e) => {
+				console.log('Inappropriate content error: ' + e);
+			});
+	},
 	methods: {
 		removeContent(content) {
 			console.log('\n\n\n remove content' + content + ' \n\n\n');
