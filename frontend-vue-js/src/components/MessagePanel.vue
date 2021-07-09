@@ -16,7 +16,7 @@
         
         <img width="200px" v-if="message.content.includes('http')" v-bind:src="message.content" /> 
 
-        <p v-if="!message.content.includes('http')" > {{message.content}}</p> 
+        <p v-if="!message.content.includes('story') && !message.content.includes('post')" > {{message.content}}</p> 
 
         <!-- <p  >Methods date call: "{{ getEntirePost('60e5fbef1b8ceffde5005a13') }}"</p> -->
                           <v-dialog  width="600px">
@@ -28,7 +28,7 @@
                               @click="getEntirePost(message.content.substr(0, message.content.length - 4))"
                               icon
                             
-                            >Open post
+                            >Open post or album
                             <v-icon right> mdi-plus-circle </v-icon>
                             </v-btn>
                           
