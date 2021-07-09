@@ -3,12 +3,15 @@ package com.xws.adds.model;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 @Entity
 public class AddCampaign {
@@ -41,6 +44,7 @@ public class AddCampaign {
 	@Column
 	private Date lastEdited;
 
+	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL)
 	private InterestGroupDescription interestGroup;
 
 	public Long getId() {

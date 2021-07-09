@@ -5,6 +5,8 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 
 @Entity
 @DiscriminatorValue("Agent")
@@ -13,6 +15,7 @@ public class Agent extends Advertiser {
 	@Column(nullable = false)
 	private String webSite;
 	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "agent")
 	private List<Collaboration> influencers;
 
 	public String getWebSite() {

@@ -2,16 +2,30 @@ package com.xws.adds.model;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 @Entity
 @DiscriminatorValue("Influencer")
 public class Influencer extends Advertiser {
 
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "influencer")
 	private List<Collaboration> agents;
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "influencer")
 	private List<CollaborationRequest> collaborationRequests;
+
+	@ManyToMany(cascade = { CascadeType.ALL })
+	@JoinTable(name = "influencer_campaign", joinColumns = @JoinColumn(name = "influencer_id"), inverseJoinColumns = @JoinColumn(name = "campaign_id"))
 	private List<AddCampaign> pendingCampaigns;
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "influencer")
 	private List<AcceptedCampaign> acceptedCampaigns;
 
 	public List<Collaboration> getAgents() {

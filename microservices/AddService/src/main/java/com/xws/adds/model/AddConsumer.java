@@ -12,14 +12,18 @@ import javax.persistence.TemporalType;
 
 @Entity
 public class AddConsumer {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
 	@Temporal(TemporalType.DATE)
 	@Column
 	private Date dateOfBirth;
+	
 	@Column
 	private String gender;
+	
 	@Column
 	private String userCategory;
 
