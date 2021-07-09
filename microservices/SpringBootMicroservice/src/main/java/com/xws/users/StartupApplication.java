@@ -1,16 +1,19 @@
 package com.xws.users;
 
+import java.util.stream.Stream;
+
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.support.DatabaseStartupValidator;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
-import java.util.stream.Stream;
+import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 public class StartupApplication {
@@ -42,5 +45,15 @@ public class StartupApplication {
 	@Bean
 	public BCryptPasswordEncoder bCryptPasswordEncoder() {
 		return new BCryptPasswordEncoder();
+	}
+	
+	@Configuration
+	class RestTemplateConfig {
+
+		// Create a bean for restTemplate to call services
+		@Bean
+		public RestTemplate restTemplate() {
+			return new RestTemplate();
+		}
 	}
 }
