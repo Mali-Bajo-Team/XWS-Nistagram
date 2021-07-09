@@ -1,6 +1,6 @@
 <template>
 	<v-app style="background: rgba(0,0,0,0);">
-		<navbar v-bind:items="links" :logout="false"></navbar>
+		<navbar v-bind:items="links" v-bind:logout="true"></navbar>
 		<v-main>
 			<v-container fluid>
 				<router-view></router-view>
@@ -19,38 +19,42 @@ export default {
 	data: () => ({
 		links: [
 			{
-				title: 'Log in',
-				to: '/guest/login',
-			},
-			{
-				title: 'Register',
+				title: 'Feed',
 				children: [
 					{
-						title: 'User',
-						to: '/guest/register',
+						title: 'Posts',
+						to: '/agent/feed/posts',
 					},
 					{
-						title: 'Agent',
-						to: '/guest/aregister',
+						title: 'Stories',
+						to: '/agent/feed/stories',
 					},
 				],
+			},
+			{
+				title: 'My profile',
+				to: '/agent/profile',
 			},
 			{
 				title: 'Search',
 				children: [
 					{
 						title: 'Users',
-						to: '/guest/usersearch',
+						to: '/agent/usersearch',
 					},
 					{
 						title: 'Hashtags',
-						to: '/guest/hashtagsearch',
+						to: '/agent/hashtagsearch',
 					},
 					{
 						title: 'Locations',
-						to: '/guest/locationsearch',
+						to: '/agent/locationsearch',
 					},
 				],
+			},
+			{
+				title: 'Recommendations',
+				to: '/agent/recommendations',
 			},
 		],
 	}),
