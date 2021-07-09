@@ -3,6 +3,9 @@ package com.xws.users.controller;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.xws.users.dto.AgentRegisterDTO;
+import com.xws.users.service.IAgentService;
+import com.xws.users.users.model.roles.Agent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -33,6 +36,9 @@ public class AuthenticationController {
 	@Autowired
 	private IRegularUserRegistrationService regularUserRegistrationService;
 
+	@Autowired
+	private IAgentService agentService;
+
 	// The first endpoint that affects the user when logging in.
 	// Then he only knows his username and password and forwards it to the backend.
 	@PostMapping("/login")
@@ -51,6 +57,14 @@ public class AuthenticationController {
 		UserAccount addedAccount = regularUserRegistrationService.registerRegularUser(userRequest);
 		addedAccount.setPassword(null);
 		return new ResponseEntity<>(addedAccount, HttpStatus.CREATED);
-	}	
+	}
+
+	// Endpoint to register a new user
+	@PostMapping("/agent/signup")
+	public ResponseEntity<Agent> addAgent(@RequestBody @Valid AgentRegisterDTO userRequest) {
+		Agent addedAccount = agentService.registerAgent(userRequest);
+		addedAccount.setPassword(null);
+		return new ResponseEntity<>(addedAccount, HttpStatus.CREATED);
+	}
 
 }
