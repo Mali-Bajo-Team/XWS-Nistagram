@@ -19,10 +19,10 @@
 						<!--Information:usernames and date about content-->
 						<v-card-text>
 							The owner of content:
-							<b>{{ inappropriatePost.post_creator_id }}</b>
+							<b>{{ inappropriatePost.post_creator_username }}</b>
 							<br />
 							The person who reported this content:<b>
-								{{ inappropriatePost.post_reporter_id }}
+								{{ inappropriatePost.post_reporter_username }}
 							</b>
 							<br />
 							Content reporting date: <b>{{ inappropriatePost.time_stamp }}</b>
@@ -82,6 +82,7 @@
 </template>
 
 <script>
+// TODO: ADD INAPPROPRIATE STORIES !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 export default {
 	data() {
 		return {
