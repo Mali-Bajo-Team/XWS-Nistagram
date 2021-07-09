@@ -264,6 +264,7 @@ function getHomePage(role) {
 	if (role == 'REGULAR') return '/feed/posts';
 	else if (role == 'ADMINISTRATOR') return '/admin/verifications';
 	else if (role == 'AGENT') return '/agent/feed/posts';
+	else if (role == 'INFLUENCER') return '/influencer/feed/posts';
 	else return '/';
 }
 
