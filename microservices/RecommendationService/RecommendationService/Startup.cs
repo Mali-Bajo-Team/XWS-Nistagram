@@ -41,21 +41,7 @@ namespace RecommendationService
             // var graphDB = new GraphClient(new Uri(graphDatabaseURI), "neo4j", "secret");
             var graphDB = new GraphClient(new Uri(graphDatabaseURI));
             int retryCount = 0;
-            while (retryCount < 100)
-            {
-                try
-                {
-                    var task = graphDB.ConnectAsync();
-                    task.Wait();
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine("Connection failed. Retrying.");
-                    retryCount = retryCount + 1;
-                    Thread.Sleep(30000);
-                }
-            }           
-            
+            var task = graphDB.ConnectAsync();      
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserRepository, UserRepository>();
@@ -78,6 +64,8 @@ namespace RecommendationService
                     .AllowAnyMethod()
                     .AllowAnyHeader();
             }));
+
+	    task.Wait();
 
             services.AddSwaggerGen(c =>
             {
