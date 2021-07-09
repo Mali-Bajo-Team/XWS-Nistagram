@@ -38,6 +38,11 @@ public class AgentService implements IAgentService {
         return addedAgent;
     }
 
+    @Override
+    public List<Agent> findAllAgentRequestRegistration() {
+        return agentRepository.findByStatus(UserAccountStatus.UNCOFIRMED);
+    }
+
     private Agent addNewAgent(AgentRegisterDTO userRequest) {
         Agent newAgent = new Agent();
         newAgent.setName(userRequest.getName());

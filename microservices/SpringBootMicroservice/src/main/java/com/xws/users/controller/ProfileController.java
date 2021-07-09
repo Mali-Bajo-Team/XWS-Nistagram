@@ -2,7 +2,9 @@ package com.xws.users.controller;
 
 
 import com.xws.users.dto.RegularUserImageUpdateDTO;
+import com.xws.users.service.IAgentService;
 import com.xws.users.users.model.PrivacySettings;
+import com.xws.users.users.model.roles.Agent;
 import com.xws.users.users.model.roles.UserAccount;
 import com.xws.users.util.security.exceptions.USConflictException;
 import javax.annotation.security.PermitAll;
@@ -18,12 +20,17 @@ import com.xws.users.dto.UserProfileDTO;
 import com.xws.users.service.impl.RegularUserService;
 import com.xws.users.users.model.roles.RegularUser;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "profile")
 public class ProfileController {
 
 	@Autowired
 	private RegularUserService regularUserService;
+
+	@Autowired
+	private IAgentService agentService;
 
 	@PreAuthorize("hasRole('REGULAR', 'AGENT')")
 	@GetMapping
@@ -218,4 +225,5 @@ public class ProfileController {
 
 		return new ResponseEntity<>(isBanned, HttpStatus.OK);
 	}
+
 }
