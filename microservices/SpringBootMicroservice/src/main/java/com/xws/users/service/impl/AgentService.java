@@ -39,6 +39,14 @@ public class AgentService implements IAgentService {
     }
 
     @Override
+    public Agent acceptRequest(String username) {
+        Agent agent = agentRepository.findByUsername(username);
+        agent.setStatus(UserAccountStatus.ACTIVE);
+        Agent acceptedAgent = agentRepository.save(agent);
+        return acceptedAgent;
+    }
+
+    @Override
     public List<Agent> findAllAgentRequestRegistration() {
         return agentRepository.findByStatus(UserAccountStatus.UNCOFIRMED);
     }

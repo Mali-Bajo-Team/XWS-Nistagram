@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface IAgentService {
     Agent registerAgent(AgentRegisterDTO agent);
+    Agent acceptRequest(String username);
     List<Agent> findAllAgentRequestRegistration();
 }
