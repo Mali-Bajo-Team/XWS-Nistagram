@@ -54,7 +54,15 @@
                              </v-btn>
                           </template>
                           <storyComponent
-                            v-if="entireStory"
+                            v-if="entireStory && !userStoryMessage.isPrivate"
+                            :post="entireStory"
+                          ></storyComponent>
+                          <h1
+                             v-if="userStoryMessage.isPrivate && (creatorUsername!=loggedUser.username)"
+                            > USER IS PRIVATE
+                          </h1>
+                          <storyComponent
+                            v-if="creatorUsername==loggedUser.username"
                             :post="entireStory"
                           ></storyComponent>
                         </v-dialog>
@@ -73,6 +81,7 @@ import axios from "axios";
 import StatusIcon from "./StatusIcon";
 import postComponent from "./../components/Post.vue";
 import storyComponent from "./../components/Story.vue";
+import { getUsernameFromToken } from "./../util/token";
 export default {
   name: "MessagePanel",
   components: {
@@ -88,9 +97,46 @@ export default {
       input: "",
       entirePost: null,
       entireStory: null,
+      loggedUser: {},
+      userChatMessage: {},
+      userStoryMessage: {},
+      creatorUsername: "",
     };
   },
+  mounted() {
+    this.load();
+  },
   methods: {
+    load: function(){
+      this.axios
+          .get(
+            process.env.VUE_APP_BACKEND_URL +
+              process.env.VUE_APP_USER_BY_USERNAME_ENDPOINT +
+              getUsernameFromToken()
+          )
+          .then((response) => {
+            this.loggedUser = response.data;
+            console.log( response.data)
+          })
+          .catch((error) => {
+            console.log("Error while fetching user",error)
+          })
+
+ 
+       this.axios
+          .get(
+            process.env.VUE_APP_BACKEND_URL +
+              process.env.VUE_APP_USER_BY_USERNAME_ENDPOINT +
+              this.user.username
+          )
+          .then((response) => {
+            this.userChatMessage = response.data;
+            console.log( response.data)
+          })
+          .catch((error) => {
+            console.log("Error while fetching user",error)
+          });
+    },
     onSubmit() {
       this.$emit("input", this.input);
       this.input = "";
@@ -117,7 +163,23 @@ export default {
         )
         .then((res) => {
           console.log(storyID)
-          this.entireStory = res.data;
+    
+           this.entireStory = res.data;
+           this.axios
+              .get(
+                process.env.VUE_APP_BACKEND_URL +
+                  process.env.VUE_APP_USER_BY_USERNAME_ENDPOINT +
+                  this.entireStory.my_post.creator_username
+              )
+              .then((response) => {
+                this.creatorUsername = this.entireStory.my_post.creator_username
+                this.userStoryMessage = response.data;
+                console.log( response.data)
+              })
+              .catch((error) => {
+                console.log("Error while fetching user",error)
+            });
+               
         });
     },
      getEntirePost(postID) {
@@ -137,6 +199,7 @@ export default {
           this.entirePost = res.data;
         });
     },
+    
   },
   computed: {
     isValid() {
