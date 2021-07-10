@@ -26,6 +26,7 @@ import AgentRegistrationRequests from './../pages/admin/agentRequests/AgentRegis
 import RecommendedFollowers from './../pages/user/recommendations/RecommendedFollowers';
 import Influencers from './../pages/agent/influencers/Infuencers'
 import CollaborationRequests from './../pages/user/collaboration/Collaboration'
+import OneTimeCampaign from './../pages/agent/create/OneTimeCampaign';
 
 const routes = [
 	{
@@ -154,6 +155,11 @@ const routes = [
 				component: StoryFeed,
 				name: 'astoryfeed',
 				path: 'feed/stories',
+			},
+			{
+				component: OneTimeCampaign,
+				name: 'onetime',
+				path: 'onetime',
 			},
 			{
 				component: Profile,
