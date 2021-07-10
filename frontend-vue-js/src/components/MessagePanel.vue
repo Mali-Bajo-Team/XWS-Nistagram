@@ -14,8 +14,6 @@
           {{ message.fromSelf ? "(yourself)" : user.username }}
         </div>
         
-        <img class="browse-tip" width="200px" v-if="message.content.includes('http')" v-bind:src="message.content" /> 
-
         <p  v-if="!message.content.includes('story') && !message.content.includes('post') && !message.content.includes('http')" > {{message.content}}</p> 
 
         <!-- <p  >Methods date call: "{{ getEntirePost('60e5fbef1b8ceffde5005a13') }}"</p> -->
@@ -66,6 +64,26 @@
                             > USER IS PRIVATE
                           </h1>
                         </v-dialog>
+ 
+                        <v-dialog width="600px">
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                             v-if="message.content.includes('http')"
+                              v-bind="attrs"
+                              v-on="on"
+                              @click="openOneTime()"
+                              icon
+                            >
+                            Open photo one time
+                              <v-icon right> mdi-plus-circle </v-icon>
+                             </v-btn>
+                          </template>
+                          <img class="browse-tip" width="200px" v-if="isOpened==1" v-bind:src="message.content" /> 
+                          <h1
+                             v-if="isOpened!=1"
+                            > YOU CAN OPEN IMAGE ONLY ONE TIME
+                          </h1>
+                        </v-dialog>
       </li>
     </ul>
 
@@ -94,6 +112,7 @@ export default {
   },
   data() {
     return {
+      isOpened: 0,
       input: "",
       entirePost: null,
       entireStory: null,
@@ -139,6 +158,9 @@ export default {
           .catch((error) => {
             console.log("Error while fetching user",error)
           });
+    },
+    openOneTime(){
+       this.isOpened = this.isOpened+1;
     },
     onSubmit() {
       this.$emit("input", this.input);
