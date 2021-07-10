@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.xws.adds.model.AddCampaign;
 import com.xws.adds.model.AddConsumer;
+import com.xws.adds.model.CampaignType;
 import com.xws.adds.model.InterestGroupDescription;
 import com.xws.adds.repository.IAddCampaignRepository;
 import com.xws.adds.repository.IAddConsumerRepository;
@@ -28,7 +29,7 @@ public class AddPlacementService implements IAddPlacementService {
 	private IAddConsumerRepository consumerRepository;
 
 	@Override
-	public AddCampaign getAdd(String username) {
+	public AddCampaign getAdd(String username, CampaignType type) {
 		AddConsumer consumer = consumerRepository.findByUsername(username);
 		if (consumer == null)
 			throw new USAuthenticationException();
@@ -38,6 +39,8 @@ public class AddPlacementService implements IAddPlacementService {
 
 		List<AddCampaign> correctTime = new ArrayList<AddCampaign>();
 		for (AddCampaign addCampaign : campaignRepository.findAll()) {
+			if (!addCampaign.getType().equals(type))
+				continue;
 			for (Date date : addCampaign.getExposureTimes()) {
 				if (date.after(earliest) && date.before(latest)) {
 					correctTime.add(addCampaign);
