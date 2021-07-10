@@ -3,7 +3,7 @@
     <div class="header">
       <status-icon :connected="user.connected" />{{ user.username }}
     </div>
-    <ul class="messages">
+    <ul class="messages" v-if="!declinee && !deletee" >
       <li
         v-for="(message, index) in user.messages"
         :key="index"
@@ -13,7 +13,7 @@
           {{ message.fromSelf ? "(yourself)" : user.username }}
         </div>
         
-        <p style="color: red" v-if="loggedUser.isPrivate && !followed">Your profile if private, not followed account sent you a message!</p>
+       
         <p  v-if="!message.content.includes('story') && !message.content.includes('post') && !message.content.includes('http')" > {{message.content}}</p> 
 
         <!-- <p  >Methods date call: "{{ getEntirePost('60e5fbef1b8ceffde5005a13') }}"</p> -->
@@ -105,6 +105,22 @@
                           </h1>
                         </v-dialog>
       </li>
+       <p style="color: red" v-if="loggedUser.isPrivate && !followed && !accepte">Your profile if private, not followed account sent you a message!</p>
+      <v-btn
+      v-if="loggedUser.isPrivate && !followed && !accepte"
+      @click="acceptee()">
+         ACCEPT 
+      </v-btn> 
+      <v-btn
+      v-if="loggedUser.isPrivate && !followed && !accepte" 
+       @click="declineee()">
+        DECLINE 
+      </v-btn> 
+      <v-btn
+      v-if="loggedUser.isPrivate && !followed && !accepte"
+      @click="deleteee()" >
+        DELETE
+       </v-btn>
     </ul>
 
     <form @submit.prevent="onSubmit" class="form">
@@ -143,7 +159,10 @@ export default {
       userPostMessage: {},
       creatorUsername: "",
       isBlocked: null,
-      followed: false
+      followed: false,
+      accepte: false,
+      declinee: false,
+      deletee: false
     };
   },
   mounted() {
@@ -203,6 +222,15 @@ export default {
 
 
                 
+    },
+    acceptee(){
+       this.accepte = true;
+    },
+    declineee(){
+       this.declinee = true;
+    },
+    deleteee(){
+       this.deletee = true;
     },
     openOneTime(){
        this.isOpened = this.isOpened+1;
