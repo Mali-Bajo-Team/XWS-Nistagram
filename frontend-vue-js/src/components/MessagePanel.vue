@@ -13,6 +13,7 @@
           {{ message.fromSelf ? "(yourself)" : user.username }}
         </div>
         
+        <p style="color: red" v-if="loggedUser.isPrivate && !followed">Your profile if private, not followed account sent you a message!</p>
         <p  v-if="!message.content.includes('story') && !message.content.includes('post') && !message.content.includes('http')" > {{message.content}}</p> 
 
         <!-- <p  >Methods date call: "{{ getEntirePost('60e5fbef1b8ceffde5005a13') }}"</p> -->
@@ -31,11 +32,11 @@
                           
                           </template>
                           <postComponent
-                             v-if="((entirePost && !userPostMessage.isPrivate) || (entirePost && creatorUsername==loggedUser.username) || (entirePost && isFollowed))"
+                             v-if="((entirePost && !userPostMessage.isPrivate) || (entirePost && creatorUsername==loggedUser.username) || (entirePost && followed))"
                             :post="entirePost"
                           ></postComponent>
                            <h1
-                             v-if="userPostMessage.isPrivate && (creatorUsername!=loggedUser.username) && !isFollowed"
+                             v-if="userPostMessage.isPrivate && (creatorUsername!=loggedUser.username) && !followed"
                             > USER IS PRIVATE
                           </h1>
                         </v-dialog>
@@ -55,11 +56,11 @@
                              </v-btn>
                           </template>
                           <storyComponent
-                             v-if="(entireStory && !userStoryMessage.isPrivate || (entireStory && creatorUsername==loggedUser.username) || (entireStory && isFollowed))"
+                             v-if="(entireStory && !userStoryMessage.isPrivate || (entireStory && creatorUsername==loggedUser.username) || (entireStory && followed))"
                             :post="entireStory"
                           ></storyComponent>
                           <h1
-                             v-if="userStoryMessage.isPrivate && (creatorUsername!=loggedUser.username) && !isFollowed"
+                             v-if="userStoryMessage.isPrivate && (creatorUsername!=loggedUser.username) && !followed"
                             > USER IS PRIVATE
                           </h1>
                         </v-dialog>
@@ -142,7 +143,7 @@ export default {
       userPostMessage: {},
       creatorUsername: "",
       isBlocked: null,
-      isFollowed: null
+      followed: false
     };
   },
   mounted() {
@@ -174,10 +175,34 @@ export default {
           .then((response) => {
             this.userChatMessage = response.data;
             console.log( response.data)
+            
+                  this.axios
+                      .get(
+                        process.env.VUE_APP_BACKEND_URL +
+                          process.env.VUE_APP_RELATIONSHIP_ENDPOINT +
+                          this.user.username,
+                        {
+                          headers: {
+                            Authorization: "Bearer " + getToken(),
+                          },
+                        }
+                      )
+                      .then((response) => {
+                        if (response.data === "BLOCKED") this.isBlocked = true;
+                        else if (response.data === "NONE") this.followed = false;
+                        else this.followed = true;
+                          console.log("RELATIONSIHP",response.data )
+                      })
+                      .catch((error) => {
+                         console.log("Error while fetching user relationships",error)
+                      });
           })
           .catch((error) => {
             console.log("Error while fetching user",error)
           });
+
+
+                
     },
     openOneTime(){
        this.isOpened = this.isOpened+1;
