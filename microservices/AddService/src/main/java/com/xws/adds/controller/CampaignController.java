@@ -21,7 +21,7 @@ import com.xws.adds.model.AddCampaign;
 import com.xws.adds.security.CustomUserDetails;
 import com.xws.adds.service.ICampaignService;
 
-@RestController("campaign")
+@RestController("campaigns")
 public class CampaignController {
 
 	@Autowired
@@ -33,7 +33,9 @@ public class CampaignController {
 			Authentication authentication) {
 		CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
 
-		return ResponseEntity.noContent().build();
+		AddCampaign addCampaign = campaignService.createMultipleCampaign(campaign, user.getUsername());
+
+		return ResponseEntity.ok(addCampaign);
 	}
 
 	@PreAuthorize("hasAnyRole('AGENT', 'API')")
