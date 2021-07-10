@@ -36,6 +36,13 @@
 			<!--End of list of photos and videos-->
 		</v-card-title>
 		<v-card-text>
+			<v-row v-if="post.my_post.is_add">
+				<v-col>
+					<v-btn block @click="add_clicked">
+						Click add
+					</v-btn>
+				</v-col>
+			</v-row>
 			<v-row>
 				<v-col>
 					<!--The number of likes and comments-->
@@ -341,6 +348,9 @@ export default {
 		},
 	},
 	methods: {
+		add_clicked() {
+			window.location.href = this.post.my_post.add_link
+		},
 		getImageUrl(path) {
 			if (path)
 				return (

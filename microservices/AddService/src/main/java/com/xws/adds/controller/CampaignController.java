@@ -21,14 +21,14 @@ import com.xws.adds.model.AddCampaign;
 import com.xws.adds.security.CustomUserDetails;
 import com.xws.adds.service.ICampaignService;
 
-@RestController("campaigns")
+@RestController
 public class CampaignController {
 
 	@Autowired
 	private ICampaignService campaignService;
 
 	@PreAuthorize("hasAnyRole('AGENT', 'API')")
-	@PostMapping("/multiple")
+	@PostMapping("campaigns/multiple")
 	public ResponseEntity<AddCampaign> createMultiple(@RequestBody MultipleCampaignDTO campaign,
 			Authentication authentication) {
 		CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
@@ -39,7 +39,7 @@ public class CampaignController {
 	}
 
 	@PreAuthorize("hasAnyRole('AGENT', 'API')")
-	@PostMapping("/onetime")
+	@PostMapping("campaigns/onetime")
 	public ResponseEntity<AddCampaign> createOneTime(@RequestBody OneTimeCampaignDTO campaign,
 			Authentication authentication) {
 		CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
@@ -50,7 +50,7 @@ public class CampaignController {
 	}
 
 	@PreAuthorize("hasAnyRole('AGENT', 'API')")
-	@GetMapping
+	@GetMapping("campaigns")
 	public ResponseEntity<List<AddCampaign>> getCampaigns(Authentication authentication) {
 		CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
 
@@ -58,7 +58,7 @@ public class CampaignController {
 	}
 
 	@PreAuthorize("hasAnyRole('AGENT', 'API')")
-	@DeleteMapping("/{id}")
+	@DeleteMapping("campaigns/{id}")
 	public ResponseEntity<Void> getCampaigns(@PathVariable(required = true) Long id, Authentication authentication) {
 		CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
 
@@ -68,7 +68,7 @@ public class CampaignController {
 	}
 
 	@PreAuthorize("hasAnyRole('AGENT', 'API')")
-	@PutMapping("/{id}")
+	@PutMapping("campaigns/{id}")
 	public ResponseEntity<AddCampaign> getCampaigns(@PathVariable(required = true) Long id,
 			Authentication authentication, @RequestBody MultipleCampaignUpdateDTO update) {
 		CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
@@ -77,7 +77,7 @@ public class CampaignController {
 	}
 	
 	@PreAuthorize("hasRole('INFLUENCER')")
-	@GetMapping("/pending")
+	@GetMapping("campaigns/pending")
 	public ResponseEntity<List<AddCampaign>> getPendingCampaigns(Authentication authentication) {
 		CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
 
@@ -85,7 +85,7 @@ public class CampaignController {
 	}
 	
 	@PreAuthorize("hasRole('INFLUENCER')")
-	@PostMapping("/pending/{id}/accept")
+	@PostMapping("campaigns/pending/{id}/accept")
 	public ResponseEntity<Void> acceptCampaign(@PathVariable(required = true) Long id,
 			Authentication authentication) {
 		CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
@@ -96,7 +96,7 @@ public class CampaignController {
 	}
 
 	@PreAuthorize("hasRole('INFLUENCER')")
-	@PostMapping("/pending/{id}/reject")
+	@PostMapping("campaigns/pending/{id}/reject")
 	public ResponseEntity<Void> rejectCampaign(@PathVariable(required = true) Long id,
 			Authentication authentication) {
 		CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();

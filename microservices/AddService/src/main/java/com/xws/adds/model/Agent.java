@@ -8,13 +8,16 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @DiscriminatorValue("Agent")
 public class Agent extends Advertiser {
 
 	@Column
 	private String webSite;
-	
+
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "agent")
 	private List<Collaboration> influencers;
 

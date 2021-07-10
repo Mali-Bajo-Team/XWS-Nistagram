@@ -56,6 +56,19 @@ export default {
 				title: 'Recommendations',
 				to: '/agent/recommendations',
 			},
+			{
+				title: 'Influencers',
+				to: '/agent/influencers',
+			},
+			{
+				title: 'Add campaign',
+				children: [
+					{
+						title: 'One time',
+						to: '/agent/onetime',
+					}
+				],
+			},
 		],
 	}),
 };
