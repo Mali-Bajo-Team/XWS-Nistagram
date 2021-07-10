@@ -1,6 +1,5 @@
 package com.xws.adds.service.impl;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,8 +24,11 @@ import com.xws.adds.dto.post.Story;
 import com.xws.adds.model.AddCampaign;
 import com.xws.adds.model.Agent;
 import com.xws.adds.model.CampaignType;
+import com.xws.adds.model.Collaboration;
+import com.xws.adds.model.Influencer;
 import com.xws.adds.repository.IAddCampaignRepository;
 import com.xws.adds.repository.IAgentRepository;
+import com.xws.adds.repository.IInfluencerRepository;
 import com.xws.adds.service.ICampaignService;
 import com.xws.adds.util.exceptions.USAuthenticationException;
 import com.xws.adds.util.exceptions.USAuthorizationException;
@@ -45,6 +47,9 @@ public class CampaignService implements ICampaignService {
 
 	@Autowired
 	private IAddCampaignRepository addCampaignRepository;
+
+	@Autowired
+	private IInfluencerRepository influencerRepository;
 
 	@Override
 	public List<AddCampaign> getCampaigns(String username) {
@@ -74,6 +79,7 @@ public class CampaignService implements ICampaignService {
 		addCampaignRepository.save(campaign);
 	}
 
+	@Override
 	@Transactional
 	public AddCampaign updateCampaign(Long id, String username, MultipleCampaignUpdateDTO update) {
 		Agent agent = agentRepository.findByUsername(username);
@@ -104,9 +110,9 @@ public class CampaignService implements ICampaignService {
 		for (Date date : getExposureTimesForMultiple(start, campaign.getEndDate(), campaign.getTimesPerDay())) {
 			exposureTimes.add(date);
 		}
-		
+
 		campaign.setExposureTimes(exposureTimes);
-		
+
 		campaign.setLastEdited(new Date());
 
 		return addCampaignRepository.save(campaign);
@@ -139,6 +145,8 @@ public class CampaignService implements ICampaignService {
 		addCampaign.setDeleted(false);
 
 		AddCampaign createdCampaign = addCampaignRepository.save(addCampaign);
+
+		offerToInfluencers(createdCampaign, agent);
 
 		return createdCampaign;
 	}
@@ -174,6 +182,8 @@ public class CampaignService implements ICampaignService {
 		addCampaign.setDeleted(false);
 
 		AddCampaign createdCampaign = addCampaignRepository.save(addCampaign);
+
+		offerToInfluencers(createdCampaign, agent);
 
 		return createdCampaign;
 	}
@@ -227,6 +237,14 @@ public class CampaignService implements ICampaignService {
 			times.add(date.toDate());
 
 		return times;
+	}
+
+	private void offerToInfluencers(AddCampaign campaign, Agent agent) {
+		for (Collaboration collaboration : agent.getInfluencers()) {
+			Influencer influencer = collaboration.getInfluencer();
+			influencer.getPendingCampaigns().add(campaign);
+			influencerRepository.save(influencer);
+		}
 	}
 
 }
