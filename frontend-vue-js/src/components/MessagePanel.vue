@@ -34,9 +34,13 @@
                           
                           </template>
                           <postComponent
-                            v-if="entirePost"
+                             v-if="((entirePost && !userPostMessage.isPrivate) || (entirePost && creatorUsername==loggedUser.username))"
                             :post="entirePost"
                           ></postComponent>
+                           <h1
+                             v-if="userPostMessage.isPrivate && (creatorUsername!=loggedUser.username)"
+                            > USER IS PRIVATE
+                          </h1>
                         </v-dialog>
 
 
@@ -54,17 +58,13 @@
                              </v-btn>
                           </template>
                           <storyComponent
-                            v-if="entireStory && !userStoryMessage.isPrivate"
+                             v-if="(entireStory && !userStoryMessage.isPrivate || (entireStory && creatorUsername==loggedUser.username))"
                             :post="entireStory"
                           ></storyComponent>
                           <h1
                              v-if="userStoryMessage.isPrivate && (creatorUsername!=loggedUser.username)"
                             > USER IS PRIVATE
                           </h1>
-                          <storyComponent
-                            v-if="creatorUsername==loggedUser.username"
-                            :post="entireStory"
-                          ></storyComponent>
                         </v-dialog>
       </li>
     </ul>
@@ -100,6 +100,7 @@ export default {
       loggedUser: {},
       userChatMessage: {},
       userStoryMessage: {},
+      userPostMessage: {},
       creatorUsername: "",
     };
   },
@@ -162,9 +163,8 @@ export default {
           }
         )
         .then((res) => {
-          console.log(storyID)
-    
            this.entireStory = res.data;
+
            this.axios
               .get(
                 process.env.VUE_APP_BACKEND_URL +
@@ -174,7 +174,6 @@ export default {
               .then((response) => {
                 this.creatorUsername = this.entireStory.my_post.creator_username
                 this.userStoryMessage = response.data;
-                console.log( response.data)
               })
               .catch((error) => {
                 console.log("Error while fetching user",error)
@@ -197,6 +196,19 @@ export default {
         )
         .then((res) => {
           this.entirePost = res.data;
+            this.axios
+              .get(
+                process.env.VUE_APP_BACKEND_URL +
+                  process.env.VUE_APP_USER_BY_USERNAME_ENDPOINT +
+                  this.entirePost.my_post.creator_username
+              )
+              .then((response) => {
+                this.creatorUsername = this.entirePost.my_post.creator_username
+                this.userPostMessage = response.data;
+              })
+              .catch((error) => {
+                console.log("Error while fetching user",error)
+            });
         });
     },
     
