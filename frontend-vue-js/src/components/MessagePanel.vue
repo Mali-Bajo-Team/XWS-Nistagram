@@ -14,9 +14,9 @@
           {{ message.fromSelf ? "(yourself)" : user.username }}
         </div>
         
-        <img width="200px" v-if="message.content.includes('http')" v-bind:src="message.content" /> 
+        <img class="browse-tip" width="200px" v-if="message.content.includes('http')" v-bind:src="message.content" /> 
 
-        <p v-if="!message.content.includes('story') && !message.content.includes('post')" > {{message.content}}</p> 
+        <p  v-if="!message.content.includes('story') && !message.content.includes('post') && !message.content.includes('http')" > {{message.content}}</p> 
 
         <!-- <p  >Methods date call: "{{ getEntirePost('60e5fbef1b8ceffde5005a13') }}"</p> -->
                           <v-dialog  width="600px">
@@ -34,11 +34,11 @@
                           
                           </template>
                           <postComponent
-                             v-if="((entirePost && !userPostMessage.isPrivate) || (entirePost && creatorUsername==loggedUser.username))"
+                             v-if="((entirePost && !userPostMessage.isPrivate) || (entirePost && creatorUsername==loggedUser.username) || (entirePost && isFollowed))"
                             :post="entirePost"
                           ></postComponent>
                            <h1
-                             v-if="userPostMessage.isPrivate && (creatorUsername!=loggedUser.username)"
+                             v-if="userPostMessage.isPrivate && (creatorUsername!=loggedUser.username) && !isFollowed"
                             > USER IS PRIVATE
                           </h1>
                         </v-dialog>
@@ -58,11 +58,11 @@
                              </v-btn>
                           </template>
                           <storyComponent
-                             v-if="(entireStory && !userStoryMessage.isPrivate || (entireStory && creatorUsername==loggedUser.username))"
+                             v-if="(entireStory && !userStoryMessage.isPrivate || (entireStory && creatorUsername==loggedUser.username) || (entireStory && isFollowed))"
                             :post="entireStory"
                           ></storyComponent>
                           <h1
-                             v-if="userStoryMessage.isPrivate && (creatorUsername!=loggedUser.username)"
+                             v-if="userStoryMessage.isPrivate && (creatorUsername!=loggedUser.username) && !isFollowed"
                             > USER IS PRIVATE
                           </h1>
                         </v-dialog>
@@ -81,7 +81,7 @@ import axios from "axios";
 import StatusIcon from "./StatusIcon";
 import postComponent from "./../components/Post.vue";
 import storyComponent from "./../components/Story.vue";
-import { getUsernameFromToken } from "./../util/token";
+import {getToken, getUsernameFromToken } from "./../util/token";
 export default {
   name: "MessagePanel",
   components: {
@@ -102,6 +102,8 @@ export default {
       userStoryMessage: {},
       userPostMessage: {},
       creatorUsername: "",
+      isBlocked: null,
+      isFollowed: null
     };
   },
   mounted() {
@@ -174,6 +176,26 @@ export default {
               .then((response) => {
                 this.creatorUsername = this.entireStory.my_post.creator_username
                 this.userStoryMessage = response.data;
+                 this.axios
+                      .get(
+                        process.env.VUE_APP_BACKEND_URL +
+                          process.env.VUE_APP_RELATIONSHIP_ENDPOINT +
+                          this.creatorUsername,
+                        {
+                          headers: {
+                            Authorization: "Bearer " + getToken(),
+                          },
+                        }
+                      )
+                      .then((response) => {
+                        if (response.data === "BLOCKED") this.isBlocked = true;
+                        else if (response.data === "NONE") this.followed = false;
+                        else this.followed = true;
+                          console.log("RELATIONSIHP",response.data )
+                      })
+                      .catch((error) => {
+                         console.log("Error while fetching user relationships",error)
+                      });
               })
               .catch((error) => {
                 console.log("Error while fetching user",error)
@@ -205,6 +227,26 @@ export default {
               .then((response) => {
                 this.creatorUsername = this.entirePost.my_post.creator_username
                 this.userPostMessage = response.data;
+                    this.axios
+                      .get(
+                        process.env.VUE_APP_BACKEND_URL +
+                          process.env.VUE_APP_RELATIONSHIP_ENDPOINT +
+                          this.creatorUsername,
+                        {
+                          headers: {
+                            Authorization: "Bearer " + getToken(),
+                          },
+                        }
+                      )
+                      .then((response) => {
+                        if (response.data === "BLOCKED") this.isBlocked = true;
+                        else if (response.data === "NONE") this.followed = false;
+                        else this.followed = true;
+                          console.log("RELATIONSIHP",response.data )
+                      })
+                      .catch((error) => {
+                         console.log("Error while fetching user relationships",error)
+                      });
               })
               .catch((error) => {
                 console.log("Error while fetching user",error)
