@@ -75,5 +75,35 @@ public class CampaignController {
 
 		return ResponseEntity.ok(campaignService.updateCampaign(id, user.getUsername(), update));
 	}
+	
+	@PreAuthorize("hasRole('INFLUENCER')")
+	@GetMapping("pending")
+	public ResponseEntity<List<AddCampaign>> getPendingCampaigns(Authentication authentication) {
+		CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
 
+		return ResponseEntity.ok(campaignService.getPendingCampaigns(user.getUsername()));
+	}
+	
+	@PreAuthorize("hasRole('INFLUENCER')")
+	@PostMapping("pending/{id}/accept")
+	public ResponseEntity<Void> acceptCampaign(@PathVariable(required = true) Long id,
+			Authentication authentication) {
+		CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
+		
+		campaignService.acceptCampaign(user.getUsername(), id);
+
+		return ResponseEntity.noContent().build();
+	}
+
+	@PreAuthorize("hasRole('INFLUENCER')")
+	@PostMapping("pending/{id}/reject")
+	public ResponseEntity<Void> rejectCampaign(@PathVariable(required = true) Long id,
+			Authentication authentication) {
+		CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
+		
+		campaignService.rejectCampaign(user.getUsername(), id);
+
+		return ResponseEntity.noContent().build();
+	}
+	
 }

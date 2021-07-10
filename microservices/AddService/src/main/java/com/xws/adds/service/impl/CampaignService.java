@@ -21,11 +21,13 @@ import com.xws.adds.dto.OneTimeCampaignDTO;
 import com.xws.adds.dto.post.Post;
 import com.xws.adds.dto.post.RegularPost;
 import com.xws.adds.dto.post.Story;
+import com.xws.adds.model.AcceptedCampaign;
 import com.xws.adds.model.AddCampaign;
 import com.xws.adds.model.Agent;
 import com.xws.adds.model.CampaignType;
 import com.xws.adds.model.Collaboration;
 import com.xws.adds.model.Influencer;
+import com.xws.adds.repository.IAcceptedCampaignRepository;
 import com.xws.adds.repository.IAddCampaignRepository;
 import com.xws.adds.repository.IAgentRepository;
 import com.xws.adds.repository.IInfluencerRepository;
@@ -50,6 +52,9 @@ public class CampaignService implements ICampaignService {
 
 	@Autowired
 	private IInfluencerRepository influencerRepository;
+	
+	@Autowired
+	private IAcceptedCampaignRepository acceptedRepository;
 
 	@Override
 	public List<AddCampaign> getCampaigns(String username) {
@@ -58,6 +63,55 @@ public class CampaignService implements ICampaignService {
 			throw new USAuthenticationException();
 
 		return addCampaignRepository.findByAgent(agent);
+	}
+	
+	public List<AddCampaign> getPendingCampaigns(String influencerUsername) {
+		Influencer influencer = influencerRepository.findByUsername(influencerUsername);
+		if (influencer == null)
+			throw new USAuthenticationException();
+		
+		return influencer.getPendingCampaigns();
+	}
+	
+	@Transactional
+	public void rejectCampaign(String influencerUsername, Long campaignId) {
+		Influencer influencer = influencerRepository.findByUsername(influencerUsername);
+		if (influencer == null)
+			throw new USAuthenticationException();
+		
+		AddCampaign campaign = addCampaignRepository.findById(campaignId).orElse(null);
+		if (campaign == null)
+			throw new USConflictException();
+		
+		influencer.getPendingCampaigns().remove(campaign);
+		influencerRepository.save(influencer);
+	}
+	
+	@Transactional
+	public void acceptCampaign(String influencerUsername, Long campaignId) {
+		Influencer influencer = influencerRepository.findByUsername(influencerUsername);
+		if (influencer == null)
+			throw new USAuthenticationException();
+		
+		AddCampaign campaign = addCampaignRepository.findById(campaignId).orElse(null);
+		if (campaign == null)
+			throw new USConflictException();
+		
+		influencer.getPendingCampaigns().remove(campaign);
+		influencerRepository.save(influencer);
+		
+		String postId = null;
+		if (campaign.getType().equals(CampaignType.POST))
+			postId = transferPostToInfluencer(campaign.getPostId(), influencerUsername);
+		else
+			postId = transferStoryToInfluencer(campaign.getPostId(), influencerUsername);
+		
+		AcceptedCampaign accepted = new AcceptedCampaign();
+		accepted.setPostId(postId);
+		accepted.setInfluencer(influencer);
+		accepted.setCampaign(campaign);
+		
+		acceptedRepository.save(accepted);
 	}
 
 	@Override
@@ -130,10 +184,10 @@ public class CampaignService implements ICampaignService {
 		String postId = null;
 		if (campaign.getIsStory()) {
 			addCampaign.setType(CampaignType.STORY);
-			postId = createStory(campaign.getPost());
+			postId = createStory(campaign.getPost(), username);
 		} else {
 			addCampaign.setType(CampaignType.POST);
-			postId = createPost(campaign.getPost());
+			postId = createPost(campaign.getPost(), username);
 		}
 
 		addCampaign.setInterestGroup(campaign.getInterestGroup());
@@ -163,10 +217,10 @@ public class CampaignService implements ICampaignService {
 		String postId = null;
 		if (campaign.getIsStory()) {
 			addCampaign.setType(CampaignType.STORY);
-			postId = createStory(campaign.getPost());
+			postId = createStory(campaign.getPost(), username);
 		} else {
 			addCampaign.setType(CampaignType.POST);
-			postId = createPost(campaign.getPost());
+			postId = createPost(campaign.getPost(), username);
 		}
 
 		addCampaign.setInterestGroup(campaign.getInterestGroup());
@@ -188,7 +242,7 @@ public class CampaignService implements ICampaignService {
 		return createdCampaign;
 	}
 
-	private String createStory(Post post) {
+	private String createStory(Post post, String username) {
 		post.setIsAdd(true);
 
 		Story story = new Story();
@@ -197,6 +251,7 @@ public class CampaignService implements ICampaignService {
 
 		String url = contentService + "story/";
 		HttpHeaders headers = new HttpHeaders();
+		headers.add("user-username", username);
 		HttpEntity<Story> entity = new HttpEntity<Story>(story, headers);
 		ResponseEntity<Story> responseEntity = restTemplate.exchange(url, HttpMethod.POST, entity, Story.class);
 		if (!responseEntity.getStatusCode().is2xxSuccessful()) {
@@ -206,7 +261,7 @@ public class CampaignService implements ICampaignService {
 		return entity.getBody().getId();
 	}
 
-	private String createPost(Post post) {
+	private String createPost(Post post, String username) {
 		post.setIsAdd(true);
 
 		RegularPost regPost = new RegularPost();
@@ -214,6 +269,7 @@ public class CampaignService implements ICampaignService {
 
 		String url = contentService + "post/";
 		HttpHeaders headers = new HttpHeaders();
+		headers.add("user-username", username);
 		HttpEntity<RegularPost> entity = new HttpEntity<RegularPost>(regPost, headers);
 		ResponseEntity<RegularPost> responseEntity = restTemplate.exchange(url, HttpMethod.POST, entity,
 				RegularPost.class);
@@ -245,6 +301,35 @@ public class CampaignService implements ICampaignService {
 			influencer.getPendingCampaigns().add(campaign);
 			influencerRepository.save(influencer);
 		}
+	}
+
+	private String transferPostToInfluencer(String postId, String influencerUsername) {
+		String url = contentService + "post/" + postId;
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("user-username", influencerUsername);
+		HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+		ResponseEntity<RegularPost> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity,
+				RegularPost.class);
+		if (!responseEntity.getStatusCode().is2xxSuccessful()) {
+			throw new USConflictException();
+		}
+		RegularPost post = responseEntity.getBody();
+
+		return createPost(post.getPost(), influencerUsername);
+	}
+
+	private String transferStoryToInfluencer(String postId, String influencerUsername) {
+		String url = contentService + "story/" + postId;
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("user-username", influencerUsername);
+		HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+		ResponseEntity<Story> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, Story.class);
+		if (!responseEntity.getStatusCode().is2xxSuccessful()) {
+			throw new USConflictException();
+		}
+		Story post = responseEntity.getBody();
+
+		return createPost(post.getPost(), influencerUsername);
 	}
 
 }
