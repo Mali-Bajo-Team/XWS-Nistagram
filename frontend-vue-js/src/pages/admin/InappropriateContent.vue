@@ -10,12 +10,6 @@
 						:key="inappropriatePost._id"
 						style="margin-bottom:3em;"
 					>
-						<!--Inappropriate content-->
-						<v-img
-							height="250"
-							src="https://cdn.vuetifyjs.com/images/cards/cooking.png"
-						></v-img>
-
 						<!--Information:usernames and date about content-->
 						<v-card-text>
 							The owner of content:
@@ -40,6 +34,13 @@
 							<b>{{ inappropriatePost.message }}</b>
 						</v-card-text>
 						<!--End of reason for reporting-->
+
+						<v-divider class="mx-4"></v-divider>
+						<v-card-text>
+							Post id:
+							<b>{{ inappropriatePost.post_id }}</b>
+							<br />
+						</v-card-text>
 
 						<!--Buttons-->
 						<v-card-actions>
@@ -166,6 +167,7 @@ export default {
 				)
 				.then((response) => {
 					console.log(response);
+					location.reload();
 				})
 				.catch((e) => {
 					console.log('Inappropriate content error: ' + e);
