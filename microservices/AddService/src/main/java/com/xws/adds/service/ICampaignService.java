@@ -18,5 +18,12 @@ public interface ICampaignService {
 	void deleteCampaign(Long id, String username);
 
 	AddCampaign updateCampaign(Long id, String username, MultipleCampaignUpdateDTO update);
+	
+	
+	List<AddCampaign> getPendingCampaigns(String influencerUsername);
+	
+	void rejectCampaign(String influencerUsername, Long campaignId);
+	
+	void acceptCampaign(String influencerUsername, Long campaignId);
 
 }

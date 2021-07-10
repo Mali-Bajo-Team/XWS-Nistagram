@@ -21,7 +21,7 @@ import com.xws.adds.model.AddCampaign;
 import com.xws.adds.security.CustomUserDetails;
 import com.xws.adds.service.ICampaignService;
 
-@RestController("campaign")
+@RestController("campaigns")
 public class CampaignController {
 
 	@Autowired
@@ -33,7 +33,9 @@ public class CampaignController {
 			Authentication authentication) {
 		CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
 
-		return ResponseEntity.noContent().build();
+		AddCampaign addCampaign = campaignService.createMultipleCampaign(campaign, user.getUsername());
+
+		return ResponseEntity.ok(addCampaign);
 	}
 
 	@PreAuthorize("hasAnyRole('AGENT', 'API')")
@@ -73,5 +75,35 @@ public class CampaignController {
 
 		return ResponseEntity.ok(campaignService.updateCampaign(id, user.getUsername(), update));
 	}
+	
+	@PreAuthorize("hasRole('INFLUENCER')")
+	@GetMapping("pending")
+	public ResponseEntity<List<AddCampaign>> getPendingCampaigns(Authentication authentication) {
+		CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
 
+		return ResponseEntity.ok(campaignService.getPendingCampaigns(user.getUsername()));
+	}
+	
+	@PreAuthorize("hasRole('INFLUENCER')")
+	@PostMapping("pending/{id}/accept")
+	public ResponseEntity<Void> acceptCampaign(@PathVariable(required = true) Long id,
+			Authentication authentication) {
+		CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
+		
+		campaignService.acceptCampaign(user.getUsername(), id);
+
+		return ResponseEntity.noContent().build();
+	}
+
+	@PreAuthorize("hasRole('INFLUENCER')")
+	@PostMapping("pending/{id}/reject")
+	public ResponseEntity<Void> rejectCampaign(@PathVariable(required = true) Long id,
+			Authentication authentication) {
+		CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
+		
+		campaignService.rejectCampaign(user.getUsername(), id);
+
+		return ResponseEntity.noContent().build();
+	}
+	
 }
