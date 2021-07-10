@@ -295,6 +295,7 @@ export default {
 .messages {
   margin: 0;
   padding: 20px;
+  margin-left: 70px;
 }
 
 .message {
