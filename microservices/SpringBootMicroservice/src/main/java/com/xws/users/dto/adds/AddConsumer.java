@@ -1,40 +1,23 @@
-package com.xws.adds.model;
+package com.xws.users.dto.adds;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import com.xws.users.users.model.roles.RegularUser;
 
-@Entity
 public class AddConsumer {
 
-	@Id
 	private Long id;
-
-	@Column
-	private String username;
-
-	@Temporal(TemporalType.DATE)
-	@Column
 	private Date dateOfBirth;
-
-	@Column
 	private String gender;
-
-	@Column
 	private String userCategory;
 
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
+	public AddConsumer(RegularUser user) {
+		super();
+		this.id = user.getId();
+		this.dateOfBirth = user.getDateOfBirth();
+		this.gender = user.getGender();
+		if (user.getUserCategory() != null)
+			this.userCategory = user.getUserCategory().getName();
 	}
 
 	public Long getId() {
