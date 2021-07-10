@@ -2,7 +2,10 @@ package usecase
 
 import (
 	"content_service/model"
+	"content_service/tracer"
+	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"strconv"
@@ -44,6 +47,13 @@ func InitializePostRouter(router *mux.Router, server *ContentServer) {
 }
 
 func (contentServerRef *ContentServer) CreatePostEndpoint(response http.ResponseWriter, request *http.Request) {
+	span := tracer.StartSpanFromRequest("CreatePostEndpoint", contentServerRef.tracer, request)
+	defer span.Finish()
+
+	span.LogFields(
+		tracer.LogString("handler", fmt.Sprintf("handling CreatePostEndpoint at %s\n", request.URL.Path)),
+	)
+
 	response.Header().Set("content-type", "application/json")
 	var post model.RegularPost
 	_ = json.NewDecoder(request.Body).Decode(&post)
@@ -54,60 +64,116 @@ func (contentServerRef *ContentServer) CreatePostEndpoint(response http.Response
 	var documentId = contentServerRef.postStore.CreatePost(post)
 	post.ID = documentId.InsertedID.(primitive.ObjectID)
 	contentServerRef.postStore.UpdateUserPosts(post)
-	renderJSON(response, post)
+	ctx := tracer.ContextWithSpan(context.Background(), span)
+	renderJSONWithContext(ctx, response, post)
 }
 
 func (contentServerRef *ContentServer) GetEntirePostEndpoint(response http.ResponseWriter, request *http.Request) {
+	span := tracer.StartSpanFromRequest("GetEntirePostEndpoint", contentServerRef.tracer, request)
+	defer span.Finish()
+
+	span.LogFields(
+		tracer.LogString("handler", fmt.Sprintf("handling GetEntirePostEndpoint at %s\n", request.URL.Path)),
+	)
 	response.Header().Set("content-type", "application/json")
 	params := mux.Vars(request)
-	renderJSON(response, contentServerRef.postStore.GetEntirePost(params["postid"]))
+	ctx := tracer.ContextWithSpan(context.Background(), span)
+	renderJSONWithContext(ctx, response, contentServerRef.postStore.GetEntirePost(params["postid"]))
 }
 
 func (contentServerRef *ContentServer) GetInappropriatePostsEndpoint(response http.ResponseWriter, request *http.Request) {
+	span := tracer.StartSpanFromRequest("GetInappropriatePostsEndpoint", contentServerRef.tracer, request)
+	defer span.Finish()
+
+	span.LogFields(
+		tracer.LogString("handler", fmt.Sprintf("handling GetInappropriatePostsEndpoint at %s\n", request.URL.Path)),
+	)
 	response.Header().Set("content-type", "application/json")
-	renderJSON(response, contentServerRef.postStore.GetAllInappropriatePosts())
+	ctx := tracer.ContextWithSpan(context.Background(), span)
+	renderJSONWithContext(ctx, response, contentServerRef.postStore.GetAllInappropriatePosts())
 }
 
 func (contentServerRef *ContentServer) GetInappropriateStoryEndpoint(response http.ResponseWriter, request *http.Request) {
+	span := tracer.StartSpanFromRequest("GetInappropriateStoryEndpoint", contentServerRef.tracer, request)
+	defer span.Finish()
+
+	span.LogFields(
+		tracer.LogString("handler", fmt.Sprintf("handling GetInappropriateStoryEndpoint at %s\n", request.URL.Path)),
+	)
 	response.Header().Set("content-type", "application/json")
-	renderJSON(response, contentServerRef.postStore.GetAllInappropriateStories())
+	ctx := tracer.ContextWithSpan(context.Background(), span)
+	renderJSONWithContext(ctx, response, contentServerRef.postStore.GetAllInappropriateStories())
 }
 
 func (contentServerRef *ContentServer) CreateInappropriatePostEndpoint(response http.ResponseWriter, request *http.Request) {
+	span := tracer.StartSpanFromRequest("CreateInappropriatePostEndpoint", contentServerRef.tracer, request)
+	defer span.Finish()
+
+	span.LogFields(
+		tracer.LogString("handler", fmt.Sprintf("handling CreateInappropriatePostEndpoint at %s\n", request.URL.Path)),
+	)
 	response.Header().Set("content-type", "application/json")
 	var inappropriatePost model.InappropriatePost
 	_ = json.NewDecoder(request.Body).Decode(&inappropriatePost)
 	var documentId = contentServerRef.postStore.CreateInappropriatePost(inappropriatePost)
 	inappropriatePost.ID = documentId.InsertedID.(primitive.ObjectID)
-	renderJSON(response, inappropriatePost)
+	ctx := tracer.ContextWithSpan(context.Background(), span)
+	renderJSONWithContext(ctx, response, inappropriatePost)
 }
 
 func (contentServerRef *ContentServer) CreateInappropriateStoryEndpoint(response http.ResponseWriter, request *http.Request) {
+	span := tracer.StartSpanFromRequest("CreateInappropriateStoryEndpoint", contentServerRef.tracer, request)
+	defer span.Finish()
+
+	span.LogFields(
+		tracer.LogString("handler", fmt.Sprintf("handling CreateInappropriateStoryEndpoint at %s\n", request.URL.Path)),
+	)
 	response.Header().Set("content-type", "application/json")
 	var inappropriateStory model.InappropriateStory
 	_ = json.NewDecoder(request.Body).Decode(&inappropriateStory)
 	var documentId = contentServerRef.postStore.CreateInappropriateStory(inappropriateStory)
 	inappropriateStory.ID = documentId.InsertedID.(primitive.ObjectID)
-	renderJSON(response, inappropriateStory)
+	ctx := tracer.ContextWithSpan(context.Background(), span)
+	renderJSONWithContext(ctx, response, inappropriateStory)
 }
 
 func (contentServerRef *ContentServer) GetEntireStoryEndpoint(response http.ResponseWriter, request *http.Request) {
+	span := tracer.StartSpanFromRequest("GetEntireStoryEndpoint", contentServerRef.tracer, request)
+	defer span.Finish()
+
+	span.LogFields(
+		tracer.LogString("handler", fmt.Sprintf("handling GetEntireStoryEndpoint at %s\n", request.URL.Path)),
+	)
 	response.Header().Set("content-type", "application/json")
 	params := mux.Vars(request)
-	renderJSON(response, contentServerRef.postStore.GetEntireStory(params["storyid"]))
+	ctx := tracer.ContextWithSpan(context.Background(), span)
+	renderJSONWithContext(ctx, response, contentServerRef.postStore.GetEntireStory(params["storyid"]))
 }
 
 func (contentServerRef *ContentServer) CreatePostCommentEndpoint(response http.ResponseWriter, request *http.Request) {
+	span := tracer.StartSpanFromRequest("CreatePostCommentEndpoint", contentServerRef.tracer, request)
+	defer span.Finish()
+
+	span.LogFields(
+		tracer.LogString("handler", fmt.Sprintf("handling CreatePostCommentEndpoint at %s\n", request.URL.Path)),
+	)
 	response.Header().Set("content-type", "application/json")
 	var comment model.Comment
 	_ = json.NewDecoder(request.Body).Decode(&comment)
 	comment.Username = request.Header.Get("user-username")
 	params := mux.Vars(request)
 	contentServerRef.postStore.UpdatePostComments(comment, params["id"])
-	renderJSON(response, comment)
+	ctx := tracer.ContextWithSpan(context.Background(), span)
+	renderJSONWithContext(ctx, response, comment)
 }
 
 func (contentServerRef *ContentServer) CreatePostReactionEndpoint(response http.ResponseWriter, request *http.Request) {
+	span := tracer.StartSpanFromRequest("CreatePostReactionEndpoint", contentServerRef.tracer, request)
+	defer span.Finish()
+
+	span.LogFields(
+		tracer.LogString("handler", fmt.Sprintf("handling CreatePostReactionEndpoint at %s\n", request.URL.Path)),
+	)
 	response.Header().Set("content-type", "application/json")
 	var reaction model.Reaction
 	_ = json.NewDecoder(request.Body).Decode(&reaction)
@@ -127,23 +193,43 @@ func (contentServerRef *ContentServer) DeletePostReactionEndpoint(response http.
 }
 
 func (contentServerRef *ContentServer) GetPostReactionEndpoint(response http.ResponseWriter, request *http.Request) {
+	span := tracer.StartSpanFromRequest("GetPostReactionEndpoint", contentServerRef.tracer, request)
+	defer span.Finish()
+
+	span.LogFields(
+		tracer.LogString("handler", fmt.Sprintf("handling GetPostReactionEndpoint at %s\n", request.URL.Path)),
+	)
 	response.Header().Set("content-type", "application/json")
 	params := mux.Vars(request)
 	reaction := contentServerRef.postStore.GetPostReaction(request.Header.Get("user-username"), params["id"])
 	if reaction == nil {
 		response.WriteHeader(http.StatusNoContent)
 	}
-	renderJSON(response, reaction)
+	ctx := tracer.ContextWithSpan(context.Background(), span)
+	renderJSONWithContext(ctx, response, reaction)
 }
 
 func (contentServerRef *ContentServer) GetReactionsEndpoint(response http.ResponseWriter, request *http.Request) {
+	span := tracer.StartSpanFromRequest("GetReactionsEndpoint", contentServerRef.tracer, request)
+	defer span.Finish()
+
+	span.LogFields(
+		tracer.LogString("handler", fmt.Sprintf("handling GetReactionsEndpoint at %s\n", request.URL.Path)),
+	)
 	response.Header().Set("content-type", "application/json")
 	params := mux.Vars(request)
 	reactions := contentServerRef.postStore.GetReactions(request.Header.Get("user-username"), params["type"])
-	renderJSON(response, reactions)
+	ctx := tracer.ContextWithSpan(context.Background(), span)
+	renderJSONWithContext(ctx, response, reactions)
 }
 
 func (contentServerRef *ContentServer) GetPostCommentsEndpoint(response http.ResponseWriter, request *http.Request) {
+	span := tracer.StartSpanFromRequest("GetPostCommentsEndpoint", contentServerRef.tracer, request)
+	defer span.Finish()
+
+	span.LogFields(
+		tracer.LogString("handler", fmt.Sprintf("handling GetPostCommentsEndpoint at %s\n", request.URL.Path)),
+	)
 	response.Header().Set("content-type", "application/json")
 	params := mux.Vars(request)
 	var result = contentServerRef.postStore.GetPostByID(params["id"])
@@ -152,10 +238,17 @@ func (contentServerRef *ContentServer) GetPostCommentsEndpoint(response http.Res
 	if err != nil {
 		return
 	}
-	renderJSON(response, post.Comments)
+	ctx := tracer.ContextWithSpan(context.Background(), span)
+	renderJSONWithContext(ctx, response, post.Comments)
 }
 
 func (contentServerRef *ContentServer) CreateStoryEndpoint(response http.ResponseWriter, request *http.Request) {
+	span := tracer.StartSpanFromRequest("CreateStoryEndpoint", contentServerRef.tracer, request)
+	defer span.Finish()
+
+	span.LogFields(
+		tracer.LogString("handler", fmt.Sprintf("handling CreateStoryEndpoint at %s\n", request.URL.Path)),
+	)
 	response.Header().Set("content-type", "application/json")
 	var story model.Story
 	_ = json.NewDecoder(request.Body).Decode(&story)
@@ -164,10 +257,17 @@ func (contentServerRef *ContentServer) CreateStoryEndpoint(response http.Respons
 	var documentId = contentServerRef.postStore.CreateStory(story)
 	story.ID = documentId.InsertedID.(primitive.ObjectID)
 	contentServerRef.postStore.UpdateUserStories(story)
-	renderJSON(response, story)
+	ctx := tracer.ContextWithSpan(context.Background(), span)
+	renderJSONWithContext(ctx, response, story)
 }
 
 func (contentServerRef *ContentServer) GetUserPostsByIDEndpoint(response http.ResponseWriter, request *http.Request) {
+	span := tracer.StartSpanFromRequest("GetUserPostsByIDEndpoint", contentServerRef.tracer, request)
+	defer span.Finish()
+
+	span.LogFields(
+		tracer.LogString("handler", fmt.Sprintf("handling GetUserPostsByIDEndpoint at %s\n", request.URL.Path)),
+	)
 	response.Header().Set("content-type", "application/json")
 	params := mux.Vars(request)
 	objectID, _ := primitive.ObjectIDFromHex(params["id"])
@@ -177,10 +277,17 @@ func (contentServerRef *ContentServer) GetUserPostsByIDEndpoint(response http.Re
 	if err != nil {
 		return
 	}
-	renderJSON(response, user.Posts)
+	ctx := tracer.ContextWithSpan(context.Background(), span)
+	renderJSONWithContext(ctx, response, user.Posts)
 }
 
 func (contentServerRef *ContentServer) GetUserStoriesByIDEndpoint(response http.ResponseWriter, request *http.Request) {
+	span := tracer.StartSpanFromRequest("GetUserStoriesByIDEndpoint", contentServerRef.tracer, request)
+	defer span.Finish()
+
+	span.LogFields(
+		tracer.LogString("handler", fmt.Sprintf("handling GetUserStoriesByIDEndpoint at %s\n", request.URL.Path)),
+	)
 	response.Header().Set("content-type", "application/json")
 	params := mux.Vars(request)
 	objectID, _ := primitive.ObjectIDFromHex(params["id"])
@@ -190,29 +297,48 @@ func (contentServerRef *ContentServer) GetUserStoriesByIDEndpoint(response http.
 	if err != nil {
 		return
 	}
-	renderJSON(response, user.Stories)
+	ctx := tracer.ContextWithSpan(context.Background(), span)
+	renderJSONWithContext(ctx, response, user.Stories)
 }
 
 func (contentServerRef *ContentServer) SearchByLocation(response http.ResponseWriter, request *http.Request) {
+	span := tracer.StartSpanFromRequest("SearchByLocation", contentServerRef.tracer, request)
+	defer span.Finish()
+
+	span.LogFields(
+		tracer.LogString("handler", fmt.Sprintf("handling SearchByLocation at %s\n", request.URL.Path)),
+	)
 	response.Header().Set("content-type", "application/json")
 	var coordinates model.Coordinates
 	_ = json.NewDecoder(request.Body).Decode(&coordinates)
 
 	var result = contentServerRef.postStore.GetPostsByLocation(coordinates.Longitude, coordinates.Latitude)
-
-	renderJSON(response, result)
+	ctx := tracer.ContextWithSpan(context.Background(), span)
+	renderJSONWithContext(ctx, response, result)
 }
 
 func (contentServerRef *ContentServer) SearchByHashtag(response http.ResponseWriter, request *http.Request) {
+	span := tracer.StartSpanFromRequest("SearchByHashtag", contentServerRef.tracer, request)
+	defer span.Finish()
+
+	span.LogFields(
+		tracer.LogString("handler", fmt.Sprintf("handling SearchByHashtag at %s\n", request.URL.Path)),
+	)
 	response.Header().Set("content-type", "application/json")
 	params := mux.Vars(request)
 
 	var result = contentServerRef.postStore.GetPostsByHashtag(params["hashtag"])
-
-	renderJSON(response, result)
+	ctx := tracer.ContextWithSpan(context.Background(), span)
+	renderJSONWithContext(ctx, response, result)
 }
 
 func (contentServerRef *ContentServer) GetPostsForFeedEndpoint(response http.ResponseWriter, request *http.Request) {
+	span := tracer.StartSpanFromRequest("GetPostsForFeedEndpoint", contentServerRef.tracer, request)
+	defer span.Finish()
+
+	span.LogFields(
+		tracer.LogString("handler", fmt.Sprintf("handling GetPostsForFeedEndpoint at %s\n", request.URL.Path)),
+	)
 	response.Header().Set("content-type", "application/json")
 	userService, present := os.LookupEnv("USER_SERVICE")
 	if !present {
@@ -232,10 +358,17 @@ func (contentServerRef *ContentServer) GetPostsForFeedEndpoint(response http.Res
 
 	var result = contentServerRef.postStore.GetPostsByCreators(usernames, page)
 
-	renderJSON(response, result)
+	ctx := tracer.ContextWithSpan(context.Background(), span)
+	renderJSONWithContext(ctx, response, result)
 }
 
 func (contentServerRef *ContentServer) GetStoriesForFeedEndpoint(response http.ResponseWriter, request *http.Request) {
+	span := tracer.StartSpanFromRequest("GetStoriesForFeedEndpoint", contentServerRef.tracer, request)
+	defer span.Finish()
+
+	span.LogFields(
+		tracer.LogString("handler", fmt.Sprintf("handling GetStoriesForFeedEndpoint at %s\n", request.URL.Path)),
+	)
 	response.Header().Set("content-type", "application/json")
 	userService, present := os.LookupEnv("USER_SERVICE")
 	if !present {
@@ -255,5 +388,6 @@ func (contentServerRef *ContentServer) GetStoriesForFeedEndpoint(response http.R
 
 	var result = contentServerRef.postStore.GetStoriesByCreators(usernames, page)
 
-	renderJSON(response, result)
+	ctx := tracer.ContextWithSpan(context.Background(), span)
+	renderJSONWithContext(ctx, response, result)
 }

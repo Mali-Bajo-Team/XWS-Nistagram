@@ -52,7 +52,8 @@ func (contentServerRef *ContentServer) DeleteUserPostEndpoint(response http.Resp
 	if err != nil {
 		return
 	}
-	renderJSON(response, user)
+	ctx := tracer.ContextWithSpan(context.Background(), span)
+	renderJSONWithContext(ctx, response, user)
 }
 
 func (contentServerRef *ContentServer) DeleteInappropriatePostEndpoint(response http.ResponseWriter, request *http.Request) {
