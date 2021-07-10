@@ -5,7 +5,9 @@ import javax.validation.Valid;
 
 import com.xws.users.dto.*;
 import com.xws.users.service.IAgentService;
+import com.xws.users.service.IRegularUserService;
 import com.xws.users.users.model.roles.Agent;
+import com.xws.users.users.model.roles.RegularUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -33,6 +35,9 @@ public class AuthenticationController {
 	private IRegularUserRegistrationService regularUserRegistrationService;
 
 	@Autowired
+	private IRegularUserService regularUserService;
+
+	@Autowired
 	private IAgentService agentService;
 
 	// The first endpoint that affects the user when logging in.
@@ -55,6 +60,13 @@ public class AuthenticationController {
 		return new ResponseEntity<>(addedAccount, HttpStatus.CREATED);
 	}
 
+	// TODO: Add access only to the administrator
+	@PostMapping("/deactivate")
+	public ResponseEntity<RegularUser> deactivateUser(@RequestBody @Valid AgentAcceptRequestDTO usernameDTO) {
+		RegularUser acceptedAccount = regularUserService.deactivateUser(usernameDTO.getUsername());
+		acceptedAccount.setPassword(null);
+		return new ResponseEntity<>(acceptedAccount, HttpStatus.CREATED);
+	}
 
 
 	// Endpoint to register a new user

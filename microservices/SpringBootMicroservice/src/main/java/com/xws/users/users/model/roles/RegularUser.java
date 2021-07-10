@@ -45,7 +45,7 @@ public class RegularUser extends UserAccount {
 	@Column(name = "linkToWebSite")
 	private String linkToWebSite;
 
-	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL)
+	@OneToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.ALL)
 	private PrivacySettings privacySettings;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "towards")
@@ -53,6 +53,8 @@ public class RegularUser extends UserAccount {
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "from")
 	private List<Relationship> outRelationships;
+
+	public RegularUser(){}
 
 	public String getBio() {
 		return bio;
