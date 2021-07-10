@@ -6,6 +6,7 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.xws.adds.model.Agent;
 import com.xws.adds.model.Collaboration;
@@ -20,6 +21,7 @@ import com.xws.adds.util.exceptions.USAuthenticationException;
 import com.xws.adds.util.exceptions.USAuthorizationException;
 import com.xws.adds.util.exceptions.USConflictException;
 
+@Service
 public class CollaborationService implements ICollaborationService {
 
 	@Autowired
