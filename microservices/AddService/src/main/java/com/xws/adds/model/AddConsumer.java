@@ -12,20 +12,30 @@ import javax.persistence.TemporalType;
 
 @Entity
 public class AddConsumer {
-	
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
+	@Column
+	private String username;
+
 	@Temporal(TemporalType.DATE)
 	@Column
 	private Date dateOfBirth;
-	
+
 	@Column
 	private String gender;
-	
+
 	@Column
 	private String userCategory;
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
 	public Long getId() {
 		return id;

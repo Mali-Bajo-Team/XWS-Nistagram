@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"content_service/tracer"
+	"fmt"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"io"
@@ -15,6 +17,13 @@ func InitializeFileRouter(router *mux.Router, server *ContentServer) {
 }
 
 func (contentServerRef *ContentServer) UploadFileEndpoint(responseWriter http.ResponseWriter, request *http.Request) {
+	span := tracer.StartSpanFromRequest("UploadFileEndpoint", contentServerRef.tracer, request)
+	defer span.Finish()
+
+	span.LogFields(
+		tracer.LogString("handler", fmt.Sprintf("handling UploadFileEndpoint at %s\n", request.URL.Path)),
+	)
+
 	var allContent []interface{}
 	const _24K = (1 << 10) * 24
 	request.ParseMultipartForm(_24K)
@@ -41,6 +50,12 @@ func (contentServerRef *ContentServer) UploadFileEndpoint(responseWriter http.Re
 }
 
 func (contentServerRef *ContentServer) GetFileEndpoint(response http.ResponseWriter, request *http.Request) {
+	span := tracer.StartSpanFromRequest("GetFileEndpoint", contentServerRef.tracer, request)
+	defer span.Finish()
+
+	span.LogFields(
+		tracer.LogString("handler", fmt.Sprintf("handling GetFileEndpoint at %s\n", request.URL.Path)),
+	)
 	params := mux.Vars(request)
 	http.ServeFile(response, request, "./post-content/"+params["name"])
 }

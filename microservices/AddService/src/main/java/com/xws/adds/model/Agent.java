@@ -12,7 +12,7 @@ import javax.persistence.OneToMany;
 @DiscriminatorValue("Agent")
 public class Agent extends Advertiser {
 
-	@Column(nullable = false)
+	@Column
 	private String webSite;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "agent")

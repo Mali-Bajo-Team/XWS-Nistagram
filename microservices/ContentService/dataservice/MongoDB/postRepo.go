@@ -469,6 +469,24 @@ func (postStoreRef *PostStore) GetPostReaction(username string, postID string) *
 	return &reaction
 }
 
+func (postStoreRef *PostStore) DeleteInappropriatePost(inappropriatePostID string, postID string) (*mongo.DeleteResult, *mongo.DeleteResult) {
+	collectionInappropriatePosts := postStoreRef.ourClient.Database("content-service-db").Collection("inappropriatePosts")
+	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
+	InappropriatePostObjectID,_ := primitive.ObjectIDFromHex(inappropriatePostID)
+	PostObjectID,_ := primitive.ObjectIDFromHex(postID)
+	deleteResult,_ := collectionInappropriatePosts.DeleteOne(
+		context.Background(),
+		bson.M{"_id": InappropriatePostObjectID},
+	)
+
+	del2,_ := collectionPosts.DeleteOne(
+		context.Background(),
+		bson.M{"_id": PostObjectID},
+	)
+	return deleteResult,del2
+}
+
+
 func (postStoreRef *PostStore) DeletePostReaction(username string, postID string) *mongo.UpdateResult {
 	collectionPosts := postStoreRef.ourClient.Database("content-service-db").Collection("posts")
 	collectionReactions := postStoreRef.ourClient.Database("content-service-db").Collection("reactions")
@@ -693,3 +711,4 @@ func (postStoreRef *PostStore) GetStoriesByCreators(usernames []string, page int
 
 	return result
 }
+

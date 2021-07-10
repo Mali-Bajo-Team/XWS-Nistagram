@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 
 import com.xws.users.dto.RegularUserImageUpdateDTO;
+import com.xws.users.users.model.enums.UserAccountStatus;
+import com.xws.users.users.model.roles.Agent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,14 @@ public class RegularUserService implements IRegularUserService {
 	@Override
 	public RegularUser findByUsername(String username) {
 		return regularUserRepository.findByUsername(username);
+	}
+
+	@Override
+	public RegularUser deactivateUser(String username) {
+		RegularUser user = regularUserRepository.findByUsername(username);
+		user.setStatus(UserAccountStatus.DEACTIVATED);
+		RegularUser deactivatedUser = regularUserRepository.save(user);
+		return deactivatedUser;
 	}
 
 	public RegularUser save(RegularUser regularUser) {

@@ -2,6 +2,8 @@ package usecase
 
 import (
 	"content_service/model"
+	"content_service/tracer"
+	"context"
 	"encoding/json"
 	"math/rand"
 	"mime/multipart"
@@ -13,6 +15,19 @@ import (
 
 // renderJSON renders 'v' as JSON and writes it as a response into w.
 func renderJSON(responseWriter http.ResponseWriter, model interface{}) {
+	marshalJson, err := json.Marshal(model)
+	if err != nil {
+		http.Error(responseWriter, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	responseWriter.Header().Set("Content-Type", "application/json")
+	responseWriter.Write(marshalJson)
+}
+
+func renderJSONWithContext(ctx context.Context, responseWriter http.ResponseWriter, model interface{}) {
+	span := tracer.StartSpanFromContext(ctx, "renderJSONWithContext")
+	defer span.Finish()
+
 	marshalJson, err := json.Marshal(model)
 	if err != nil {
 		http.Error(responseWriter, err.Error(), http.StatusInternalServerError)

@@ -11,6 +11,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 @Entity
@@ -18,6 +19,9 @@ public class AddCampaign {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@Column(nullable = false)
+	private Boolean deleted;
 
 	@Column(nullable = false)
 	private CampaignType type;
@@ -46,6 +50,9 @@ public class AddCampaign {
 
 	@OneToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL)
 	private InterestGroupDescription interestGroup;
+
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+	private Agent agent;
 
 	public Long getId() {
 		return id;
@@ -125,6 +132,22 @@ public class AddCampaign {
 
 	public void setInterestGroup(InterestGroupDescription interestGroup) {
 		this.interestGroup = interestGroup;
+	}
+
+	public Agent getAgent() {
+		return agent;
+	}
+
+	public void setAgent(Agent agent) {
+		this.agent = agent;
+	}
+
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
 	}
 
 }

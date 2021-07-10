@@ -27,6 +27,28 @@ func (postStoreRef *PostStore) UpdateUser(user model.UserUpdate) *mongo.UpdateRe
 	return result
 }
 
+func (postStoreRef *PostStore) DeleteUserPost(username string, postId string) *mongo.UpdateResult {
+	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
+	PostObjectId, _ := primitive.ObjectIDFromHex(postId)
+	update := bson.M{
+		"$pull": bson.M{
+			"posts": bson.M{"post_id": PostObjectId},
+		},
+	}
+
+	result, err := collectionUsers.UpdateOne(
+		context.Background(),
+		bson.M{"username": username},
+		update,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return result
+}
+
+
 func (postStoreRef *PostStore) CreateUser(user model.User) *mongo.InsertOneResult {
 	collectionUsers := postStoreRef.ourClient.Database("content-service-db").Collection("users")
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
