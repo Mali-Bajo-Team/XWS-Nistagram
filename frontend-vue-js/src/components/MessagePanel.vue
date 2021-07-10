@@ -3,7 +3,6 @@
     <div class="header">
       <status-icon :connected="user.connected" />{{ user.username }}
     </div>
-
     <ul class="messages">
       <li
         v-for="(message, index) in user.messages"
@@ -68,7 +67,7 @@
                         <v-dialog width="600px">
                           <template v-slot:activator="{ on, attrs }">
                             <v-btn
-                             v-if="message.content.includes('http')"
+                             v-if="message.content.includes('http') && !message.content.includes('.mp4')"
                               v-bind="attrs"
                               v-on="on"
                               @click="openOneTime()"
@@ -82,6 +81,26 @@
                           <h1
                              v-if="isOpened!=1"
                             > YOU CAN OPEN IMAGE ONLY ONE TIME
+                          </h1>
+                        </v-dialog>
+
+                         <v-dialog width="600px">
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                             v-if="message.content.includes('.mp4')"
+                              v-bind="attrs"
+                              v-on="on"
+                              @click="openOneTimeVideo()"
+                              icon
+                            >
+                            Open video one time
+                              <v-icon right> mdi-plus-circle </v-icon>
+                             </v-btn>
+                          </template>
+                           <video v-if="isOpenedVideo==1" width="450" controls :src="message.content"></video>
+                          <h1
+                             v-if="isOpenedVideo!=1"
+                            > YOU CAN OPEN VIDEO ONLY ONE TIME
                           </h1>
                         </v-dialog>
       </li>
@@ -113,6 +132,7 @@ export default {
   data() {
     return {
       isOpened: 0,
+      isOpenedVideo: 0,
       input: "",
       entirePost: null,
       entireStory: null,
@@ -161,6 +181,9 @@ export default {
     },
     openOneTime(){
        this.isOpened = this.isOpened+1;
+    },
+     openOneTimeVideo(){
+       this.isOpenedVideo = this.isOpenedVideo+1;
     },
     onSubmit() {
       this.$emit("input", this.input);
