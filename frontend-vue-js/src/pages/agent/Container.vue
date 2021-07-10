@@ -56,6 +56,10 @@ export default {
 				title: 'Recommendations',
 				to: '/agent/recommendations',
 			},
+			{
+				title: 'Influencers',
+				to: '/agent/influencers',
+			},
 		],
 	}),
 };
