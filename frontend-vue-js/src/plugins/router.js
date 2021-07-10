@@ -19,6 +19,7 @@ import UserSearch from './../pages/user/user-search/UserSearch';
 import HashtagSearch from './../pages/user/post-search/HashtagSearch';
 import LocationSearch from './../pages/user/post-search/LocationSearch';
 import OtherProfile from './../pages/user/profile/OtherProfile';
+import Messages from './../pages/user/messages/Messages'
 import PostFeed from './../pages/user/feed/PostFeed';
 import StoryFeed from './../pages/user/feed/StoryFeed';
 import InappropriateContent from './../pages/admin/InappropriateContent';
@@ -76,6 +77,11 @@ const routes = [
 				name: 'recommendations',
 				path: 'recommendations',
 			},
+			{
+                component:Messages,
+                name:'messages',
+                path:'messages'
+            },
 		],
 	},
 	{

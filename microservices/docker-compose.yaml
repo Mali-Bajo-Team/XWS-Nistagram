@@ -128,6 +128,14 @@ services:
       - JAEGER_SAMPLER_PARAM=1
     volumes:
       - content-service-file-volume:/dist/post-content/
+  message-service:
+    build:  
+      context: ./MessageService
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    networks:
+      - backend
 
   content-service-db:
     networks:

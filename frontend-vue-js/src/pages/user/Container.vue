@@ -36,6 +36,10 @@ export default {
         to: "/profile",
       },
       {
+        title: "Messages",
+        to: "/messages",
+      },
+      {
         title: "Search",
         children: [
           {
