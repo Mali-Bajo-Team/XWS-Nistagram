@@ -58,7 +58,7 @@ public class CampaignController {
 	}
 
 	@PreAuthorize("hasAnyRole('AGENT', 'API')")
-	@DeleteMapping("{id}")
+	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> getCampaigns(@PathVariable(required = true) Long id, Authentication authentication) {
 		CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
 
@@ -68,7 +68,7 @@ public class CampaignController {
 	}
 
 	@PreAuthorize("hasAnyRole('AGENT', 'API')")
-	@PutMapping("{id}")
+	@PutMapping("/{id}")
 	public ResponseEntity<AddCampaign> getCampaigns(@PathVariable(required = true) Long id,
 			Authentication authentication, @RequestBody MultipleCampaignUpdateDTO update) {
 		CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
@@ -77,7 +77,7 @@ public class CampaignController {
 	}
 	
 	@PreAuthorize("hasRole('INFLUENCER')")
-	@GetMapping("pending")
+	@GetMapping("/pending")
 	public ResponseEntity<List<AddCampaign>> getPendingCampaigns(Authentication authentication) {
 		CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
 
@@ -85,7 +85,7 @@ public class CampaignController {
 	}
 	
 	@PreAuthorize("hasRole('INFLUENCER')")
-	@PostMapping("pending/{id}/accept")
+	@PostMapping("/pending/{id}/accept")
 	public ResponseEntity<Void> acceptCampaign(@PathVariable(required = true) Long id,
 			Authentication authentication) {
 		CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
@@ -96,7 +96,7 @@ public class CampaignController {
 	}
 
 	@PreAuthorize("hasRole('INFLUENCER')")
-	@PostMapping("pending/{id}/reject")
+	@PostMapping("/pending/{id}/reject")
 	public ResponseEntity<Void> rejectCampaign(@PathVariable(required = true) Long id,
 			Authentication authentication) {
 		CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
