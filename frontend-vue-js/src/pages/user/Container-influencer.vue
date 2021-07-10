@@ -55,6 +55,10 @@ export default {
       {
         title:"Recommendations",
         to:"/influencer/recommendations"
+      },
+      {
+        title:"Agent requests",
+        to:"/influencer/collab-requests"
       }
     ],
   }),

@@ -11,20 +11,26 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @DiscriminatorValue("Influencer")
 public class Influencer extends Advertiser {
 
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "influencer")
 	private List<Collaboration> agents;
 
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "influencer")
 	private List<CollaborationRequest> collaborationRequests;
 
+	@JsonIgnore
 	@ManyToMany(cascade = { CascadeType.ALL })
 	@JoinTable(name = "influencer_campaign", joinColumns = @JoinColumn(name = "influencer_id"), inverseJoinColumns = @JoinColumn(name = "campaign_id"))
 	private List<AddCampaign> pendingCampaigns;
 
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "influencer")
 	private List<AcceptedCampaign> acceptedCampaigns;
 

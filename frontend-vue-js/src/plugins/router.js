@@ -25,6 +25,7 @@ import InappropriateContent from './../pages/admin/InappropriateContent';
 import AgentRegistrationRequests from './../pages/admin/agentRequests/AgentRegistrationRequests';
 import RecommendedFollowers from './../pages/user/recommendations/RecommendedFollowers';
 import Influencers from './../pages/agent/influencers/Infuencers'
+import CollaborationRequests from './../pages/user/collaboration/Collaboration'
 
 const routes = [
 	{
@@ -128,6 +129,11 @@ const routes = [
 				component: RecommendedFollowers,
 				name: 'irecommendations',
 				path: 'recommendations',
+			},
+			{
+				component: CollaborationRequests,
+				name: 'collreq',
+				path: 'collab-requests',
 			},
 		],
 	},

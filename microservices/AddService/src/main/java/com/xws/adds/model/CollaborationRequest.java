@@ -7,6 +7,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class CollaborationRequest {
 
@@ -16,7 +18,8 @@ public class CollaborationRequest {
 	
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	private Agent requester;
-	
+
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	private Influencer influencer;
 
